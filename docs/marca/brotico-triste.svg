@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Brotico desanimado">
+  <path d="M60 46 V38" stroke="#1E5A3A" stroke-width="4" stroke-linecap="round"/>
+  <path d="M60 40 C52 42 44 48 40 56 C49 56 57 50 60 40 Z" fill="#3E9B63"/>
+  <path d="M60 38 C68 40 76 46 80 54 C71 54 63 48 60 38 Z" fill="#1E5A3A"/>
+  <path d="M32 84 C26 90 24 98 26 104 C32 100 34 92 32 84 Z" fill="#1E5A3A"/>
+  <path d="M88 84 C94 90 96 98 94 104 C88 100 86 92 88 84 Z" fill="#1E5A3A"/>
+  <path d="M60 108 C36 108 28 92 30 74 C32 56 44 46 60 46 C76 46 88 56 90 74 C92 92 84 108 60 108 Z" fill="#5BB37E"/>
+  <circle cx="50" cy="77" r="4.5" fill="#14211A"/>
+  <circle cx="70" cy="77" r="4.5" fill="#14211A"/>
+  <path d="M44 68 L54 70 M76 68 L66 70" stroke="#14211A" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M52 92 Q60 86 68 92" stroke="#14211A" stroke-width="3" stroke-linecap="round" fill="none"/>
+</svg>

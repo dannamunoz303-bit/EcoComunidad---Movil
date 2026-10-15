@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="EcoComunidad">
+  <path d="M8 44 H30 L33 49 L29 53 L32 58 H8 Q4 58 4 54 V48 Q4 44 8 44 Z" fill="#CFD8D2"/>
+  <path d="M34 44 H56 Q60 44 60 48 V54 Q60 58 56 58 H36 L33 53 L37 49 Z" fill="#CFD8D2"/>
+  <path d="M33 47 C33 39 31 35 32 27" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M32 35 C24 35 18 30 18 22 C26 22 32 27 32 35 Z" fill="#A8D9B8"/>
+  <path d="M32 29 C32 21 38 15 46 15 C46 23 40 29 32 29 Z" fill="#FFFFFF"/>
+</svg>
