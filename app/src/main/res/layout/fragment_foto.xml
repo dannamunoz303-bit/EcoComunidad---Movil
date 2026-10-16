@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Una foto en grande sobre fondo tinta, con el botón de cerrar arriba. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tinta">
+
+    <ImageView
+        android:id="@+id/foto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/foto_ampliada"
+        android:scaleType="fitCenter" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/boton_cerrar"
+        style="@style/Widget.Material3.Button.IconButton.Filled"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="12dp"
+        android:contentDescription="@string/cerrar"
+        app:backgroundTint="@color/superficie"
+        app:icon="@drawable/ic_cerrar"
+        app:iconTint="@color/tinta" />
+</FrameLayout>

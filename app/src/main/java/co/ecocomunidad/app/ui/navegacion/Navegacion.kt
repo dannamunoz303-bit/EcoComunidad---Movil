@@ -11,6 +11,10 @@ const val ARG_MOTIVO = "motivo"
 const val ARG_CORREO = "correo"
 const val ARG_CUENTA_CREADA = "cuentaCreada"
 
+/** Argumentos del detalle de un reporte y de la foto en grande. */
+const val ARG_ID_REPORTE = "idReporte"
+const val ARG_URL_FOTO = "url"
+
 /** Destino de nav_graph.xml y argumentos para cada [Ruta]. */
 fun Ruta.destino(): Pair<Int, Bundle?> = when (this) {
     is Ruta.Login -> R.id.loginFragment to bundleOf(

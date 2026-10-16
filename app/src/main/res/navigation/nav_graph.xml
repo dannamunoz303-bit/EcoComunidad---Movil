@@ -45,4 +45,21 @@
     <fragment
         android:id="@+id/inicioGestorFragment"
         android:name="co.ecocomunidad.app.ui.inicio.InicioGestorFragment" />
+
+    <!-- Se apilan sobre la lista: atrás vuelve a ella -->
+    <fragment
+        android:id="@+id/detalleReporteFragment"
+        android:name="co.ecocomunidad.app.ui.reportes.DetalleReporteFragment">
+        <argument
+            android:name="idReporte"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fotoFragment"
+        android:name="co.ecocomunidad.app.ui.reportes.FotoFragment">
+        <argument
+            android:name="url"
+            app:argType="string" />
+    </fragment>
 </navigation>

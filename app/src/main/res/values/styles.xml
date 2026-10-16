@@ -122,6 +122,57 @@
         <item name="android:stateListAnimator">@null</item>
     </style>
 
+    <!-- Tarjeta de cada reporte en la lista: clara, esquinas de 20 dp -->
+    <style name="Widget.EcoComunidad.TarjetaReporte" parent="Widget.EcoComunidad.TarjetaClara">
+        <item name="cardCornerRadius">20dp</item>
+    </style>
+
+    <!-- Marco de las fotos: recorta la imagen con esquinas redondeadas -->
+    <style name="Widget.EcoComunidad.MarcoFoto" parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">@color/fondo</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
+
+    <!-- Chip de filtro de la lista ("Todos", "Mis reportes") -->
+    <style name="Widget.EcoComunidad.ChipFiltro" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/fondo_chip</item>
+        <item name="chipStrokeColor">@color/borde_chip</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:textColor">@color/texto_chip</item>
+        <item name="android:textAppearance">@style/TextAppearance.EcoComunidad.Etiqueta</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="chipCornerRadius">999dp</item>
+        <item name="chipMinHeight">40dp</item>
+        <item name="chipStartPadding">8dp</item>
+        <item name="chipEndPadding">8dp</item>
+    </style>
+
+    <!-- Botón secundario: píldora con borde verde bosque (Reintentar) -->
+    <style name="Widget.EcoComunidad.BotonSecundario" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textColor">@color/verde_bosque</item>
+        <item name="android:textAppearance">@style/TextAppearance.EcoComunidad.Etiqueta</item>
+        <item name="strokeColor">@color/verde_bosque</item>
+        <item name="cornerRadius">999dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <!-- Etiqueta de estado del reporte: punto de color y texto en tinta (contraste 4,5:1) -->
+    <style name="Widget.EcoComunidad.EtiquetaEstado" parent="">
+        <item name="android:background">@drawable/fondo_estado</item>
+        <item name="android:drawableStart">@drawable/punto_estado</item>
+        <item name="android:drawablePadding">6dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.EcoComunidad.Etiqueta</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
     <!-- Botón de texto en verde bosque -->
     <style name="Widget.EcoComunidad.BotonTexto" parent="Widget.Material3.Button.TextButton">
         <item name="android:textColor">@color/verde_bosque</item>

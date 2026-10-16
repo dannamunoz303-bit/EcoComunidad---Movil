@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Detalle de un reporte: fotos, datos, motivo de rechazo (si es propio) y acciones del gestor. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondo"
+    android:orientation="vertical">
+
+    <!-- Barra: volver y título -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp"
+        android:paddingTop="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/boton_volver"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/volver"
+            app:icon="@drawable/ic_volver"
+            app:iconTint="@color/verde_bosque" />
+
+        <TextView
+            style="@style/Widget.EcoComunidad.TextoTitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:accessibilityHeading="true"
+            android:text="@string/detalle_titulo"
+            android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <include
+            android:id="@+id/estado_carga"
+            layout="@layout/vista_estado_carga"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="20dp" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/contenido"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="24dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Carrusel de fotos del ciudadano; tocar una la abre en grande -->
+                <HorizontalScrollView
+                    android:id="@+id/carrusel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="20dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/fotos"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="20dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.EcoComunidad.TarjetaClara"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/categoria"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:layout_weight="1"
+                                    android:textAppearance="@style/TextAppearance.EcoComunidad.Etiqueta"
+                                    android:textColor="@color/verde_musgo" />
+
+                                <TextView
+                                    android:id="@+id/estado"
+                                    style="@style/Widget.EcoComunidad.EtiquetaEstado"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/titulo"
+                                style="@style/Widget.EcoComunidad.TextoTitulo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta"
+                                android:textColor="@color/tinta" />
+
+                            <!-- Rechazado y propio: motivo sobrio, sin Brotico -->
+                            <include
+                                android:id="@+id/motivo_rechazo"
+                                layout="@layout/vista_aviso" />
+
+                            <!-- Resuelto: Brotico florece (marca.md) -->
+                            <LinearLayout
+                                android:id="@+id/resuelto"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:background="@drawable/fondo_aviso_exito"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:padding="12dp"
+                                android:visibility="gone">
+
+                                <ImageView
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
+                                    android:importantForAccessibility="no"
+                                    android:src="@drawable/brotico_florece" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="12dp"
+                                    android:layout_weight="1"
+                                    android:text="@string/detalle_resuelto"
+                                    android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                    android:textColor="@color/verde_bosque"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/descripcion"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo" />
+
+                            <TextView
+                                android:id="@+id/direccion"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:drawablePadding="6dp"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                android:textSize="14sp"
+                                app:drawableStartCompat="@drawable/ic_ubicacion"
+                                app:drawableTint="@color/verde_musgo" />
+
+                            <TextView
+                                android:id="@+id/descripcion_ubicacion"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="22dp"
+                                android:layout_marginTop="2dp"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                android:textColor="@color/tinta_suave"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/fechas"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                android:textColor="@color/tinta_suave"
+                                android:textSize="13sp"
+                                app:lineHeight="20sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Línea de tiempo con las acciones del gestor (solo si el backend la entrega, RN-14) -->
+                    <LinearLayout
+                        android:id="@+id/seccion_acciones"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            style="@style/Widget.EcoComunidad.TextoTitulo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:accessibilityHeading="true"
+                            android:text="@string/detalle_acciones_titulo"
+                            android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
+                            android:textSize="18sp" />
+
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/progreso_acciones"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:contentDescription="@string/cargando"
+                            android:indeterminate="true"
+                            app:indicatorColor="@color/verde_bosque"
+                            app:trackColor="@color/borde" />
+
+                        <TextView
+                            android:id="@+id/acciones_mensaje"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                            android:textColor="@color/tinta_suave"
+                            android:textSize="14sp"
+                            android:visibility="gone" />
+
+                        <LinearLayout
+                            android:id="@+id/acciones"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="vertical" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </FrameLayout>
+</LinearLayout>

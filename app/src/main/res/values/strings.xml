@@ -32,8 +32,45 @@
     <string name="saludo_sin_nombre">¡Hola de nuevo!</string>
     <string name="saludo_barrio">Tu barrio te está esperando.</string>
     <string name="brotico_saludando">Brotico saludando</string>
-    <string name="rol_ciudadano">Ciudadano</string>
     <string name="rol_gestor">Gestor ambiental</string>
+
+    <!-- Estados del reporte (sección 6.1), en texto legible -->
+    <string name="estado_pendiente">Pendiente</string>
+    <string name="estado_aprobado">Aprobado</string>
+    <string name="estado_asignado">Asignado</string>
+    <string name="estado_en_proceso">En proceso</string>
+    <string name="estado_resuelto">Resuelto</string>
+    <string name="estado_rechazado">Rechazado</string>
+
+    <!-- Lista de reportes del ciudadano -->
+    <string name="filtro_todos">Todos</string>
+    <string name="filtro_mis_reportes">Mis reportes</string>
+    <string name="reportes_cargando">Revisando los reportes del barrio…</string>
+    <string name="reportes_vacio_todos">Todavía no hay reportes para mostrar. Cuando alguien reporte un problema del barrio, aparecerá aquí.</string>
+    <string name="reportes_vacio_mios">Aún no has hecho reportes. Los que crees aparecerán aquí con su estado.</string>
+    <string name="reportes_error_titulo">No pudimos cargar los reportes</string>
+    <string name="reintentar">Reintentar</string>
+    <string name="reporte_descripcion_item">%1$s, %2$s. %3$s. Estado: %4$s.</string>
+    <string name="foto_del_reporte">Foto del reporte</string>
+
+    <!-- Detalle del reporte -->
+    <string name="volver">Volver</string>
+    <string name="detalle_titulo">Reporte</string>
+    <string name="detalle_error_titulo">No pudimos abrir el reporte</string>
+    <string name="detalle_fecha_creacion">Creado el %1$s</string>
+    <string name="detalle_fecha_actualizacion">Actualizado el %1$s</string>
+    <string name="detalle_fecha_revision">Revisado el %1$s</string>
+    <string name="detalle_motivo_rechazo">Motivo del rechazo: %1$s</string>
+    <string name="detalle_resuelto">¡Un lugar más limpio! Gracias al trabajo del equipo.</string>
+    <string name="detalle_cargando">Buscando los detalles del reporte…</string>
+    <string name="detalle_acciones_titulo">Acciones del gestor</string>
+    <string name="detalle_sin_acciones">Todavía no hay acciones registradas en este reporte.</string>
+    <string name="detalle_acciones_error">No pudimos cargar las acciones: %1$s</string>
+    <string name="detalle_gestor">%1$s %2$s</string>
+    <string name="foto_numero">Foto %1$d de %2$d. Toca para verla en grande.</string>
+    <string name="evidencia_numero">Evidencia %1$d de %2$d. Toca para verla en grande.</string>
+    <string name="foto_ampliada">Foto en grande</string>
+    <string name="cerrar">Cerrar</string>
 
     <!-- Registro del ciudadano (RN-01): los gestores los crea el administrador -->
     <string name="registro_titulo">Crea tu cuenta</string>

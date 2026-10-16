@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Foto del reporte en el carrusel del detalle. -->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.EcoComunidad.MarcoFoto"
+    android:layout_width="260dp"
+    android:layout_height="190dp"
+    android:layout_marginEnd="12dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/foto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop" />
+</com.google.android.material.card.MaterialCardView>

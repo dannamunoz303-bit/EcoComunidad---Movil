@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.viewmodel.initializer
@@ -12,13 +11,14 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.fragment.findNavController
 import co.ecocomunidad.app.R
 import co.ecocomunidad.app.databinding.FragmentInicioBinding
+import co.ecocomunidad.app.ui.componentes.compactarSiHaceFalta
 import co.ecocomunidad.app.ui.componentes.contenedor
 import co.ecocomunidad.app.ui.componentes.observar
 import co.ecocomunidad.app.ui.navegacion.Ruta
 import co.ecocomunidad.app.ui.navegacion.irA
 
-/** Inicio temporal: el mismo para los dos roles, solo cambia la etiqueta [rol]. */
-abstract class InicioFragment(@param:StringRes private val rol: Int) : Fragment() {
+/** Inicio temporal del gestor: saludo de Brotico y cierre de sesión. */
+class InicioGestorFragment : Fragment() {
 
     private var _binding: FragmentInicioBinding? = null
     private val binding get() = _binding!!
@@ -33,16 +33,8 @@ abstract class InicioFragment(@param:StringRes private val rol: Int) : Fragment(
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.rol.setText(rol)
-        if (resources.getBoolean(R.bool.barra_compacta)) {
-            // Solo el ícono, para que el nombre de marca quepa completo en la barra
-            binding.botonCerrarSesion.apply {
-                text = null
-                iconPadding = 0
-                contentDescription = getString(R.string.cerrar_sesion)
-                tooltipText = getString(R.string.cerrar_sesion)
-            }
-        }
+        binding.rol.setText(R.string.rol_gestor)
+        binding.botonCerrarSesion.compactarSiHaceFalta()
         binding.botonCerrarSesion.setOnClickListener {
             it.isEnabled = false
             viewModel.cerrarSesion {
@@ -63,7 +55,3 @@ abstract class InicioFragment(@param:StringRes private val rol: Int) : Fragment(
         super.onDestroyView()
     }
 }
-
-class InicioCiudadanoFragment : InicioFragment(R.string.rol_ciudadano)
-
-class InicioGestorFragment : InicioFragment(R.string.rol_gestor)

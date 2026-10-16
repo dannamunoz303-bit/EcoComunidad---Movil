@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import co.ecocomunidad.app.data.AuthRepository
 import co.ecocomunidad.app.data.AuthRepositoryRemoto
+import co.ecocomunidad.app.data.ReportesRepository
+import co.ecocomunidad.app.data.ReportesRepositoryRemoto
 import co.ecocomunidad.app.data.remoto.ApiCliente
 import co.ecocomunidad.app.data.sesion.EventosSesion
 import co.ecocomunidad.app.data.sesion.SesionStore
@@ -27,4 +29,6 @@ class AppContainer(context: Context) {
     val apiCliente = ApiCliente(sesionStore, eventosSesion)
     val authRepository: AuthRepository =
         AuthRepositoryRemoto(apiCliente.authApi, sesionStore, apiCliente.json)
+    val reportesRepository: ReportesRepository =
+        ReportesRepositoryRemoto(apiCliente.reportesApi, apiCliente.json, apiCliente.urlBase)
 }

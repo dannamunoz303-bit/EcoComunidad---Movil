@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Encabezado de la pantalla principal del ciudadano: barra, saludo de Brotico y pestañas. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- El nombre conserva su ancho completo; el espacio flexible empuja el botón -->
+        <include
+            layout="@layout/vista_logo_con_nombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- En pantallas estrechas queda solo el ícono (ver compactarSiHaceFalta) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/boton_cerrar_sesion"
+            style="@style/Widget.EcoComunidad.BotonTexto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="48dp"
+            android:text="@string/cerrar_sesion"
+            app:icon="@drawable/ic_salir"
+            app:iconPadding="6dp"
+            app:iconSize="18dp" />
+    </LinearLayout>
+
+    <!-- Tarjeta destacada en verde bosque (marca.md) -->
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.EcoComunidad.TarjetaDestacada"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="20dp">
+
+            <ImageView
+                android:layout_width="88dp"
+                android:layout_height="88dp"
+                android:contentDescription="@string/brotico_saludando"
+                android:src="@drawable/brotico_saluda" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/saludo"
+                    style="@style/Widget.EcoComunidad.TextoTitulo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/saludo_sin_nombre"
+                    android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta"
+                    android:textColor="@color/superficie" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/saludo_barrio"
+                    android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                    android:textColor="@color/verde_brote"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/filtros"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="4dp"
+        app:checkedChip="@id/filtro_todos"
+        app:selectionRequired="true"
+        app:singleLine="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/filtro_todos"
+            style="@style/Widget.EcoComunidad.ChipFiltro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/filtro_todos" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/filtro_mios"
+            style="@style/Widget.EcoComunidad.ChipFiltro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/filtro_mis_reportes" />
+    </com.google.android.material.chip.ChipGroup>
+</LinearLayout>

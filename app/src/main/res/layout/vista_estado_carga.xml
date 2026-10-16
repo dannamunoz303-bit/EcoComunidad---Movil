@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Cargando, vacío o error, centrado. Lo usan la lista y el detalle.
+  Brotico solo cuando aplica (marca.md): piensa si la carga tarda, triste si no hay nada o no hay conexión.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:accessibilityLiveRegion="polite"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="32dp">
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progreso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/cargando"
+        android:indeterminate="true"
+        app:indicatorColor="@color/verde_bosque"
+        app:indicatorSize="32dp"
+        app:trackThickness="3dp" />
+
+    <ImageView
+        android:id="@+id/brotico"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:importantForAccessibility="no"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/icono_error"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_alerta"
+        android:visibility="gone"
+        app:tint="@color/arcilla" />
+
+    <TextView
+        android:id="@+id/titulo"
+        style="@style/Widget.EcoComunidad.TextoTitulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/mensaje"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+        android:textColor="@color/tinta_suave"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:lineHeight="20sp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/boton_reintentar"
+        style="@style/Widget.EcoComunidad.BotonSecundario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/reintentar"
+        android:visibility="gone" />
+</LinearLayout>

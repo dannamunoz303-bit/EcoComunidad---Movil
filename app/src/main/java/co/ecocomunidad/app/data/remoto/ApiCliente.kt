@@ -15,7 +15,7 @@ import retrofit2.create
 class ApiCliente(
     sesion: SesionStore,
     eventos: EventosSesion,
-    urlBase: String = BuildConfig.API_URL,
+    val urlBase: String = BuildConfig.API_URL,
     registrarPeticiones: Boolean = BuildConfig.DEBUG,
 ) {
     val json = Json { ignoreUnknownKeys = true }
@@ -38,4 +38,6 @@ class ApiCliente(
         .build()
 
     val authApi: AuthApi by lazy { retrofit.create() }
+
+    val reportesApi: ReportesApi by lazy { retrofit.create() }
 }

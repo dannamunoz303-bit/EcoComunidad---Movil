@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Una acción del gestor en la línea de tiempo: punto y línea a la izquierda, contenido a la derecha. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:layout_width="20dp"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/linea"
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:background="@color/borde" />
+
+        <View
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="3dp"
+            android:background="@drawable/linea_tiempo_punto" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingBottom="20dp">
+
+        <TextView
+            android:id="@+id/fecha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.EcoComunidad.Etiqueta"
+            android:textColor="@color/verde_musgo"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/gestor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+            android:textColor="@color/tinta_suave"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/descripcion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+            app:lineHeight="22sp" />
+
+        <HorizontalScrollView
+            android:id="@+id/carrusel_evidencias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:scrollbars="none"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/evidencias"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+    </LinearLayout>
+</LinearLayout>
