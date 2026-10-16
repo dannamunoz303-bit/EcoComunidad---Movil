@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- El nombre y el formulario suben esto al aparecer en el login (marca.md) -->
+    <dimen name="subida_aparicion">6dp</dimen>
+</resources>

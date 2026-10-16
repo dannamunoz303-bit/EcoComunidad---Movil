@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Pantallas de sesión. MainActivity cambia el inicio según AppViewModel (sesión y rol).
+  Toda navegación entre login, cambio de contraseña e inicio limpia la pila (ver Navegacion.kt);
+  solo el registro se apila sobre el login.
+-->
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="co.ecocomunidad.app.ui.login.LoginFragment">
+        <!-- Por qué se volvió al login (sesión cerrada, cuenta bloqueada, administrador) -->
+        <argument
+            android:name="motivo"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registroFragment"
+        android:name="co.ecocomunidad.app.ui.registro.RegistroFragment" />
+
+    <fragment
+        android:id="@+id/cambiarContrasenaFragment"
+        android:name="co.ecocomunidad.app.ui.contrasena.CambiarContrasenaFragment" />
+
+    <fragment
+        android:id="@+id/inicioCiudadanoFragment"
+        android:name="co.ecocomunidad.app.ui.inicio.InicioCiudadanoFragment" />
+
+    <fragment
+        android:id="@+id/inicioGestorFragment"
+        android:name="co.ecocomunidad.app.ui.inicio.InicioGestorFragment" />
+</navigation>

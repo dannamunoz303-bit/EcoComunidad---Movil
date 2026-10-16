@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondo"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="24dp">
+
+        <LinearLayout
+            android:id="@+id/contenido"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="480dp">
+
+            <include
+                layout="@layout/vista_logo_con_nombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.EcoComunidad.TarjetaClara"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:accessibilityHeading="true"
+                        android:text="@string/cambiar_titulo"
+                        android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
+                        android:textColor="@color/verde_bosque"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/cambiar_explicacion"
+                        android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                        android:textColor="@color/tinta_suave"
+                        android:textSize="14sp"
+                        app:lineHeight="20sp" />
+
+                    <include
+                        android:id="@+id/aviso"
+                        layout="@layout/vista_aviso" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/campo_actual"
+                        style="@style/Widget.EcoComunidad.Campo.Contrasena"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:hint="@string/campo_contrasena_actual">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/texto_actual"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:autofillHints="password"
+                            android:imeOptions="actionNext"
+                            android:inputType="textPassword"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/campo_nueva"
+                        style="@style/Widget.EcoComunidad.Campo.Contrasena"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:hint="@string/campo_contrasena_nueva">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/texto_nueva"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:autofillHints="newPassword"
+                            android:imeOptions="actionNext"
+                            android:inputType="textPassword"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/campo_confirmar"
+                        style="@style/Widget.EcoComunidad.Campo.Contrasena"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:hint="@string/campo_contrasena_confirmar">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/texto_confirmar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:autofillHints="newPassword"
+                            android:imeOptions="actionDone"
+                            android:inputType="textPassword"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/boton_guardar"
+                            style="@style/Widget.EcoComunidad.BotonPrincipal"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:text="@string/boton_guardar_contrasena" />
+
+                        <com.google.android.material.progressindicator.CircularProgressIndicator
+                            android:id="@+id/progreso"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:contentDescription="@string/cargando"
+                            android:indeterminate="true"
+                            android:visibility="gone"
+                            app:indicatorColor="@color/tinta_suave"
+                            app:indicatorSize="18dp"
+                            app:trackThickness="2dp" />
+                    </FrameLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/boton_cerrar_sesion"
+                style="@style/Widget.EcoComunidad.BotonTexto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/cerrar_sesion" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

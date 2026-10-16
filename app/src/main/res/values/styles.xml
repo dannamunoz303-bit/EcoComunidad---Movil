@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Tipografía de marca (marca.md): títulos en Bricolage Grotesque, texto en Instrument Sans. -->
+<!-- Tipografía y componentes de marca (marca.md): títulos en Bricolage Grotesque, texto en Instrument Sans. -->
 <resources>
 
     <!-- Títulos y números grandes: Bricolage Grotesque 700 -->
@@ -33,5 +33,75 @@
         <item name="android:fontFamily">@font/instrument_sans_semibold</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/tinta</item>
+    </style>
+
+    <!-- Nombre de marca: "Eco" verde musgo 500 y "Comunidad" verde bosque 700 -->
+    <style name="TextAppearance.EcoComunidad.MarcaEco" parent="TextAppearance.EcoComunidad.Titulo">
+        <item name="fontFamily">@font/bricolage_grotesque_medium</item>
+        <item name="android:fontFamily">@font/bricolage_grotesque_medium</item>
+        <item name="android:textColor">@color/verde_musgo</item>
+    </style>
+
+    <style name="TextAppearance.EcoComunidad.MarcaComunidad" parent="TextAppearance.EcoComunidad.Titulo">
+        <item name="android:textColor">@color/verde_bosque</item>
+    </style>
+
+    <!-- Tarjeta clara: blanca, esquinas de 24 dp, borde de marca, sin sombra -->
+    <style name="Widget.EcoComunidad.TarjetaClara" parent="Widget.Material3.CardView.Outlined">
+        <item name="cardBackgroundColor">@color/superficie</item>
+        <item name="cardCornerRadius">24dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/borde</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <!-- Tarjeta destacada en verde bosque (marca.md: no todas las tarjetas iguales) -->
+    <style name="Widget.EcoComunidad.TarjetaDestacada" parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">@color/verde_bosque</item>
+        <item name="cardCornerRadius">24dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
+
+    <!-- Campo con contorno: esquinas de 16 dp, fondo blanco, arcilla con error -->
+    <style name="Widget.EcoComunidad.Campo" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/superficie</item>
+        <item name="boxCornerRadiusTopStart">16dp</item>
+        <item name="boxCornerRadiusTopEnd">16dp</item>
+        <item name="boxCornerRadiusBottomStart">16dp</item>
+        <item name="boxCornerRadiusBottomEnd">16dp</item>
+        <item name="boxStrokeColor">@color/borde_campo</item>
+        <item name="boxStrokeErrorColor">@color/arcilla</item>
+        <item name="hintTextColor">@color/verde_bosque</item>
+        <item name="errorTextColor">@color/arcilla</item>
+        <item name="errorIconDrawable">@null</item>
+        <item name="android:layout_marginTop">4dp</item>
+    </style>
+
+    <!-- Campo de contraseña: con el ojo de Lucide para mostrarla u ocultarla -->
+    <style name="Widget.EcoComunidad.Campo.Contrasena">
+        <item name="endIconMode">password_toggle</item>
+        <item name="endIconDrawable">@drawable/ic_ojo_alternar</item>
+        <item name="endIconTint">@color/tinta_suave</item>
+        <item name="endIconContentDescription">@string/mostrar_contrasena</item>
+    </style>
+
+    <!-- Botón principal: píldora verde bosque, alto 52 dp -->
+    <style name="Widget.EcoComunidad.BotonPrincipal" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/fondo_boton_principal</item>
+        <item name="android:textColor">@color/texto_boton_principal</item>
+        <item name="android:textAppearance">@style/TextAppearance.EcoComunidad.Etiqueta</item>
+        <item name="android:minHeight">52dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">26dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- Botón de texto en verde bosque -->
+    <style name="Widget.EcoComunidad.BotonTexto" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">@color/verde_bosque</item>
+        <item name="android:textAppearance">@style/TextAppearance.EcoComunidad.Etiqueta</item>
+        <item name="iconTint">@color/verde_bosque</item>
     </style>
 </resources>

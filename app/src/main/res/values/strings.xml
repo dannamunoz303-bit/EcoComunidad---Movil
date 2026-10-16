@@ -1,3 +1,41 @@
 <resources>
     <string name="app_name">EcoComunidad</string>
+
+    <!-- Nombre de marca: "Eco" y "Comunidad" van en estilos distintos (marca.md) -->
+    <string name="marca_eco" translatable="false">Eco</string>
+    <string name="marca_comunidad" translatable="false">Comunidad</string>
+
+    <!-- Comunes -->
+    <string name="cargando">Cargando</string>
+    <string name="mostrar_contrasena">Mostrar contraseña</string>
+    <string name="cerrar_sesion">Cerrar sesión</string>
+
+    <!-- Login -->
+    <string name="login_titulo">Inicia sesión</string>
+    <string name="campo_correo">Correo</string>
+    <string name="campo_contrasena">Contraseña</string>
+    <string name="boton_entrar">Entrar</string>
+    <string name="login_revisando">Revisando tus datos…</string>
+    <string name="login_sin_cuenta">¿No tienes cuenta?</string>
+    <string name="login_registrate">Regístrate</string>
+
+    <!-- Cambio obligatorio de contraseña (RN-05) -->
+    <string name="cambiar_titulo">Cambia tu contraseña</string>
+    <string name="cambiar_explicacion">Tu contraseña es temporal. Antes de continuar, escribe una nueva que solo tú conozcas.</string>
+    <string name="campo_contrasena_actual">Contraseña actual</string>
+    <string name="campo_contrasena_nueva">Contraseña nueva</string>
+    <string name="campo_contrasena_confirmar">Repite la contraseña nueva</string>
+    <string name="boton_guardar_contrasena">Guardar contraseña</string>
+
+    <!-- Inicio de ciudadano y gestor (temporal) -->
+    <string name="saludo_con_nombre">¡Hola de nuevo, %1$s!</string>
+    <string name="saludo_sin_nombre">¡Hola de nuevo!</string>
+    <string name="saludo_barrio">Tu barrio te está esperando.</string>
+    <string name="brotico_saludando">Brotico saludando</string>
+    <string name="rol_ciudadano">Ciudadano</string>
+    <string name="rol_gestor">Gestor ambiental</string>
+
+    <!-- Registro (se construye en el próximo paso) -->
+    <string name="registro_proximo">Registro (próximo paso)</string>
+    <string name="registro_volver">Volver a iniciar sesión</string>
 </resources>
