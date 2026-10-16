@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generado desde docs/marca/logo.svg sin cambiar formas ni colores -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+    <path
+        android:pathData="M8 44 H30 L33 49 L29 53 L32 58 H8 Q4 58 4 54 V48 Q4 44 8 44 Z"
+        android:fillColor="#FF3A4740" />
+    <path
+        android:pathData="M34 44 H56 Q60 44 60 48 V54 Q60 58 56 58 H36 L33 53 L37 49 Z"
+        android:fillColor="#FF3A4740" />
+    <path
+        android:pathData="M33 47 C33 39 31 35 32 27"
+        android:strokeColor="#FF1E5A3A"
+        android:strokeWidth="4"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M32 35 C24 35 18 30 18 22 C26 22 32 27 32 35 Z"
+        android:fillColor="#FF3E9B63" />
+    <path
+        android:pathData="M32 29 C32 21 38 15 46 15 C46 23 40 29 32 29 Z"
+        android:fillColor="#FF1E5A3A" />
+</vector>

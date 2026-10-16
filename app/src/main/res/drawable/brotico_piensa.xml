@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generado desde docs/marca/brotico-piensa.svg sin cambiar formas ni colores -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <path
+        android:pathData="M60 46 V34"
+        android:strokeColor="#FF1E5A3A"
+        android:strokeWidth="4"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M60 38 C50 38 42 32 42 22 C52 22 60 28 60 38 Z"
+        android:fillColor="#FF3E9B63" />
+    <path
+        android:pathData="M60 32 C60 22 68 14 78 14 C78 24 70 32 60 32 Z"
+        android:fillColor="#FF1E5A3A" />
+    <path
+        android:pathData="M32 82 C22 82 16 76 16 68 C24 68 32 74 32 82 Z"
+        android:fillColor="#FF1E5A3A" />
+    <path
+        android:pathData="M88 86 C80 90 72 90 68 86 C72 80 82 80 88 86 Z"
+        android:fillColor="#FF1E5A3A" />
+    <path
+        android:pathData="M60 108 C36 108 28 92 30 74 C32 56 44 46 60 46 C76 46 88 56 90 74 C92 92 84 108 60 108 Z"
+        android:fillColor="#FF5BB37E" />
+    <path
+        android:pathData="M48.5,71 a4.5,4.5 0 1,0 9,0 a4.5,4.5 0 1,0 -9,0 Z"
+        android:fillColor="#FF14211A" />
+    <path
+        android:pathData="M68.5,71 a4.5,4.5 0 1,0 9,0 a4.5,4.5 0 1,0 -9,0 Z"
+        android:fillColor="#FF14211A" />
+    <path
+        android:pathData="M53,69.5 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0 Z"
+        android:fillColor="#FFFFFFFF" />
+    <path
+        android:pathData="M73,69.5 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0 Z"
+        android:fillColor="#FFFFFFFF" />
+    <path
+        android:pathData="M59,88 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0 Z"
+        android:fillColor="#FF14211A" />
+    <path
+        android:pathData="M92.5,40 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0 Z"
+        android:fillColor="#FF6B8BB8" />
+    <path
+        android:pathData="M102.5,30 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0 Z"
+        android:fillColor="#FF6B8BB8" />
+    <path
+        android:pathData="M110.5,20 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0 Z"
+        android:fillColor="#FF6B8BB8" />
+</vector>

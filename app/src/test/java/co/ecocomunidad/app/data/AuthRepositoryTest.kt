@@ -50,7 +50,7 @@ class AuthRepositoryTest {
         )
         eventos = EventosSesion()
         val cliente = ApiCliente(sesion, eventos, servidor.url("/api").toString(), registrarPeticiones = false)
-        repositorio = AuthRepository(cliente.authApi, sesion, cliente.json)
+        repositorio = AuthRepositoryRemoto(cliente.authApi, sesion, cliente.json)
     }
 
     @After
