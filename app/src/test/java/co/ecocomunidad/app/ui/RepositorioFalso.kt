@@ -4,8 +4,10 @@ import co.ecocomunidad.app.data.AuthRepository
 import co.ecocomunidad.app.data.ErrorAuth
 import co.ecocomunidad.app.data.Resultado
 import co.ecocomunidad.app.data.modelo.EstadoUsuario
+import co.ecocomunidad.app.data.modelo.RegistroPeticion
 import co.ecocomunidad.app.data.modelo.Rol
 import co.ecocomunidad.app.data.modelo.UsuarioActual
+import co.ecocomunidad.app.data.modelo.UsuarioRegistrado
 import co.ecocomunidad.app.data.sesion.UsuarioSesion
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,6 +34,19 @@ class RepositorioFalso : AuthRepository {
     val logins = mutableListOf<Pair<String, String>>()
     val cambios = mutableListOf<Pair<String, String>>()
     var cierres = 0
+
+    var resultadoRegistro: Resultado<UsuarioRegistrado> =
+        Resultado.Exito(UsuarioRegistrado(id = 9, nombre = "Ana", apellido = "Pérez", correo = "ana@correo.co"))
+    val registros = mutableListOf<RegistroPeticion>()
+
+    /** Si no es null, registrar espera a que se complete (para ver el estado de carga). */
+    var esperaRegistro: CompletableDeferred<Unit>? = null
+
+    override suspend fun registrar(peticion: RegistroPeticion): Resultado<UsuarioRegistrado> {
+        registros += peticion
+        esperaRegistro?.await()
+        return resultadoRegistro
+    }
 
     override suspend fun login(correo: String, contrasena: String): Resultado<UsuarioActual> {
         logins += correo to contrasena

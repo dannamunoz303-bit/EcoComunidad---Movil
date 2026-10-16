@@ -26,6 +26,8 @@ data class LoginEstado(
     val cargaLarga: Boolean = false,
     /** Error del último intento o motivo por el que se volvió al login. */
     val aviso: String? = null,
+    /** Se acaba de crear la cuenta en el registro; se borra al intentar entrar. */
+    val cuentaCreada: Boolean = false,
     /** A dónde ir tras entrar; la pantalla navega y llama a [LoginViewModel.destinoAtendido]. */
     val destino: Ruta? = null,
 )
@@ -33,9 +35,13 @@ data class LoginEstado(
 class LoginViewModel(
     private val repositorio: AuthRepository,
     motivo: String? = null,
+    correo: String? = null,
+    cuentaCreada: Boolean = false,
 ) : ViewModel() {
 
-    private val _estado = MutableStateFlow(LoginEstado(aviso = motivo))
+    private val _estado = MutableStateFlow(
+        LoginEstado(correo = correo.orEmpty(), aviso = motivo, cuentaCreada = cuentaCreada),
+    )
     val estado: StateFlow<LoginEstado> = _estado.asStateFlow()
 
     fun cambiarCorreo(valor: String) = _estado.update { it.copy(correo = valor, errorCorreo = null) }
@@ -54,7 +60,7 @@ class LoginViewModel(
             return
         }
 
-        _estado.update { it.copy(cargando = true, aviso = null) }
+        _estado.update { it.copy(cargando = true, aviso = null, cuentaCreada = false) }
         viewModelScope.launch {
             val avisoLento = launch {
                 delay(UN_SEGUNDO)

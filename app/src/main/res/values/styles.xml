@@ -3,10 +3,11 @@
 <resources>
 
     <!-- Títulos y números grandes: Bricolage Grotesque 700 -->
+    <!-- El tamaño baja en pantallas estrechas (values/dimens.xml y values-w400dp/dimens.xml) -->
     <style name="TextAppearance.EcoComunidad.Titulo" parent="TextAppearance.Material3.HeadlineMedium">
         <item name="fontFamily">@font/bricolage_grotesque_bold</item>
         <item name="android:fontFamily">@font/bricolage_grotesque_bold</item>
-        <item name="android:textSize">28sp</item>
+        <item name="android:textSize">@dimen/texto_titulo</item>
         <item name="android:textColor">@color/tinta</item>
     </style>
 
@@ -35,15 +36,38 @@
         <item name="android:textColor">@color/tinta</item>
     </style>
 
+    <!-- Título de cada tarjeta ("Inicia sesión", "Crea tu cuenta"…) -->
+    <style name="TextAppearance.EcoComunidad.TituloTarjeta" parent="TextAppearance.EcoComunidad.Subtitulo">
+        <item name="android:textSize">@dimen/texto_titulo_tarjeta</item>
+        <item name="android:textColor">@color/verde_bosque</item>
+    </style>
+
     <!-- Nombre de marca: "Eco" verde musgo 500 y "Comunidad" verde bosque 700 -->
     <style name="TextAppearance.EcoComunidad.MarcaEco" parent="TextAppearance.EcoComunidad.Titulo">
         <item name="fontFamily">@font/bricolage_grotesque_medium</item>
         <item name="android:fontFamily">@font/bricolage_grotesque_medium</item>
+        <item name="android:textSize">@dimen/texto_marca</item>
         <item name="android:textColor">@color/verde_musgo</item>
     </style>
 
     <style name="TextAppearance.EcoComunidad.MarcaComunidad" parent="TextAppearance.EcoComunidad.Titulo">
+        <item name="android:textSize">@dimen/texto_marca</item>
         <item name="android:textColor">@color/verde_bosque</item>
+    </style>
+
+    <!--
+      Títulos: nunca se parten palabras con guion. El ancho de cada título cabe desde 320 dp
+      gracias a los tamaños de dimens.xml.
+    -->
+    <style name="Widget.EcoComunidad.TextoTitulo" parent="">
+        <item name="android:hyphenationFrequency">none</item>
+        <item name="android:breakStrategy">simple</item>
+    </style>
+
+    <!-- Cada parte del nombre de marca va en una sola línea y nunca se aprieta -->
+    <style name="Widget.EcoComunidad.TextoMarca" parent="">
+        <item name="android:maxLines">1</item>
+        <item name="android:hyphenationFrequency">none</item>
     </style>
 
     <!-- Tarjeta clara: blanca, esquinas de 24 dp, borde de marca, sin sombra -->

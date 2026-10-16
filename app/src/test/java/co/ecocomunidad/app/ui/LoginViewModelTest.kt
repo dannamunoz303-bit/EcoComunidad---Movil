@@ -165,6 +165,27 @@ class LoginViewModelTest {
     }
 
     @Test
+    fun trasRegistrarse_traeElCorreoYElAvisoDeCuentaCreada() {
+        val vm = LoginViewModel(repositorio, correo = "ana@correo.co", cuentaCreada = true)
+
+        assertEquals("ana@correo.co", vm.estado.value.correo)
+        assertTrue(vm.estado.value.cuentaCreada)
+        assertNull(vm.estado.value.aviso)
+    }
+
+    @Test
+    fun avisoDeCuentaCreada_seBorraAlIntentarEntrar() = runTest(main.despachador) {
+        val vm = LoginViewModel(repositorio, correo = "ana@correo.co", cuentaCreada = true)
+        vm.cambiarContrasena("clave-segura-1")
+
+        vm.entrar()
+        runCurrent()
+
+        assertFalse(vm.estado.value.cuentaCreada)
+        assertEquals(listOf("ana@correo.co" to "clave-segura-1"), repositorio.logins)
+    }
+
+    @Test
     fun motivoDeCierre_seMuestraYSeBorraAlIntentarDeNuevo() = runTest(main.despachador) {
         val vm = viewModel(motivo = Mensajes.SESION_TERMINADA)
         assertEquals(Mensajes.SESION_TERMINADA, vm.estado.value.aviso)

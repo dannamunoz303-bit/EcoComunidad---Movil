@@ -4,8 +4,15 @@ import co.ecocomunidad.app.data.modelo.Rol
 import kotlinx.serialization.Serializable
 
 sealed interface Ruta {
-    /** [motivo]: por qué se volvió al login (sesión cerrada, cuenta bloqueada, administrador). */
-    @Serializable data class Login(val motivo: String? = null) : Ruta
+    /**
+     * [motivo]: por qué se volvió al login (sesión cerrada, cuenta bloqueada, administrador).
+     * [correo] y [cuentaCreada]: al volver de un registro exitoso, con el correo ya escrito.
+     */
+    @Serializable data class Login(
+        val motivo: String? = null,
+        val correo: String? = null,
+        val cuentaCreada: Boolean = false,
+    ) : Ruta
     @Serializable data object Registro : Ruta
     @Serializable data object CambiarContrasena : Ruta
     @Serializable data object InicioCiudadano : Ruta

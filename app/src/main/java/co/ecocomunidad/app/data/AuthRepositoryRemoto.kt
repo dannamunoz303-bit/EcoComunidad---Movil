@@ -4,7 +4,9 @@ import co.ecocomunidad.app.data.modelo.CambiarContrasenaPeticion
 import co.ecocomunidad.app.data.modelo.CodigoError
 import co.ecocomunidad.app.data.modelo.ErrorBackend
 import co.ecocomunidad.app.data.modelo.LoginPeticion
+import co.ecocomunidad.app.data.modelo.RegistroPeticion
 import co.ecocomunidad.app.data.modelo.UsuarioActual
+import co.ecocomunidad.app.data.modelo.UsuarioRegistrado
 import co.ecocomunidad.app.data.remoto.AuthApi
 import co.ecocomunidad.app.data.sesion.SesionStore
 import co.ecocomunidad.app.data.sesion.UsuarioSesion
@@ -27,6 +29,10 @@ class AuthRepositoryRemoto(
 ) : AuthRepository {
 
     override val usuario: Flow<UsuarioSesion?> = sesion.usuario
+
+    /** auth/registro/. No guarda sesión: el ciudadano inicia sesión después. */
+    override suspend fun registrar(peticion: RegistroPeticion): Resultado<UsuarioRegistrado> =
+        llamar { api.registrar(peticion) }
 
     /** Inicia sesión y trae los datos del usuario (auth/login/ y luego auth/yo/). */
     override suspend fun login(correo: String, contrasena: String): Resultado<UsuarioActual> {

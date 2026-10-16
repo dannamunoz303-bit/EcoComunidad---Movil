@@ -35,7 +35,17 @@
     <string name="rol_ciudadano">Ciudadano</string>
     <string name="rol_gestor">Gestor ambiental</string>
 
-    <!-- Registro (se construye en el próximo paso) -->
-    <string name="registro_proximo">Registro (próximo paso)</string>
-    <string name="registro_volver">Volver a iniciar sesión</string>
+    <!-- Registro del ciudadano (RN-01): los gestores los crea el administrador -->
+    <string name="registro_titulo">Crea tu cuenta</string>
+    <string name="registro_explicacion">Regístrate como ciudadano para reportar los problemas ambientales de tu barrio. Si eres gestor ambiental, el administrador crea tu cuenta.</string>
+    <string name="campo_nombre">Nombre</string>
+    <string name="campo_apellido">Apellido</string>
+    <string name="campo_cedula">Cédula</string>
+    <string name="campo_telefono">Teléfono (opcional)</string>
+    <string name="campo_confirmar_contrasena">Confirmar contraseña</string>
+    <string name="boton_crear_cuenta">Crear cuenta</string>
+    <string name="registro_creando">Creando tu cuenta…</string>
+    <string name="registro_ya_tienes_cuenta">¿Ya tienes cuenta?</string>
+    <string name="registro_inicia_sesion">Inicia sesión</string>
+    <string name="registro_exito">Tu cuenta quedó creada. Ya puedes iniciar sesión.</string>
 </resources>

@@ -59,9 +59,12 @@
                         android:layout_height="wrap_content"
                         android:accessibilityHeading="true"
                         android:text="@string/login_titulo"
-                        android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
-                        android:textColor="@color/verde_bosque"
-                        android:textSize="24sp" />
+                        style="@style/Widget.EcoComunidad.TextoTitulo"
+                        android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta" />
+
+                    <include
+                        android:id="@+id/aviso_exito"
+                        layout="@layout/vista_aviso_exito" />
 
                     <include
                         android:id="@+id/aviso"

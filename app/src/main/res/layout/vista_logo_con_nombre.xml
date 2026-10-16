@@ -20,14 +20,16 @@
         android:layout_height="wrap_content"
         android:importantForAccessibility="no"
         android:text="@string/marca_eco"
+        style="@style/Widget.EcoComunidad.TextoMarca"
         android:textAppearance="@style/TextAppearance.EcoComunidad.MarcaEco"
-        android:textSize="22sp" />
+        android:textSize="@dimen/texto_marca_barra" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:importantForAccessibility="no"
         android:text="@string/marca_comunidad"
+        style="@style/Widget.EcoComunidad.TextoMarca"
         android:textAppearance="@style/TextAppearance.EcoComunidad.MarcaComunidad"
-        android:textSize="22sp" />
+        android:textSize="@dimen/texto_marca_barra" />
 </LinearLayout>

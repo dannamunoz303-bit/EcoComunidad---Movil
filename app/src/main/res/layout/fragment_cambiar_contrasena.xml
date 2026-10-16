@@ -45,9 +45,8 @@
                         android:layout_height="wrap_content"
                         android:accessibilityHeading="true"
                         android:text="@string/cambiar_titulo"
-                        android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
-                        android:textColor="@color/verde_bosque"
-                        android:textSize="24sp" />
+                        style="@style/Widget.EcoComunidad.TextoTitulo"
+                        android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta" />
 
                     <TextView
                         android:layout_width="match_parent"

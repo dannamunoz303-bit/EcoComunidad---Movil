@@ -21,6 +21,8 @@ import co.ecocomunidad.app.ui.componentes.cerrarTeclado
 import co.ecocomunidad.app.ui.componentes.contenedor
 import co.ecocomunidad.app.ui.componentes.mostrar
 import co.ecocomunidad.app.ui.componentes.observar
+import co.ecocomunidad.app.ui.navegacion.ARG_CORREO
+import co.ecocomunidad.app.ui.navegacion.ARG_CUENTA_CREADA
 import co.ecocomunidad.app.ui.navegacion.ARG_MOTIVO
 import co.ecocomunidad.app.ui.navegacion.irA
 
@@ -31,7 +33,14 @@ class LoginFragment : Fragment() {
 
     private val viewModel: LoginViewModel by viewModels {
         viewModelFactory {
-            initializer { LoginViewModel(contenedor.authRepository, arguments?.getString(ARG_MOTIVO)) }
+            initializer {
+                LoginViewModel(
+                    contenedor.authRepository,
+                    motivo = arguments?.getString(ARG_MOTIVO),
+                    correo = arguments?.getString(ARG_CORREO),
+                    cuentaCreada = arguments?.getBoolean(ARG_CUENTA_CREADA) ?: false,
+                )
+            }
         }
     }
 
@@ -71,6 +80,7 @@ class LoginFragment : Fragment() {
             campoCorreo.mostrar(estado.correo, estado.errorCorreo)
             campoContrasena.mostrar(estado.contrasena, estado.errorContrasena)
             aviso.mostrar(estado.aviso)
+            avisoExito.mostrar(if (estado.cuentaCreada) getString(R.string.registro_exito) else null)
 
             val habilitado = !estado.cargando
             campoCorreo.isEnabled = habilitado

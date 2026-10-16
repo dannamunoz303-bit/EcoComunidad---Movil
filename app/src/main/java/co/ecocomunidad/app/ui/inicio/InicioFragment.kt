@@ -34,6 +34,15 @@ abstract class InicioFragment(@param:StringRes private val rol: Int) : Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.rol.setText(rol)
+        if (resources.getBoolean(R.bool.barra_compacta)) {
+            // Solo el ícono, para que el nombre de marca quepa completo en la barra
+            binding.botonCerrarSesion.apply {
+                text = null
+                iconPadding = 0
+                contentDescription = getString(R.string.cerrar_sesion)
+                tooltipText = getString(R.string.cerrar_sesion)
+            }
+        }
         binding.botonCerrarSesion.setOnClickListener {
             it.isEnabled = false
             viewModel.cerrarSesion {

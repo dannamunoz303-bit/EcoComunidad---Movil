@@ -37,6 +37,30 @@ data class Tokens(
     val refresh: String,
 )
 
+/**
+ * POST auth/registro/ (RegistroSerializer): solo ciudadanos (RN-01). La cédula es obligatoria (RN-02)
+ * y el teléfono opcional; sin teléfono el campo no se envía.
+ */
+@Serializable
+data class RegistroPeticion(
+    val nombre: String,
+    val apellido: String,
+    val cedula: String,
+    val correo: String,
+    val password: String,
+    val telefono: String? = null,
+)
+
+/** Respuesta 201 del registro: la cédula y la contraseña son de solo escritura. */
+@Serializable
+data class UsuarioRegistrado(
+    val id: Int,
+    val nombre: String,
+    val apellido: String,
+    val correo: String,
+    val telefono: String? = null,
+)
+
 @Serializable
 data class CambiarContrasenaPeticion(
     @SerialName("contrasena_actual") val contrasenaActual: String,

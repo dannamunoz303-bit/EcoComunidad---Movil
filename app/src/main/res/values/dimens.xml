@@ -2,4 +2,13 @@
 <resources>
     <!-- El nombre y el formulario suben esto al aparecer en el login (marca.md) -->
     <dimen name="subida_aparicion">6dp</dimen>
+
+    <!--
+      Tamaños de los títulos para teléfonos estrechos (desde 320 dp de ancho).
+      En values-w400dp están los tamaños completos.
+    -->
+    <dimen name="texto_titulo">24sp</dimen>
+    <dimen name="texto_titulo_tarjeta">20sp</dimen>
+    <dimen name="texto_marca">24sp</dimen>
+    <dimen name="texto_marca_barra">18sp</dimen>
 </resources>

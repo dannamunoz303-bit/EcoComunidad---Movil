@@ -2,6 +2,7 @@ package co.ecocomunidad.app.ui.componentes
 
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import androidx.core.content.getSystemService
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -11,6 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import co.ecocomunidad.app.AppContainer
 import co.ecocomunidad.app.EcoComunidadApp
 import co.ecocomunidad.app.databinding.VistaAvisoBinding
+import co.ecocomunidad.app.databinding.VistaAvisoExitoBinding
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -39,9 +41,13 @@ fun TextInputLayout.mostrar(texto: String, error: String?) {
     if (this.error?.toString() != error) this.error = error
 }
 
-fun VistaAvisoBinding.mostrar(texto: String?) {
-    root.visibility = if (texto == null) View.GONE else View.VISIBLE
-    if (avisoTexto.text?.toString() != texto) avisoTexto.text = texto
+fun VistaAvisoBinding.mostrar(texto: String?) = mostrarAviso(root, avisoTexto, texto)
+
+fun VistaAvisoExitoBinding.mostrar(texto: String?) = mostrarAviso(root, avisoExitoTexto, texto)
+
+private fun mostrarAviso(caja: View, vistaTexto: TextView, texto: String?) {
+    caja.visibility = if (texto == null) View.GONE else View.VISIBLE
+    if (vistaTexto.text?.toString() != texto) vistaTexto.text = texto
 }
 
 /** Quita el foco y esconde el teclado antes de enviar un formulario. */

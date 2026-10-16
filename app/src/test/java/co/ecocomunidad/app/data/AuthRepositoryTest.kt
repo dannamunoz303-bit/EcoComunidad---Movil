@@ -2,6 +2,7 @@ package co.ecocomunidad.app.data
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import co.ecocomunidad.app.data.modelo.EstadoUsuario
+import co.ecocomunidad.app.data.modelo.RegistroPeticion
 import co.ecocomunidad.app.data.modelo.Rol
 import co.ecocomunidad.app.data.modelo.UsuarioActual
 import co.ecocomunidad.app.data.remoto.ApiCliente
@@ -95,6 +96,49 @@ class AuthRepositoryTest {
 
         assertTrue((r as Resultado.Exito).datos.debeCambiarContrasena)
         assertEquals(true, sesion.usuario.first()?.debeCambiarContrasena)
+    }
+
+    // --- Registro ---
+
+    @Test
+    fun registro_usaLaRutaYLosCamposDelBackend_sinIniciarSesion() = runTest {
+        sesion.guardarTokens("viejo", "viejo")
+        responder(201, """{"id":9,"nombre":"Ana","apellido":"Pérez","correo":"ana@correo.co","telefono":null}""")
+
+        val r = repositorio.registrar(
+            RegistroPeticion("Ana", "Pérez", "1020304050", "ana@correo.co", "clave-segura-1"),
+        )
+
+        assertEquals(9, (r as Resultado.Exito).datos.id)
+        val peticion = servidor.takeRequest()
+        assertEquals("/api/auth/registro/", peticion.path)
+        assertEquals("POST", peticion.method)
+        // Sin teléfono el campo no se envía, y el registro no lleva token
+        assertEquals(
+            """{"nombre":"Ana","apellido":"Pérez","cedula":"1020304050","correo":"ana@correo.co",""" +
+                """"password":"clave-segura-1"}""",
+            peticion.body.readUtf8(),
+        )
+        assertNull(peticion.getHeader("Authorization"))
+        assertNull(sesion.usuario.first())
+    }
+
+    @Test
+    fun registroConDatosRepetidos_devuelveLosErroresPorCampo() = runTest {
+        responder(
+            400,
+            """{"cedula":["Ya existe un usuario con esta cédula."],""" +
+                """"correo":["Ya existe un usuario con este correo."]}""",
+        )
+
+        val r = repositorio.registrar(
+            RegistroPeticion("Ana", "Pérez", "1020304050", "ana@correo.co", "clave-segura-1", "3001234567"),
+        )
+
+        val campos = ((r as Resultado.Fallo).error as ErrorAuth.Validacion).campos
+        assertEquals(listOf("Ya existe un usuario con esta cédula."), campos["cedula"])
+        assertEquals(listOf("Ya existe un usuario con este correo."), campos["correo"])
+        assertEquals(1, servidor.requestCount)
     }
 
     @Test

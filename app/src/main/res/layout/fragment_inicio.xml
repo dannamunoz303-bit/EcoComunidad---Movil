@@ -29,17 +29,24 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
+                <!-- El nombre conserva su ancho completo; el espacio flexible empuja el botón -->
                 <include
                     layout="@layout/vista_logo_con_nombre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Space
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_weight="1" />
 
+                <!-- En pantallas estrechas queda solo el ícono (ver InicioFragment) -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/boton_cerrar_sesion"
                     style="@style/Widget.EcoComunidad.BotonTexto"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:minWidth="48dp"
                     android:text="@string/cerrar_sesion"
                     app:icon="@drawable/ic_salir"
                     app:iconPadding="6dp"
@@ -73,6 +80,7 @@
                         android:layout_marginTop="8dp"
                         android:gravity="center"
                         android:text="@string/saludo_sin_nombre"
+                        style="@style/Widget.EcoComunidad.TextoTitulo"
                         android:textAppearance="@style/TextAppearance.EcoComunidad.Titulo"
                         android:textColor="@color/superficie" />
 

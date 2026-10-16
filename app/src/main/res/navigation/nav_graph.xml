@@ -18,6 +18,16 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <!-- Al volver de un registro exitoso: correo ya escrito y aviso de cuenta creada -->
+        <argument
+            android:name="correo"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="cuentaCreada"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
 
     <fragment

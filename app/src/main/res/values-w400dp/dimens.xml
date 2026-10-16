@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tamaños completos de los títulos cuando hay al menos 400 dp de ancho. -->
+<resources>
+    <dimen name="texto_titulo">28sp</dimen>
+    <dimen name="texto_titulo_tarjeta">24sp</dimen>
+    <dimen name="texto_marca">28sp</dimen>
+    <dimen name="texto_marca_barra">22sp</dimen>
+</resources>

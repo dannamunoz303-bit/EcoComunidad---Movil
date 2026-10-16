@@ -5,8 +5,10 @@ import co.ecocomunidad.app.data.modelo.LoginPeticion
 import co.ecocomunidad.app.data.modelo.LoginRespuesta
 import co.ecocomunidad.app.data.modelo.RefreshPeticion
 import co.ecocomunidad.app.data.modelo.RefreshRespuesta
+import co.ecocomunidad.app.data.modelo.RegistroPeticion
 import co.ecocomunidad.app.data.modelo.Tokens
 import co.ecocomunidad.app.data.modelo.UsuarioActual
+import co.ecocomunidad.app.data.modelo.UsuarioRegistrado
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -15,6 +17,11 @@ import retrofit2.http.POST
 
 /** Rutas de usuarios/urls.py, montadas en api/auth/ (config/urls.py). */
 interface AuthApi {
+
+    /** Registro público del ciudadano (RN-01); el backend no usa autenticación aquí. */
+    @Headers(SIN_AUTORIZACION)
+    @POST("auth/registro/")
+    suspend fun registrar(@Body peticion: RegistroPeticion): UsuarioRegistrado
 
     @Headers(SIN_AUTORIZACION)
     @POST("auth/login/")
