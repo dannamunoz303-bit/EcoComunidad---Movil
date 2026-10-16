@@ -55,6 +55,10 @@ dependencies {
     // Fotos de los reportes desde su url
     implementation(libs.coil)
     implementation(libs.coil.network.okhttp)
+    // Crear reporte: mapa de OpenStreetMap, ubicación del teléfono y orientación de las fotos
+    implementation(libs.osmdroid.android)
+    implementation(libs.play.services.location)
+    implementation(libs.androidx.exifinterface)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.kotlinx.serialization)
     implementation(libs.okhttp)

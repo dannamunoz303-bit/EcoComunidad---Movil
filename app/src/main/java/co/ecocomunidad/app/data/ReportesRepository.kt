@@ -1,5 +1,7 @@
 package co.ecocomunidad.app.data
 
+import co.ecocomunidad.app.data.modelo.Categoria
+import co.ecocomunidad.app.data.modelo.NuevoReporte
 import co.ecocomunidad.app.data.modelo.Reporte
 import co.ecocomunidad.app.data.modelo.Tarea
 
@@ -16,4 +18,10 @@ interface ReportesRepository {
 
     /** Tareas, acciones y evidencias del reporte. Para quien no es el dueño, el backend responde 403 (RN-14). */
     suspend fun tareas(id: Int): Resultado<List<Tarea>>
+
+    /** Categorías activas para elegir al crear un reporte. */
+    suspend fun categorias(): Resultado<List<Categoria>>
+
+    /** Crea el reporte con sus fotos en una sola petición. Los 400 llegan por campo en [ErrorAuth.Validacion]. */
+    suspend fun crear(nuevo: NuevoReporte): Resultado<Reporte>
 }

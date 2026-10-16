@@ -110,6 +110,38 @@
         <item name="endIconContentDescription">@string/mostrar_contrasena</item>
     </style>
 
+    <!-- Desplegable con el mismo aspecto que los campos (categoría del reporte) -->
+    <style name="Widget.EcoComunidad.Campo.Desplegable" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxBackgroundColor">@color/superficie</item>
+        <item name="boxCornerRadiusTopStart">16dp</item>
+        <item name="boxCornerRadiusTopEnd">16dp</item>
+        <item name="boxCornerRadiusBottomStart">16dp</item>
+        <item name="boxCornerRadiusBottomEnd">16dp</item>
+        <item name="boxStrokeColor">@color/borde_campo</item>
+        <item name="boxStrokeErrorColor">@color/arcilla</item>
+        <item name="hintTextColor">@color/verde_bosque</item>
+        <item name="errorTextColor">@color/arcilla</item>
+        <item name="errorIconDrawable">@null</item>
+        <item name="endIconTint">@color/tinta_suave</item>
+        <item name="android:layout_marginTop">4dp</item>
+    </style>
+
+    <!-- Botón flotante "Nuevo reporte": píldora verde bosque con sombra leve -->
+    <style name="Widget.EcoComunidad.BotonFlotante" parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
+        <item name="backgroundTint">@color/verde_bosque</item>
+        <item name="android:textColor">@color/superficie</item>
+        <item name="iconTint">@color/superficie</item>
+        <item name="android:textAppearance">@style/TextAppearance.EcoComunidad.Etiqueta</item>
+        <item name="shapeAppearanceOverlay">@style/Forma.EcoComunidad.Pildora</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:elevation">2dp</item>
+    </style>
+
+    <style name="Forma.EcoComunidad.Pildora" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
     <!-- Botón principal: píldora verde bosque, alto 52 dp -->
     <style name="Widget.EcoComunidad.BotonPrincipal" parent="Widget.Material3.Button">
         <item name="backgroundTint">@color/fondo_boton_principal</item>

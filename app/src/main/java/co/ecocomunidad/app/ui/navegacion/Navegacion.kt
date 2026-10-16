@@ -15,6 +15,9 @@ const val ARG_CUENTA_CREADA = "cuentaCreada"
 const val ARG_ID_REPORTE = "idReporte"
 const val ARG_URL_FOTO = "url"
 
+/** Lo deja CrearReporteFragment en la pantalla anterior al crear bien un reporte. */
+const val RESULTADO_REPORTE_CREADO = "reporteCreado"
+
 /** Destino de nav_graph.xml y argumentos para cada [Ruta]. */
 fun Ruta.destino(): Pair<Int, Bundle?> = when (this) {
     is Ruta.Login -> R.id.loginFragment to bundleOf(

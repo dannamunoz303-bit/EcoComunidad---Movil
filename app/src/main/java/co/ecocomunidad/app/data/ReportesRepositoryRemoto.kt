@@ -1,12 +1,18 @@
 package co.ecocomunidad.app.data
 
+import co.ecocomunidad.app.data.modelo.Categoria
 import co.ecocomunidad.app.data.modelo.Foto
+import co.ecocomunidad.app.data.modelo.NuevoReporte
 import co.ecocomunidad.app.data.modelo.Reporte
 import co.ecocomunidad.app.data.modelo.Tarea
 import co.ecocomunidad.app.data.remoto.ReportesApi
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.util.Locale
 
 /**
  * [urlApi]: la misma de ApiCliente. Sirve para completar las url de fotos relativas
@@ -33,7 +39,39 @@ class ReportesRepositoryRemoto(
             }
         }
 
+    override suspend fun categorias(): Resultado<List<Categoria>> = llamarApi(json) { api.categorias() }
+
+    override suspend fun crear(nuevo: NuevoReporte): Resultado<Reporte> =
+        llamarApi(json) { api.crear(cuerpo(nuevo)).conUrlsCompletas() }
+
+    /**
+     * Campos de ReporteCrearSerializer. Las fotos van como varias partes con el mismo nombre
+     * "fotos", igual que en las pruebas del backend. Las coordenadas, con los 8 decimales de la columna.
+     */
+    private fun cuerpo(nuevo: NuevoReporte): MultipartBody =
+        MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("categoria", nuevo.categoria.toString())
+            .addFormDataPart("titulo", nuevo.titulo)
+            .addFormDataPart("descripcion", nuevo.descripcion)
+            .addFormDataPart("direccion", nuevo.direccion)
+            .apply { nuevo.descripcionUbicacion?.let { addFormDataPart("descripcion_ubicacion", it) } }
+            .addFormDataPart("latitud", coordenada(nuevo.latitud))
+            .addFormDataPart("longitud", coordenada(nuevo.longitud))
+            .apply {
+                for (foto in nuevo.fotos) {
+                    addFormDataPart("fotos", foto.name, foto.asRequestBody(JPEG))
+                }
+            }
+            .build()
+
+    private fun coordenada(valor: Double): String = String.format(Locale.ROOT, "%.8f", valor)
+
     private fun Reporte.conUrlsCompletas() = copy(fotos = fotos.conUrlsCompletas())
 
     private fun List<Foto>.conUrlsCompletas() = map { it.copy(url = raiz.resolve(it.url)?.toString() ?: it.url) }
+
+    private companion object {
+        val JPEG = "image/jpeg".toMediaType()
+    }
 }

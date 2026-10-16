@@ -3,6 +3,8 @@ package co.ecocomunidad.app.ui
 import co.ecocomunidad.app.data.ReportesRepository
 import co.ecocomunidad.app.data.Resultado
 import co.ecocomunidad.app.data.modelo.Accion
+import co.ecocomunidad.app.data.modelo.Categoria
+import co.ecocomunidad.app.data.modelo.NuevoReporte
 import co.ecocomunidad.app.data.modelo.EstadoReporte
 import co.ecocomunidad.app.data.modelo.EstadoTarea
 import co.ecocomunidad.app.data.modelo.Reporte
@@ -40,6 +42,23 @@ class ReportesFalso : ReportesRepository {
     override suspend fun tareas(id: Int): Resultado<List<Tarea>> {
         tareasPedidas += id
         return tareas
+    }
+
+    var categorias: Resultado<List<Categoria>> = Resultado.Exito(
+        listOf(Categoria(3, "Basura acumulada"), Categoria(4, "Árbol caído")),
+    )
+    var creado: Resultado<Reporte> = Resultado.Exito(reporte(9, EstadoReporte.PENDIENTE))
+
+    /** Si no es null, crear espera a que se complete (para ver el estado de carga). */
+    var esperaCrear: CompletableDeferred<Unit>? = null
+    val creados = mutableListOf<NuevoReporte>()
+
+    override suspend fun categorias(): Resultado<List<Categoria>> = categorias
+
+    override suspend fun crear(nuevo: NuevoReporte): Resultado<Reporte> {
+        creados += nuevo
+        esperaCrear?.await()
+        return creado
     }
 
     companion object {

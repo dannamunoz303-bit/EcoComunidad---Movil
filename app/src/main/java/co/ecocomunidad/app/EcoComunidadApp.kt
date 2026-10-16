@@ -10,6 +10,8 @@ import co.ecocomunidad.app.data.remoto.ApiCliente
 import co.ecocomunidad.app.data.sesion.EventosSesion
 import co.ecocomunidad.app.data.sesion.SesionStore
 import co.ecocomunidad.app.data.sesion.sesionDataStore
+import org.osmdroid.config.Configuration
+import java.io.File
 
 class EcoComunidadApp : Application() {
 
@@ -19,6 +21,20 @@ class EcoComunidadApp : Application() {
     override fun onCreate() {
         super.onCreate()
         contenedor = AppContainer(this)
+        configurarMapa()
+    }
+
+    /**
+     * osmdroid (OpenStreetMap, sin clave). La política de uso de OSM exige un user agent propio.
+     * Los mapas se guardan en la caché de la app, así no hace falta permiso de almacenamiento.
+     */
+    private fun configurarMapa() {
+        val base = File(cacheDir, "osmdroid")
+        Configuration.getInstance().apply {
+            userAgentValue = "${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME}"
+            osmdroidBasePath = base
+            osmdroidTileCache = File(base, "teselas")
+        }
     }
 }
 

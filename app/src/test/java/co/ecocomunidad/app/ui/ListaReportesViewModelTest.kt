@@ -146,6 +146,29 @@ class ListaReportesViewModelTest {
     }
 
     @Test
+    fun trasCrearUnReporte_muestraMisReportesRecienPedidos() = runTest(main.despachador) {
+        val vm = ListaReportesViewModel(repositorio)
+        advanceUntilIdle()
+        vm.elegirFiltro(FiltroReportes.MIOS)
+        advanceUntilIdle()
+        vm.elegirFiltro(FiltroReportes.TODOS)
+        repositorio.mios = Resultado.Exito(listOf(reporte(9), reporte(1)))
+
+        vm.reporteCreado()
+        advanceUntilIdle()
+
+        assertEquals(FiltroReportes.MIOS, vm.estado.value.filtro)
+        assertEquals(listOf(9, 1), vm.estado.value.reportes.map { it.id })
+        // Se pidió de nuevo aunque ya estaba guardada
+        assertEquals(listOf(false, true, true), repositorio.listados)
+
+        // "Todos" también quedó vieja: se vuelve a pedir
+        vm.elegirFiltro(FiltroReportes.TODOS)
+        advanceUntilIdle()
+        assertEquals(listOf(false, true, true, false), repositorio.listados)
+    }
+
+    @Test
     fun sinPaginacion_unaSolaPeticionTraeTodaLaLista() = runTest(main.despachador) {
         // El backend no pagina (no hay DEFAULT_PAGINATION_CLASS): la lista llega completa
         repositorio.todos = Resultado.Exito((1..120).map { reporte(it) })

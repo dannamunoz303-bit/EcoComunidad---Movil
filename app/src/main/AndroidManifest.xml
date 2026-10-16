@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- osmdroid revisa si hay red antes de bajar el mapa -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- "Usar mi ubicación" al crear un reporte (RN-06); la cámara se abre con un intent, sin permiso CAMERA -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:name=".EcoComunidadApp"
@@ -17,6 +22,17 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+        <!-- La cámara guarda aquí la foto que toma (cache/camara) -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.archivos"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/rutas_archivos" />
+        </provider>
 
         <activity
             android:name=".MainActivity"

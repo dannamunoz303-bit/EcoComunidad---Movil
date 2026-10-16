@@ -12,11 +12,13 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import co.ecocomunidad.app.R
 import co.ecocomunidad.app.databinding.FragmentInicioCiudadanoBinding
 import co.ecocomunidad.app.ui.componentes.contenedor
 import co.ecocomunidad.app.ui.componentes.observar
 import co.ecocomunidad.app.ui.navegacion.ARG_ID_REPORTE
+import co.ecocomunidad.app.ui.navegacion.RESULTADO_REPORTE_CREADO
 import co.ecocomunidad.app.ui.navegacion.Ruta
 import co.ecocomunidad.app.ui.navegacion.irA
 import co.ecocomunidad.app.ui.reportes.EncabezadoAdapter
@@ -70,10 +72,32 @@ class InicioCiudadanoFragment : Fragment() {
         binding.recargar.setColorSchemeResources(R.color.verde_bosque)
         binding.recargar.setOnRefreshListener { lista.recargar() }
 
+        binding.botonNuevoReporte.setOnClickListener { findNavController().navigate(R.id.crearReporteFragment) }
+        // Al bajar por la lista el botón queda solo con el ícono, para no tapar los reportes
+        binding.lista.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 0) binding.botonNuevoReporte.shrink() else if (dy < 0) binding.botonNuevoReporte.extend()
+            }
+        })
+        escucharReporteCreado()
+
         observar(inicio.usuario) { usuario ->
             encabezado.encabezado = encabezado.encabezado.copy(nombre = usuario?.nombre)
         }
         observar(lista.estado, ::mostrarEstado)
+    }
+
+    /** Al volver de crear un reporte: aviso de éxito y "Mis reportes" recién pedido. */
+    private fun escucharReporteCreado() {
+        val resultados = findNavController().getBackStackEntry(R.id.inicioCiudadanoFragment).savedStateHandle
+        observar(resultados.getStateFlow(RESULTADO_REPORTE_CREADO, false)) { creado ->
+            if (!creado) return@observar
+            resultados[RESULTADO_REPORTE_CREADO] = false
+            lista.reporteCreado()
+            Snackbar.make(binding.raiz, R.string.reporte_creado, Snackbar.LENGTH_LONG)
+                .setAnchorView(binding.botonNuevoReporte)
+                .show()
+        }
     }
 
     private fun mostrarEstado(estado: ListaReportesEstado) {
@@ -93,7 +117,7 @@ class InicioCiudadanoFragment : Fragment() {
         binding.recargar.isEnabled = !estado.cargando
 
         estado.avisoRecarga?.let {
-            Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+            Snackbar.make(binding.raiz, it, Snackbar.LENGTH_LONG).setAnchorView(binding.botonNuevoReporte).show()
             lista.avisoAtendido()
         }
     }

@@ -3,6 +3,7 @@ package co.ecocomunidad.app.data
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import co.ecocomunidad.app.data.modelo.EstadoReporte
 import co.ecocomunidad.app.data.modelo.EstadoTarea
+import co.ecocomunidad.app.data.modelo.NuevoReporte
 import co.ecocomunidad.app.data.remoto.ApiCliente
 import co.ecocomunidad.app.data.sesion.EventosSesion
 import co.ecocomunidad.app.data.sesion.SesionStore
@@ -11,8 +12,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.runTest
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartReader
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -149,6 +153,85 @@ class ReportesRepositoryTest {
         assertEquals(404, (error as ErrorAuth.Servidor).codigoHttp)
     }
 
+    // --- Crear reporte ---
+
+    @Test
+    fun categorias_usaLaRutaDelBackend() = runTest {
+        responder(200, """[{"id":3,"nombre":"Basura acumulada","descripcion":"Bolsas o desechos","activa":true}]""")
+
+        val categoria = (repositorio.categorias() as Resultado.Exito).datos.single()
+
+        assertEquals("/api/categorias/", servidor.takeRequest().path)
+        assertEquals(3, categoria.id)
+        assertEquals("Basura acumulada", categoria.nombre)
+        assertEquals("Bolsas o desechos", categoria.descripcion)
+    }
+
+    @Test
+    fun crear_enviaUnaSolaPeticionMultipartConLosCamposDelBackend() = runTest {
+        responder(201, reporteJson(id = 9, estado = "pendiente", urlFoto = "/media/reportes/x.jpg"))
+        val fotos = listOf(foto("a.jpg", "AAA"), foto("b.jpg", "BBBB"))
+
+        val r = repositorio.crear(nuevo(fotos = fotos, descripcionUbicacion = "Frente al parque"))
+
+        val creado = (r as Resultado.Exito).datos
+        assertEquals(9, creado.id)
+        assertEquals(servidor.url("/media/reportes/x.jpg").toString(), creado.fotos.single().url)
+
+        val peticion = servidor.takeRequest()
+        assertEquals(1, servidor.requestCount)
+        assertEquals("POST", peticion.method)
+        assertEquals("/api/reportes/", peticion.path)
+        val partes = partes(peticion)
+        assertEquals(
+            listOf(
+                "categoria", "titulo", "descripcion", "direccion", "descripcion_ubicacion",
+                "latitud", "longitud", "fotos", "fotos",
+            ),
+            partes.map { it.nombre },
+        )
+        val valores = partes.filter { it.archivo == null }.associate { it.nombre to it.contenido }
+        assertEquals("3", valores["categoria"])
+        assertEquals("Basura en el parque", valores["titulo"])
+        assertEquals("Bolsas acumuladas", valores["descripcion"])
+        assertEquals("Calle 10 # 5-20", valores["direccion"])
+        assertEquals("Frente al parque", valores["descripcion_ubicacion"])
+        // Siempre con punto y 8 decimales, sin importar el idioma del teléfono
+        assertEquals("4.60971000", valores["latitud"])
+        assertEquals("-74.08175000", valores["longitud"])
+        val enviadas = partes.filter { it.nombre == "fotos" }
+        assertEquals(listOf("a.jpg", "b.jpg"), enviadas.map { it.archivo })
+        assertEquals(listOf("image/jpeg", "image/jpeg"), enviadas.map { it.tipo })
+        assertEquals(listOf("AAA", "BBBB"), enviadas.map { it.contenido })
+    }
+
+    @Test
+    fun crearSinDescripcionDeUbicacion_noEnviaEseCampo() = runTest {
+        responder(201, reporteJson(id = 9, estado = "pendiente"))
+
+        repositorio.crear(nuevo(fotos = listOf(foto("a.jpg", "AAA")), descripcionUbicacion = null))
+
+        assertTrue(partes(servidor.takeRequest()).none { it.nombre == "descripcion_ubicacion" })
+    }
+
+    @Test
+    fun crearConErrores_devuelveLosMensajesPorCampo() = runTest {
+        responder(
+            400,
+            """{"categoria":["La categoría no existe o no está activa."],
+               "latitud":["La latitud debe estar entre -90 y 90."],
+               "fotos":{"1":["Solo se aceptan imágenes JPG, PNG o WEBP."]}}""",
+        )
+
+        val r = repositorio.crear(nuevo(fotos = listOf(foto("a.jpg", "AAA"), foto("b.jpg", "BBB"))))
+
+        val campos = ((r as Resultado.Fallo).error as ErrorAuth.Validacion).campos
+        assertEquals(listOf("La categoría no existe o no está activa."), campos["categoria"])
+        assertEquals(listOf("La latitud debe estar entre -90 y 90."), campos["latitud"])
+        // El error de una foto llega por posición y se junta en el campo
+        assertEquals(listOf("Solo se aceptan imágenes JPG, PNG o WEBP."), campos["fotos"])
+    }
+
     @Test
     fun sinConexion() = runTest {
         servidor.shutdown()
@@ -156,6 +239,38 @@ class ReportesRepositoryTest {
         val error = (repositorio.listar(soloMios = false) as Resultado.Fallo).error
 
         assertTrue(error is ErrorAuth.SinConexion)
+    }
+
+    private fun foto(nombre: String, contenido: String): File =
+        File(carpeta.root, nombre).apply { writeText(contenido) }
+
+    private fun nuevo(fotos: List<File>, descripcionUbicacion: String? = null) = NuevoReporte(
+        categoria = 3,
+        titulo = "Basura en el parque",
+        descripcion = "Bolsas acumuladas",
+        direccion = "Calle 10 # 5-20",
+        descripcionUbicacion = descripcionUbicacion,
+        latitud = 4.60971,
+        longitud = -74.08175,
+        fotos = fotos,
+    )
+
+    private data class Parte(val nombre: String, val archivo: String?, val tipo: String?, val contenido: String)
+
+    /** Lee las partes del multipart que recibió el servidor, en orden. */
+    private fun partes(peticion: RecordedRequest): List<Parte> {
+        val tipo = peticion.getHeader("Content-Type")!!.toMediaType()
+        assertEquals("multipart/form-data", "${tipo.type}/${tipo.subtype}")
+        val lector = MultipartReader(peticion.body, tipo.parameter("boundary")!!)
+        return generateSequence { lector.nextPart() }.map { parte ->
+            val disposicion = parte.headers["Content-Disposition"]!!
+            Parte(
+                nombre = Regex("""name="([^"]+)"""").find(disposicion)!!.groupValues[1],
+                archivo = Regex("""filename="([^"]+)"""").find(disposicion)?.groupValues?.get(1),
+                tipo = parte.headers["Content-Type"],
+                contenido = parte.body.readUtf8(),
+            )
+        }.toList()
     }
 
     private fun responder(codigo: Int, cuerpo: String) {

@@ -72,6 +72,40 @@
     <string name="foto_ampliada">Foto en grande</string>
     <string name="cerrar">Cerrar</string>
 
+    <!-- Crear reporte (RN-06) -->
+    <string name="nuevo_reporte">Nuevo reporte</string>
+    <string name="crear_seccion_problema">Qué está pasando</string>
+    <string name="crear_seccion_fotos">Fotos</string>
+    <string name="crear_seccion_lugar">Dónde es</string>
+    <string name="campo_categoria">Categoría</string>
+    <string name="campo_titulo">Título</string>
+    <string name="campo_descripcion">Descripción del problema</string>
+    <string name="campo_direccion">Dirección</string>
+    <string name="campo_descripcion_ubicacion">Referencias para ubicar el lugar (opcional)</string>
+    <string name="categorias_cargando">Cargando categorías…</string>
+    <string name="fotos_ayuda">Agrega de 1 a %1$d fotos del problema. Llevas %2$d.</string>
+    <string name="fotos_preparando">Preparando las fotos…</string>
+    <string name="tomar_foto">Tomar foto</string>
+    <string name="elegir_fotos">Galería</string>
+    <string name="quitar_foto">Quitar foto %1$d</string>
+    <string name="foto_nueva">Foto %1$d del reporte</string>
+    <string name="sin_camara">No encontramos una app de cámara en este teléfono.</string>
+    <string name="mapa_ayuda">Toca el mapa o arrastra el pin para marcar el lugar exacto.</string>
+    <string name="mapa_descripcion">Mapa para marcar el lugar del reporte</string>
+    <string name="usar_mi_ubicacion">Usar mi ubicación</string>
+    <string name="buscando_ubicacion">Buscando tu ubicación…</string>
+    <string name="ubicacion_elegida">Lugar marcado: %1$s, %2$s</string>
+    <string name="ubicacion_sin_marcar">Todavía no has marcado el lugar.</string>
+    <string name="ubicacion_no_disponible">No pudimos obtener tu ubicación. Revisa que la ubicación del teléfono esté encendida, o marca el lugar en el mapa.</string>
+    <string name="ubicacion_sin_permiso">Sin permiso de ubicación. Puedes marcar el lugar tocando el mapa o arrastrando el pin.</string>
+    <string name="permiso_ubicacion_titulo">¿Usamos tu ubicación?</string>
+    <string name="permiso_ubicacion_explicacion">La usamos solo para marcar en el mapa dónde está el problema, una vez, cuando tocas \"Usar mi ubicación\". No la guardamos ni la seguimos. Si prefieres, puedes marcar el lugar a mano en el mapa.</string>
+    <string name="permiso_permitir">Permitir</string>
+    <string name="permiso_ahora_no">Ahora no</string>
+    <string name="boton_enviar_reporte">Enviar reporte</string>
+    <string name="crear_enviando">Enviando tu reporte…</string>
+    <string name="reporte_creado">Tu reporte quedó enviado. El administrador lo revisará pronto.</string>
+
     <!-- Registro del ciudadano (RN-01): los gestores los crea el administrador -->
     <string name="registro_titulo">Crea tu cuenta</string>
     <string name="registro_explicacion">Regístrate como ciudadano para reportar los problemas ambientales de tu barrio. Si eres gestor ambiental, el administrador crea tu cuenta.</string>

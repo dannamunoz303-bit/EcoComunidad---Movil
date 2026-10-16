@@ -55,6 +55,11 @@
             app:argType="integer" />
     </fragment>
 
+    <!-- Al crear bien, vuelve a la lista y le avisa por su SavedStateHandle (ver RESULTADO_REPORTE_CREADO) -->
+    <fragment
+        android:id="@+id/crearReporteFragment"
+        android:name="co.ecocomunidad.app.ui.reportes.crear.CrearReporteFragment" />
+
     <fragment
         android:id="@+id/fotoFragment"
         android:name="co.ecocomunidad.app.ui.reportes.FotoFragment">

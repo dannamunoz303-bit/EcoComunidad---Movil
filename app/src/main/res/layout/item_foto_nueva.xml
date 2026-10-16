@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Miniatura de una foto del reporte nuevo, con el botón para quitarla. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="96dp"
+    android:layout_height="96dp"
+    android:layout_marginEnd="8dp">
+
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.EcoComunidad.MarcoFoto"
+        android:layout_width="88dp"
+        android:layout_height="88dp"
+        android:layout_gravity="bottom|start"
+        app:cardCornerRadius="14dp">
+
+        <ImageView
+            android:id="@+id/foto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- 40 dp de toque aunque el círculo se vea pequeño en la esquina -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/boton_quitar"
+        style="@style/Widget.Material3.Button.IconButton.Filled"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="top|end"
+        android:insetLeft="6dp"
+        android:insetTop="6dp"
+        android:insetRight="6dp"
+        android:insetBottom="6dp"
+        android:padding="0dp"
+        app:backgroundTint="@color/superficie"
+        app:icon="@drawable/ic_cerrar"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="16dp"
+        app:iconTint="@color/tinta"
+        app:strokeColor="@color/borde"
+        app:strokeWidth="1dp" />
+</FrameLayout>

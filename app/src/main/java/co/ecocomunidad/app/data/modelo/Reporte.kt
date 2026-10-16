@@ -2,6 +2,7 @@ package co.ecocomunidad.app.data.modelo
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.io.File
 
 // Nombres de campo tomados de reportes/serializers.py y tareas/serializers.py del backend.
 // Lo que la app no usa (latitud, longitud, eliminado) se ignora al leer.
@@ -25,6 +26,30 @@ enum class EstadoTarea {
     @SerialName("terminada") TERMINADA,
     @SerialName("cancelada") CANCELADA,
 }
+
+/** CategoriaSerializer. Al ciudadano el backend solo le devuelve las activas (sección 4.3). */
+@Serializable
+data class Categoria(
+    val id: Int,
+    val nombre: String,
+    val descripcion: String? = null,
+    val activa: Boolean = true,
+)
+
+/**
+ * Datos para POST reportes/ (ReporteCrearSerializer, RN-06). Se envía en multipart en una sola
+ * petición: si el backend rechaza algo, no se crea nada. [fotos] son archivos JPEG ya reducidos.
+ */
+data class NuevoReporte(
+    val categoria: Int,
+    val titulo: String,
+    val descripcion: String,
+    val direccion: String,
+    val descripcionUbicacion: String?,
+    val latitud: Double,
+    val longitud: Double,
+    val fotos: List<File>,
+)
 
 /** UsuarioResumenSerializer: sin cédula (RN-02). */
 @Serializable
