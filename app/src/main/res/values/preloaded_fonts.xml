@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Se piden al abrir la app para que estén listas al mostrar texto -->
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/bricolage_grotesque_bold</item>
+        <item>@font/bricolage_grotesque_medium</item>
+        <item>@font/instrument_sans</item>
+        <item>@font/instrument_sans_medium</item>
+        <item>@font/instrument_sans_semibold</item>
+    </array>
+</resources>

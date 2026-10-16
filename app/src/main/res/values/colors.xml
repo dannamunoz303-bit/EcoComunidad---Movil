@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Colores de marca (docs/marca/marca.md). Solo tema claro. -->
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Verde principal: botones, barras, títulos -->
+    <color name="verde_bosque">#FF1E5A3A</color>
+    <!-- Acentos y gráficas -->
+    <color name="verde_hoja">#FF3E9B63</color>
+    <!-- Texto verde suave ("Eco", etiquetas) -->
+    <color name="verde_musgo">#FF3B7A55</color>
+    <!-- Detalles sobre verde oscuro -->
+    <color name="verde_brote">#FFA8D9B8</color>
+    <!-- Cuerpo de Brotico -->
+    <color name="brotico">#FF5BB37E</color>
     <color name="fondo">#FFF3F6F1</color>
+    <!-- Tarjetas -->
+    <color name="superficie">#FFFFFFFF</color>
+    <color name="borde">#FFDCE5DF</color>
+    <!-- Texto principal y secundario -->
+    <color name="tinta">#FF14211A</color>
+    <color name="tinta_suave">#FF4F5E55</color>
+    <!-- Pavimento del logo -->
+    <color name="pavimento">#FF3A4740</color>
+    <!-- Alerta / atrasado -->
+    <color name="ambar">#FFB7791F</color>
+    <!-- Error / rechazado -->
+    <color name="arcilla">#FFB4432B</color>
 </resources>

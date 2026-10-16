@@ -1,7 +1,39 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Tema de ventana: sin barra de título y con el fondo de marca. El resto lo pinta Compose. -->
-    <style name="Base.Theme.EcoComunidad" parent="android:Theme.Material.Light.NoActionBar">
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Solo tema claro y con la paleta de marca (marca.md); no hay values-night. -->
+<resources>
+    <style name="Base.Theme.EcoComunidad" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/verde_bosque</item>
+        <item name="colorOnPrimary">@color/superficie</item>
+        <item name="colorPrimaryContainer">@color/verde_brote</item>
+        <item name="colorOnPrimaryContainer">@color/verde_bosque</item>
+        <item name="colorSecondary">@color/verde_musgo</item>
+        <item name="colorOnSecondary">@color/superficie</item>
+        <item name="colorSecondaryContainer">@color/verde_brote</item>
+        <item name="colorOnSecondaryContainer">@color/verde_bosque</item>
+        <item name="colorTertiary">@color/verde_hoja</item>
+        <item name="colorOnTertiary">@color/tinta</item>
+        <item name="android:colorBackground">@color/fondo</item>
+        <item name="colorOnBackground">@color/tinta</item>
+        <item name="colorSurface">@color/superficie</item>
+        <item name="colorOnSurface">@color/tinta</item>
+        <item name="colorSurfaceVariant">@color/fondo</item>
+        <item name="colorOnSurfaceVariant">@color/tinta_suave</item>
+        <item name="colorOutline">@color/tinta_suave</item>
+        <item name="colorOutlineVariant">@color/borde</item>
+        <item name="colorError">@color/arcilla</item>
+        <item name="colorOnError">@color/superficie</item>
+
         <item name="android:windowBackground">@color/fondo</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+
+        <!-- Texto por defecto en Instrument Sans; los estilos de Material usan los de marca -->
+        <item name="fontFamily">@font/instrument_sans</item>
+        <item name="android:fontFamily">@font/instrument_sans</item>
+        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.EcoComunidad.Titulo</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.EcoComunidad.Subtitulo</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.EcoComunidad.Cuerpo</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.EcoComunidad.Etiqueta</item>
     </style>
 
     <style name="Theme.EcoComunidad" parent="Base.Theme.EcoComunidad" />

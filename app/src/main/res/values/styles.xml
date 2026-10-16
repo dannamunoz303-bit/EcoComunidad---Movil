@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tipografía de marca (marca.md): títulos en Bricolage Grotesque, texto en Instrument Sans. -->
+<resources>
+
+    <!-- Títulos y números grandes: Bricolage Grotesque 700 -->
+    <style name="TextAppearance.EcoComunidad.Titulo" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="fontFamily">@font/bricolage_grotesque_bold</item>
+        <item name="android:fontFamily">@font/bricolage_grotesque_bold</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textColor">@color/tinta</item>
+    </style>
+
+    <!-- Títulos de sección y de tarjeta: Bricolage Grotesque 500 -->
+    <style name="TextAppearance.EcoComunidad.Subtitulo" parent="TextAppearance.Material3.TitleLarge">
+        <item name="fontFamily">@font/bricolage_grotesque_medium</item>
+        <item name="android:fontFamily">@font/bricolage_grotesque_medium</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/tinta</item>
+    </style>
+
+    <!-- Texto corrido y formularios: Instrument Sans 400 -->
+    <style name="TextAppearance.EcoComunidad.Cuerpo" parent="TextAppearance.Material3.BodyLarge">
+        <item name="fontFamily">@font/instrument_sans</item>
+        <item name="android:fontFamily">@font/instrument_sans</item>
+        <item name="android:textSize">16sp</item>
+        <item name="lineHeight">24sp</item>
+        <item name="android:textColor">@color/tinta</item>
+    </style>
+
+    <!-- Botones, etiquetas y chips: Instrument Sans 600 -->
+    <style name="TextAppearance.EcoComunidad.Etiqueta" parent="TextAppearance.Material3.LabelLarge">
+        <item name="fontFamily">@font/instrument_sans_semibold</item>
+        <item name="android:fontFamily">@font/instrument_sans_semibold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/tinta</item>
+    </style>
+</resources>
