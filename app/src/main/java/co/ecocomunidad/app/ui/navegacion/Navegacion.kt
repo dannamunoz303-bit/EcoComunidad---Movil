@@ -18,6 +18,15 @@ const val ARG_URL_FOTO = "url"
 /** Lo deja CrearReporteFragment en la pantalla anterior al crear bien un reporte. */
 const val RESULTADO_REPORTE_CREADO = "reporteCreado"
 
+/** Lo deja el formulario en el detalle al guardar los cambios de un reporte. */
+const val RESULTADO_REPORTE_EDITADO = "reporteEditado"
+
+/** Lo deja el detalle en la lista al eliminar el reporte. */
+const val RESULTADO_REPORTE_ELIMINADO = "reporteEliminado"
+
+/** Lo deja el detalle en la lista cuando el reporte cambió y la lista quedó vieja. */
+const val RESULTADO_REPORTES_CAMBIADOS = "reportesCambiados"
+
 /** Destino de nav_graph.xml y argumentos para cada [Ruta]. */
 fun Ruta.destino(): Pair<Int, Bundle?> = when (this) {
     is Ruta.Login -> R.id.loginFragment to bundleOf(

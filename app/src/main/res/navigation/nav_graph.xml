@@ -60,6 +60,15 @@
         android:id="@+id/crearReporteFragment"
         android:name="co.ecocomunidad.app.ui.reportes.crear.CrearReporteFragment" />
 
+    <!-- El mismo formulario, cargado con el reporte (RN-07). Al guardar vuelve al detalle -->
+    <fragment
+        android:id="@+id/editarReporteFragment"
+        android:name="co.ecocomunidad.app.ui.reportes.crear.CrearReporteFragment">
+        <argument
+            android:name="idReporte"
+            app:argType="integer" />
+    </fragment>
+
     <fragment
         android:id="@+id/fotoFragment"
         android:name="co.ecocomunidad.app.ui.reportes.FotoFragment">

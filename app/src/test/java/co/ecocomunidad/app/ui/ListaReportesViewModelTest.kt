@@ -169,6 +169,30 @@ class ListaReportesViewModelTest {
     }
 
     @Test
+    fun trasEditarOEliminar_recargaLaPestanaSinQuitarLaLista() = runTest(main.despachador) {
+        val vm = ListaReportesViewModel(repositorio)
+        advanceUntilIdle()
+        vm.elegirFiltro(FiltroReportes.MIOS)
+        advanceUntilIdle()
+        repositorio.mios = Resultado.Exito(emptyList())
+        val espera = CompletableDeferred<Unit>()
+        repositorio.esperaListar = espera
+
+        vm.reportesCambiados()
+        runCurrent()
+        assertTrue(vm.estado.value.recargando)
+        assertEquals(listOf(1), vm.estado.value.reportes.map { it.id })
+
+        espera.complete(Unit)
+        advanceUntilIdle()
+        assertTrue(vm.estado.value.vacio)
+        // "Todos" también se vuelve a pedir
+        vm.elegirFiltro(FiltroReportes.TODOS)
+        advanceUntilIdle()
+        assertEquals(listOf(false, true, true, false), repositorio.listados)
+    }
+
+    @Test
     fun sinPaginacion_unaSolaPeticionTraeTodaLaLista() = runTest(main.despachador) {
         // El backend no pagina (no hay DEFAULT_PAGINATION_CLASS): la lista llega completa
         repositorio.todos = Resultado.Exito((1..120).map { reporte(it) })

@@ -18,7 +18,9 @@ import co.ecocomunidad.app.databinding.FragmentInicioCiudadanoBinding
 import co.ecocomunidad.app.ui.componentes.contenedor
 import co.ecocomunidad.app.ui.componentes.observar
 import co.ecocomunidad.app.ui.navegacion.ARG_ID_REPORTE
+import co.ecocomunidad.app.ui.navegacion.RESULTADO_REPORTES_CAMBIADOS
 import co.ecocomunidad.app.ui.navegacion.RESULTADO_REPORTE_CREADO
+import co.ecocomunidad.app.ui.navegacion.RESULTADO_REPORTE_ELIMINADO
 import co.ecocomunidad.app.ui.navegacion.Ruta
 import co.ecocomunidad.app.ui.navegacion.irA
 import co.ecocomunidad.app.ui.reportes.EncabezadoAdapter
@@ -79,7 +81,7 @@ class InicioCiudadanoFragment : Fragment() {
                 if (dy > 0) binding.botonNuevoReporte.shrink() else if (dy < 0) binding.botonNuevoReporte.extend()
             }
         })
-        escucharReporteCreado()
+        escucharResultados()
 
         observar(inicio.usuario) { usuario ->
             encabezado.encabezado = encabezado.encabezado.copy(nombre = usuario?.nombre)
@@ -87,17 +89,32 @@ class InicioCiudadanoFragment : Fragment() {
         observar(lista.estado, ::mostrarEstado)
     }
 
-    /** Al volver de crear un reporte: aviso de éxito y "Mis reportes" recién pedido. */
-    private fun escucharReporteCreado() {
+    /**
+     * Lo que dejan las otras pantallas al volver: reporte creado ("Mis reportes" recién pedido),
+     * eliminado o editado (se recarga la pestaña actual).
+     */
+    private fun escucharResultados() {
         val resultados = findNavController().getBackStackEntry(R.id.inicioCiudadanoFragment).savedStateHandle
-        observar(resultados.getStateFlow(RESULTADO_REPORTE_CREADO, false)) { creado ->
-            if (!creado) return@observar
-            resultados[RESULTADO_REPORTE_CREADO] = false
-            lista.reporteCreado()
-            Snackbar.make(binding.raiz, R.string.reporte_creado, Snackbar.LENGTH_LONG)
-                .setAnchorView(binding.botonNuevoReporte)
-                .show()
+        fun alRecibir(clave: String, accion: () -> Unit) {
+            observar(resultados.getStateFlow(clave, false)) { llego ->
+                if (!llego) return@observar
+                resultados[clave] = false
+                accion()
+            }
         }
+        alRecibir(RESULTADO_REPORTE_CREADO) {
+            lista.reporteCreado()
+            avisar(R.string.reporte_creado)
+        }
+        alRecibir(RESULTADO_REPORTE_ELIMINADO) {
+            lista.reportesCambiados()
+            avisar(R.string.reporte_eliminado)
+        }
+        alRecibir(RESULTADO_REPORTES_CAMBIADOS) { lista.reportesCambiados() }
+    }
+
+    private fun avisar(texto: Int) {
+        Snackbar.make(binding.raiz, texto, Snackbar.LENGTH_LONG).setAnchorView(binding.botonNuevoReporte).show()
     }
 
     private fun mostrarEstado(estado: ListaReportesEstado) {

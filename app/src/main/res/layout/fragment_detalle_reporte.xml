@@ -201,6 +201,48 @@
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
+                    <!-- Solo si el reporte es mío y está pendiente (RN-07); el backend vuelve a revisar -->
+                    <LinearLayout
+                        android:id="@+id/acciones_dueno"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/editar_pendiente_ayuda"
+                            android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                            android:textColor="@color/tinta_suave"
+                            android:textSize="13sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/boton_editar"
+                                style="@style/Widget.EcoComunidad.BotonSecundario"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:layout_weight="1"
+                                android:text="@string/editar" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/boton_eliminar"
+                                style="@style/Widget.EcoComunidad.BotonPeligro"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/eliminar" />
+                        </LinearLayout>
+                    </LinearLayout>
+
                     <!-- Línea de tiempo con las acciones del gestor (solo si el backend la entrega, RN-14) -->
                     <LinearLayout
                         android:id="@+id/seccion_acciones"

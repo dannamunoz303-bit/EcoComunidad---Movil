@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import java.io.File
 
 // Nombres de campo tomados de reportes/serializers.py y tareas/serializers.py del backend.
-// Lo que la app no usa (latitud, longitud, eliminado) se ignora al leer.
+// Lo que la app no usa (eliminado) se ignora al leer.
 
 /** Estado del reporte (sección 6.1). */
 @Serializable
@@ -51,6 +51,24 @@ data class NuevoReporte(
     val fotos: List<File>,
 )
 
+/**
+ * Campos de ReporteEditarSerializer que cambiaron (PATCH reportes/{id}/, RN-07). null = sin cambio.
+ * Para borrar las referencias de ubicación se manda texto vacío (el campo permite blank).
+ * La latitud y la longitud van siempre juntas.
+ */
+data class CambiosReporte(
+    val categoria: Int? = null,
+    val titulo: String? = null,
+    val descripcion: String? = null,
+    val direccion: String? = null,
+    val descripcionUbicacion: String? = null,
+    val latitud: Double? = null,
+    val longitud: Double? = null,
+) {
+    val vacio: Boolean
+        get() = this == CambiosReporte()
+}
+
 /** UsuarioResumenSerializer: sin cédula (RN-02). */
 @Serializable
 data class UsuarioResumen(
@@ -81,6 +99,9 @@ data class Reporte(
     val descripcion: String,
     val direccion: String,
     @SerialName("descripcion_ubicacion") val descripcionUbicacion: String? = null,
+    /** DecimalField: DRF las manda como texto ("4.60971000"). Sirven para poner el pin al editar. */
+    val latitud: String? = null,
+    val longitud: String? = null,
     val estado: EstadoReporte,
     @SerialName("motivo_rechazo") val motivoRechazo: String? = null,
     @SerialName("fecha_creacion") val fechaCreacion: String,

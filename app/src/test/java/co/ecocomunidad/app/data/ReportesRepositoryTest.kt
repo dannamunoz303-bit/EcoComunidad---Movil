@@ -1,6 +1,7 @@
 package co.ecocomunidad.app.data
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import co.ecocomunidad.app.data.modelo.CambiosReporte
 import co.ecocomunidad.app.data.modelo.EstadoReporte
 import co.ecocomunidad.app.data.modelo.EstadoTarea
 import co.ecocomunidad.app.data.modelo.NuevoReporte
@@ -230,6 +231,113 @@ class ReportesRepositoryTest {
         assertEquals(listOf("La latitud debe estar entre -90 y 90."), campos["latitud"])
         // El error de una foto llega por posición y se junta en el campo
         assertEquals(listOf("Solo se aceptan imágenes JPG, PNG o WEBP."), campos["fotos"])
+    }
+
+    // --- Editar y eliminar (RN-07) y fotos (RN-15) ---
+
+    @Test
+    fun editar_mandaPatchSoloConLoQueCambio() = runTest {
+        responder(200, reporteJson(id = 5, estado = "pendiente"))
+
+        val r = repositorio.editar(
+            5,
+            CambiosReporte(titulo = "Basura en el parque", latitud = 4.6, longitud = -74.08175, descripcionUbicacion = ""),
+        )
+
+        assertEquals(5, (r as Resultado.Exito).datos.id)
+        val peticion = servidor.takeRequest()
+        assertEquals("PATCH", peticion.method)
+        assertEquals("/api/reportes/5/", peticion.path)
+        assertEquals(
+            """{"titulo":"Basura en el parque","descripcion_ubicacion":"","latitud":"4.60000000","longitud":"-74.08175000"}""",
+            peticion.body.readUtf8(),
+        )
+    }
+
+    @Test
+    fun editarUnReporteQueYaNoEstaPendiente_devuelveElMensajeDelBackend() = runTest {
+        responder(400, """{"detail":"Solo se puede modificar el reporte mientras está pendiente."}""")
+
+        val error = (repositorio.editar(5, CambiosReporte(titulo = "X")) as Resultado.Fallo).error
+
+        assertEquals("Solo se puede modificar el reporte mientras está pendiente.", (error as ErrorAuth.Validacion).detail)
+    }
+
+    @Test
+    fun editarUnReporteAjeno_respondeSinPermiso() = runTest {
+        responder(403, """{"detail":"Solo el ciudadano que creó el reporte puede modificarlo."}""")
+
+        val error = (repositorio.editar(5, CambiosReporte(titulo = "X")) as Resultado.Fallo).error
+
+        assertEquals(403, (error as ErrorAuth.Servidor).codigoHttp)
+        assertEquals("Solo el ciudadano que creó el reporte puede modificarlo.", error.detail)
+    }
+
+    @Test
+    fun eliminar_mandaDeleteYAceptaElCuerpoVacio() = runTest {
+        servidor.enqueue(MockResponse().setResponseCode(204))
+
+        val r = repositorio.eliminar(5)
+
+        assertTrue(r is Resultado.Exito)
+        val peticion = servidor.takeRequest()
+        assertEquals("DELETE", peticion.method)
+        assertEquals("/api/reportes/5/", peticion.path)
+    }
+
+    @Test
+    fun agregarFotos_mandaMultipartConVariasPartesFotos() = runTest {
+        responder(201, reporteJson(id = 5, estado = "pendiente", urlFoto = "/media/reportes/n.jpg"))
+
+        val r = repositorio.agregarFotos(5, listOf(foto("n1.jpg", "UNO"), foto("n2.jpg", "DOS")))
+
+        assertEquals(servidor.url("/media/reportes/n.jpg").toString(), (r as Resultado.Exito).datos.fotos.single().url)
+        val peticion = servidor.takeRequest()
+        assertEquals("POST", peticion.method)
+        assertEquals("/api/reportes/5/fotos/", peticion.path)
+        val partes = partes(peticion)
+        assertEquals(listOf("fotos", "fotos"), partes.map { it.nombre })
+        assertEquals(listOf("n1.jpg", "n2.jpg"), partes.map { it.archivo })
+        assertEquals(listOf("UNO", "DOS"), partes.map { it.contenido })
+    }
+
+    @Test
+    fun agregarFotosDeMas_devuelveElErrorDelCampo() = runTest {
+        responder(400, """{"fotos":"Un reporte puede tener máximo 5 fotos."}""")
+
+        val error = (repositorio.agregarFotos(5, listOf(foto("n1.jpg", "UNO"))) as Resultado.Fallo).error
+
+        assertEquals(listOf("Un reporte puede tener máximo 5 fotos."), (error as ErrorAuth.Validacion).campos["fotos"])
+    }
+
+    @Test
+    fun borrarFoto_usaLaRutaDeLaFoto() = runTest {
+        servidor.enqueue(MockResponse().setResponseCode(204))
+
+        assertTrue(repositorio.borrarFoto(5, 31) is Resultado.Exito)
+
+        val peticion = servidor.takeRequest()
+        assertEquals("DELETE", peticion.method)
+        assertEquals("/api/reportes/5/fotos/31/", peticion.path)
+    }
+
+    @Test
+    fun borrarLaUltimaFoto_noSePermite() = runTest {
+        responder(400, """{"detail":"No se puede borrar la última foto del reporte."}""")
+
+        val error = (repositorio.borrarFoto(5, 31) as Resultado.Fallo).error
+
+        assertEquals("No se puede borrar la última foto del reporte.", (error as ErrorAuth.Validacion).detail)
+    }
+
+    @Test
+    fun detalle_traeLasCoordenadasParaElPin() = runTest {
+        responder(200, reporteJson(id = 5))
+
+        val reporte = (repositorio.detalle(5) as Resultado.Exito).datos
+
+        assertEquals("4.60971000", reporte.latitud)
+        assertEquals("-74.08175000", reporte.longitud)
     }
 
     @Test

@@ -141,6 +141,90 @@ class DetalleReporteViewModelTest {
         assertTrue(repositorio.tareasPedidas.isEmpty())
     }
 
+    // --- Editar y eliminar (RN-07) ---
+
+    @Test
+    fun soloElDuenoConPendientePuedeModificar() = runTest(main.despachador) {
+        val casos = listOf(
+            reporte(1, EstadoReporte.PENDIENTE, ciudadano = ANA) to true,
+            reporte(1, EstadoReporte.APROBADO, ciudadano = ANA) to false,
+            reporte(1, EstadoReporte.RECHAZADO, ciudadano = ANA) to false,
+            // Un pendiente ajeno no debería llegar (RN-10), pero tampoco mostraría botones
+            reporte(1, EstadoReporte.PENDIENTE, ciudadano = null) to false,
+        )
+        for ((reporte, esperado) in casos) {
+            repositorio.detalle = Resultado.Exito(reporte)
+            val vm = viewModel()
+            advanceUntilIdle()
+            assertEquals("${reporte.estado} ${reporte.ciudadano}", esperado, vm.estado.value.puedeModificar)
+        }
+    }
+
+    @Test
+    fun eliminarConExito() = runTest(main.despachador) {
+        repositorio.detalle = Resultado.Exito(reporte(1, EstadoReporte.PENDIENTE, ciudadano = ANA))
+        val vm = viewModel()
+        advanceUntilIdle()
+
+        vm.eliminar()
+        vm.eliminar()
+        advanceUntilIdle()
+
+        assertEquals(listOf("eliminar"), repositorio.operaciones)
+        assertTrue(vm.estado.value.eliminado)
+        assertFalse(vm.estado.value.eliminando)
+        vm.eliminadoAtendido()
+        assertFalse(vm.estado.value.eliminado)
+    }
+
+    @Test
+    fun eliminarCuandoYaNoEstaPendiente_muestraElMensajeDelBackend() = runTest(main.despachador) {
+        repositorio.detalle = Resultado.Exito(reporte(1, EstadoReporte.PENDIENTE, ciudadano = ANA))
+        repositorio.eliminado = RepositorioFalso.fallo(
+            ErrorAuth.Validacion(mapOf("detail" to listOf("Solo se puede modificar el reporte mientras está pendiente."))),
+        )
+        val vm = viewModel()
+        advanceUntilIdle()
+
+        vm.eliminar()
+        advanceUntilIdle()
+
+        assertFalse(vm.estado.value.eliminado)
+        assertEquals("Solo se puede modificar el reporte mientras está pendiente.", vm.estado.value.avisoEliminar)
+        vm.avisoEliminarAtendido()
+        assertNull(vm.estado.value.avisoEliminar)
+    }
+
+    @Test
+    fun eliminarSinPermiso403_muestraElMensajeDelBackend() = runTest(main.despachador) {
+        repositorio.eliminado = RepositorioFalso.fallo(
+            ErrorAuth.Servidor(403, "Solo el ciudadano que creó el reporte puede modificarlo.", null),
+        )
+        val vm = viewModel()
+        advanceUntilIdle()
+
+        vm.eliminar()
+        advanceUntilIdle()
+
+        assertEquals("Solo el ciudadano que creó el reporte puede modificarlo.", vm.estado.value.avisoEliminar)
+    }
+
+    @Test
+    fun eliminarSinConexion() = runTest(main.despachador) {
+        repositorio.eliminado = RepositorioFalso.fallo(ErrorAuth.SinConexion(IOException()))
+        val vm = viewModel()
+        advanceUntilIdle()
+
+        vm.eliminar()
+        advanceUntilIdle()
+
+        assertFalse(vm.estado.value.eliminado)
+        assertEquals(
+            "No hay conexión con el servidor. Revisa tu internet e inténtalo de nuevo.",
+            vm.estado.value.avisoEliminar,
+        )
+    }
+
     @Test
     fun errorAlCargarLasAcciones_noOcultaElReporte() = runTest(main.despachador) {
         repositorio.detalle = Resultado.Exito(reporte(1, ciudadano = ANA))

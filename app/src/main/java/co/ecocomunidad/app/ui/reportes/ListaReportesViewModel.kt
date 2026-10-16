@@ -71,6 +71,12 @@ class ListaReportesViewModel(private val repositorio: ReportesRepository) : View
 
     fun avisoAtendido() = _estado.update { it.copy(avisoRecarga = null) }
 
+    /** Un reporte se editó o se eliminó: se vuelve a pedir la pestaña actual y la otra queda vieja. */
+    fun reportesCambiados() {
+        guardados.clear()
+        cargar(_estado.value.filtro, recarga = _estado.value.reportes.isNotEmpty())
+    }
+
     /** Se acaba de crear un reporte: se muestra "Mis reportes" recién pedido; las dos pestañas quedan viejas. */
     fun reporteCreado() {
         guardados.clear()

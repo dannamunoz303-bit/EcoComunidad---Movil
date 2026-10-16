@@ -4,6 +4,7 @@ import co.ecocomunidad.app.data.ErrorAuth
 import co.ecocomunidad.app.data.Resultado
 import co.ecocomunidad.app.ui.reportes.crear.CampoReporte
 import co.ecocomunidad.app.ui.reportes.crear.CrearReporteViewModel
+import co.ecocomunidad.app.ui.reportes.crear.FotoFormulario
 import co.ecocomunidad.app.ui.reportes.crear.MAXIMO_FOTOS
 import co.ecocomunidad.app.ui.reportes.crear.PreparadorFotos
 import kotlinx.coroutines.CompletableDeferred
@@ -51,6 +52,18 @@ class CrearReporteViewModelTest {
         cambiar(CampoReporte.DIRECCION, " Calle 10 # 5-20 ")
         agregarFotos(listOf("foto-a"))
         ponerUbicacion(4.60971, -74.08175)
+    }
+
+    @Test
+    fun hayCambios_conCualquierCosaEscritaOElegida() = runTest(main.despachador) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        assertFalse(vm.hayCambios())
+
+        vm.cambiar(CampoReporte.TITULO, "   ")
+        assertFalse(vm.hayCambios())
+        vm.ponerUbicacion(4.6, -74.0)
+        assertTrue(vm.hayCambios())
     }
 
     @Test
@@ -108,7 +121,7 @@ class CrearReporteViewModelTest {
         advanceUntilIdle()
         vm.llenar()
         advanceUntilIdle()
-        vm.quitarFoto(File("foto-a.jpg"))
+        vm.quitarFoto(FotoFormulario.Nueva(File("foto-a.jpg")))
 
         vm.enviar()
         advanceUntilIdle()

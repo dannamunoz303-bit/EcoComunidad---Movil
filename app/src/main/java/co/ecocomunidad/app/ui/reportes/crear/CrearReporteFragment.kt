@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -31,7 +32,12 @@ import co.ecocomunidad.app.ui.componentes.cerrarTeclado
 import co.ecocomunidad.app.ui.componentes.contenedor
 import co.ecocomunidad.app.ui.componentes.mostrar
 import co.ecocomunidad.app.ui.componentes.observar
+import co.ecocomunidad.app.ui.navegacion.ARG_ID_REPORTE
 import co.ecocomunidad.app.ui.navegacion.RESULTADO_REPORTE_CREADO
+import co.ecocomunidad.app.ui.navegacion.RESULTADO_REPORTE_EDITADO
+import co.ecocomunidad.app.ui.reportes.EstadoVista
+import co.ecocomunidad.app.ui.reportes.cargarFoto
+import co.ecocomunidad.app.ui.reportes.mostrar as mostrarEstadoCarga
 import coil3.load
 import coil3.request.crossfade
 import coil3.request.error
@@ -54,18 +60,29 @@ import java.util.Locale
 import java.util.UUID
 
 /**
- * Crear reporte (RN-06). La latitud y la longitud no las escribe el ciudadano: salen del GPS
- * ("Usar mi ubicación") o del pin que mueve en el mapa.
+ * Formulario del reporte. Sin argumentos crea uno nuevo (RN-06); con [ARG_ID_REPORTE] edita uno
+ * propio que está pendiente (RN-07, RN-15). La latitud y la longitud no las escribe el ciudadano:
+ * salen del GPS ("Usar mi ubicación") o del pin que mueve en el mapa.
  */
 class CrearReporteFragment : Fragment() {
 
     private var _binding: FragmentCrearReporteBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CrearReporteViewModel by viewModels {
+    /** null al crear; el id del reporte al editar. */
+    private val idReporte: Int?
+        get() = arguments?.takeIf { it.containsKey(ARG_ID_REPORTE) }?.getInt(ARG_ID_REPORTE)
+
+    private val editando: Boolean get() = idReporte != null
+
+    private val viewModel: FormularioReporteViewModel by viewModels {
         viewModelFactory {
             initializer {
-                CrearReporteViewModel(contenedor.reportesRepository, ReductorFotos(requireContext().applicationContext))
+                val repositorio = contenedor.reportesRepository
+                val reductor = ReductorFotos(requireContext().applicationContext)
+                val id = idReporte
+                if (id == null) CrearReporteViewModel(repositorio, reductor)
+                else EditarReporteViewModel(repositorio, reductor, id)
             }
         }
     }
@@ -96,7 +113,7 @@ class CrearReporteFragment : Fragment() {
 
     /** Lo último que se pintó, para no rehacer vistas en cada emisión del estado. */
     private var categoriasPintadas: List<Categoria>? = null
-    private var fotosPintadas: List<File>? = null
+    private var fotosPintadas: List<FotoFormulario>? = null
     private var ubicacionPintada: Ubicacion? = null
     private var estabaEnviando = false
 
@@ -120,7 +137,11 @@ class CrearReporteFragment : Fragment() {
         ubicacionPintada = null
         pin = null
 
-        binding.botonVolver.setOnClickListener { findNavController().popBackStack() }
+        binding.botonVolver.setOnClickListener { volver() }
+        // Atrás del sistema: si hay algo sin enviar, se pregunta antes de perderlo
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) { volver() }
+        binding.tituloPantalla.setText(if (editando) R.string.editar_reporte else R.string.nuevo_reporte)
+        binding.textoCargaLarga.setText(if (editando) R.string.editar_guardando else R.string.crear_enviando)
         binding.botonReintentarCategorias.setOnClickListener { viewModel.reintentarCategorias() }
         binding.textoCategoria.setOnItemClickListener { _, _, posicion, _ ->
             categoriasPintadas?.getOrNull(posicion)?.let { viewModel.elegirCategoria(it.id) }
@@ -149,13 +170,18 @@ class CrearReporteFragment : Fragment() {
             CampoReporte.DESCRIPCION_UBICACION to binding.campoDescripcionUbicacion,
         )
 
-    private fun mostrarEstado(estado: CrearReporteEstado) {
-        if (estado.creado) {
-            viewModel.creadoAtendido()
-            findNavController().previousBackStackEntry?.savedStateHandle?.set(RESULTADO_REPORTE_CREADO, true)
+    private fun mostrarEstado(estado: FormularioReporteEstado) {
+        if (estado.creado || estado.guardado) {
+            when (val vm = viewModel) {
+                is CrearReporteViewModel -> vm.creadoAtendido()
+                is EditarReporteViewModel -> vm.guardadoAtendido()
+            }
+            val resultado = if (estado.creado) RESULTADO_REPORTE_CREADO else RESULTADO_REPORTE_EDITADO
+            findNavController().previousBackStackEntry?.savedStateHandle?.set(resultado, true)
             findNavController().popBackStack()
             return
         }
+        mostrarCargaDelReporte(estado)
         val habilitado = !estado.enviando
         mostrarCategorias(estado, habilitado)
         campos.forEach { (campo, vista) ->
@@ -168,7 +194,11 @@ class CrearReporteFragment : Fragment() {
         with(binding) {
             aviso.mostrar(estado.aviso)
             botonEnviar.isEnabled = habilitado
-            botonEnviar.text = if (estado.enviando) "" else getString(R.string.boton_enviar_reporte)
+            botonEnviar.text = when {
+                estado.enviando -> ""
+                editando -> getString(R.string.boton_guardar_cambios)
+                else -> getString(R.string.boton_enviar_reporte)
+            }
             progreso.visibility = if (estado.enviando) View.VISIBLE else View.GONE
             cargaLarga.visibility = if (estado.cargaLarga) View.VISIBLE else View.GONE
         }
@@ -181,9 +211,35 @@ class CrearReporteFragment : Fragment() {
         estabaEnviando = estado.enviando
     }
 
+    /** Al editar, mientras se abre el reporte (o si no se pudo) no se muestra el formulario. */
+    private fun mostrarCargaDelReporte(estado: FormularioReporteEstado) = with(binding) {
+        val vistaEstado = when {
+            estado.cargandoReporte -> EstadoVista.Cargando(conBrotico = false, texto = R.string.editar_cargando)
+            estado.errorReporte != null -> EstadoVista.Error(R.string.editar_error_titulo, estado.errorReporte)
+            else -> null
+        }
+        estadoCarga.root.visibility = if (vistaEstado == null) View.GONE else View.VISIBLE
+        vistaEstado?.let { estadoCarga.mostrarEstadoCarga(it) { (viewModel as? EditarReporteViewModel)?.reintentarReporte() } }
+        desplazamiento.visibility = if (vistaEstado == null) View.VISIBLE else View.GONE
+    }
+
+    /** Volver: si hay algo sin enviar, se pregunta si se descarta. */
+    private fun volver() {
+        if (viewModel.estado.value.enviando || !viewModel.hayCambios()) {
+            findNavController().popBackStack()
+            return
+        }
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.descartar_titulo)
+            .setMessage(R.string.descartar_mensaje)
+            .setPositiveButton(R.string.descartar) { _, _ -> findNavController().popBackStack() }
+            .setNegativeButton(R.string.seguir_editando, null)
+            .show()
+    }
+
     // --- Categoría ---
 
-    private fun mostrarCategorias(estado: CrearReporteEstado, habilitado: Boolean) = with(binding) {
+    private fun mostrarCategorias(estado: FormularioReporteEstado, habilitado: Boolean) = with(binding) {
         if (estado.categorias != categoriasPintadas) {
             categoriasPintadas = estado.categorias
             textoCategoria.setAdapter(ArrayAdapter(requireContext(), R.layout.item_categoria, estado.categorias.map { it.nombre }))
@@ -223,7 +279,7 @@ class CrearReporteFragment : Fragment() {
         if (viewModel.estado.value.fotosDisponibles == 1) elegirUna.launch(solicitud) else elegirVarias.launch(solicitud)
     }
 
-    private fun mostrarFotos(estado: CrearReporteEstado, habilitado: Boolean) = with(binding) {
+    private fun mostrarFotos(estado: FormularioReporteEstado, habilitado: Boolean) = with(binding) {
         fotosAyuda.text = getString(R.string.fotos_ayuda, MAXIMO_FOTOS, estado.fotos.size)
         fotosPreparando.visibility = if (estado.preparandoFotos > 0) View.VISIBLE else View.GONE
         val error = estado.errores[CampoReporte.FOTOS]
@@ -234,23 +290,34 @@ class CrearReporteFragment : Fragment() {
         botonElegirFotos.isEnabled = puedeAgregar
 
         carruselFotos.visibility = if (estado.fotos.isEmpty()) View.GONE else View.VISIBLE
+        // Al editar, la última foto no se puede quitar (RN-15): su botón no aparece
+        val quitarVisible = if (estado.puedeQuitarFotos) View.VISIBLE else View.GONE
         if (estado.fotos == fotosPintadas) {
-            fotos.forEachChild { it.findViewById<View>(R.id.boton_quitar).isEnabled = habilitado }
+            fotos.forEachChild {
+                it.findViewById<View>(R.id.boton_quitar).apply {
+                    isEnabled = habilitado
+                    visibility = quitarVisible
+                }
+            }
             return@with
         }
         fotosPintadas = estado.fotos
         fotos.removeAllViews()
-        estado.fotos.forEachIndexed { i, archivo ->
+        estado.fotos.forEachIndexed { i, foto ->
             val item = ItemFotoNuevaBinding.inflate(layoutInflater, fotos, false)
             item.foto.contentDescription = getString(R.string.foto_nueva, i + 1)
-            item.foto.load(archivo) {
-                placeholder(R.drawable.ic_imagen)
-                error(R.drawable.ic_imagen_rota)
-                crossfade(true)
+            when (foto) {
+                is FotoFormulario.Guardada -> item.foto.cargarFoto(foto.foto.url)
+                is FotoFormulario.Nueva -> item.foto.load(foto.archivo) {
+                    placeholder(R.drawable.ic_imagen)
+                    error(R.drawable.ic_imagen_rota)
+                    crossfade(true)
+                }
             }
             item.botonQuitar.contentDescription = getString(R.string.quitar_foto, i + 1)
             item.botonQuitar.isEnabled = habilitado
-            item.botonQuitar.setOnClickListener { viewModel.quitarFoto(archivo) }
+            item.botonQuitar.visibility = quitarVisible
+            item.botonQuitar.setOnClickListener { viewModel.quitarFoto(foto) }
             fotos.addView(item.root)
         }
     }
@@ -287,10 +354,15 @@ class CrearReporteFragment : Fragment() {
         }
     }
 
-    private fun mostrarUbicacion(estado: CrearReporteEstado, habilitado: Boolean) = with(binding) {
+    private fun mostrarUbicacion(estado: FormularioReporteEstado, habilitado: Boolean) = with(binding) {
         botonMiUbicacion.isEnabled = habilitado && busquedaUbicacion == null
         val ubicacion = estado.ubicacion
         if (ubicacion != ubicacionPintada) {
+            // Al abrir para editar, el mapa se centra en el lugar guardado
+            if (ubicacionPintada == null && ubicacion != null && ubicacion == estado.ubicacionGuardada) {
+                mapa.controller.setZoom(ZOOM_UBICACION)
+                mapa.controller.setCenter(GeoPoint(ubicacion.latitud, ubicacion.longitud))
+            }
             ubicacionPintada = ubicacion
             if (ubicacion != null) moverPin(ubicacion)
         }

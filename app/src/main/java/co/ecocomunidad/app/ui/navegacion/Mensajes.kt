@@ -33,7 +33,9 @@ fun mensajeDeError(error: ErrorAuth): String = when (error) {
     is ErrorAuth.CredencialesInvalidas -> "El correo o la contraseña no son correctos."
     is ErrorAuth.SesionExpirada -> Mensajes.SESION_TERMINADA
     is ErrorAuth.Validacion -> error.detail ?: "Revisa los datos e inténtalo de nuevo."
-    is ErrorAuth.Servidor -> "El servidor no respondió bien. Inténtalo en unos minutos."
+    // En los 4xx (por ejemplo 403 "Solo el ciudadano que creó el reporte…") el backend explica qué pasó
+    is ErrorAuth.Servidor -> error.detail?.takeIf { error.codigoHttp in 400..499 && it.isNotBlank() }
+        ?: "El servidor no respondió bien. Inténtalo en unos minutos."
     is ErrorAuth.SinConexion -> "No hay conexión con el servidor. Revisa tu internet e inténtalo de nuevo."
 }
 

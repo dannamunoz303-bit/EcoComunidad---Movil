@@ -6,6 +6,7 @@ import co.ecocomunidad.app.data.ErrorAuth
 import co.ecocomunidad.app.data.ReportesRepository
 import co.ecocomunidad.app.data.Resultado
 import co.ecocomunidad.app.data.modelo.Accion
+import co.ecocomunidad.app.data.modelo.EstadoReporte
 import co.ecocomunidad.app.data.modelo.Reporte
 import co.ecocomunidad.app.data.modelo.UsuarioResumen
 import co.ecocomunidad.app.data.sesion.UsuarioSesion
@@ -46,7 +47,19 @@ data class DetalleReporteEstado(
     val esPropio: Boolean = false,
     val linea: LineaDeTiempo = LineaDeTiempo.Cargando,
     val error: ErrorCarga? = null,
-)
+    val eliminando: Boolean = false,
+    /** Se eliminó: la pantalla vuelve a la lista. */
+    val eliminado: Boolean = false,
+    /** Mensaje del backend si no se pudo eliminar (por ejemplo, ya no está pendiente). */
+    val avisoEliminar: String? = null,
+) {
+    /**
+     * RN-07 y RN-15: editar, eliminar y cambiar fotos solo el dueño y mientras esté pendiente.
+     * Solo decide qué botones se ven; el backend vuelve a revisar al enviar.
+     */
+    val puedeModificar: Boolean
+        get() = esPropio && reporte?.estado == EstadoReporte.PENDIENTE
+}
 
 class DetalleReporteViewModel(
     private val repositorio: ReportesRepository,
@@ -64,6 +77,27 @@ class DetalleReporteViewModel(
     }
 
     fun reintentar() = cargar()
+
+    /** Tras editar: se vuelve a pedir el reporte para mostrar lo que quedó en el backend. */
+    fun recargar() = cargar()
+
+    /** Eliminación lógica (RN-07), después de que el ciudadano confirma. */
+    fun eliminar() {
+        if (_estado.value.eliminando) return
+        _estado.update { it.copy(eliminando = true, avisoEliminar = null) }
+        viewModelScope.launch {
+            when (val r = repositorio.eliminar(id)) {
+                is Resultado.Exito -> _estado.update { it.copy(eliminando = false, eliminado = true) }
+                is Resultado.Fallo -> _estado.update {
+                    it.copy(eliminando = false, avisoEliminar = mensajeDeError(r.error))
+                }
+            }
+        }
+    }
+
+    fun eliminadoAtendido() = _estado.update { it.copy(eliminado = false) }
+
+    fun avisoEliminarAtendido() = _estado.update { it.copy(avisoEliminar = null) }
 
     private fun cargar() {
         trabajo?.cancel()

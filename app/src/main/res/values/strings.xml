@@ -106,6 +106,26 @@
     <string name="crear_enviando">Enviando tu reporte…</string>
     <string name="reporte_creado">Tu reporte quedó enviado. El administrador lo revisará pronto.</string>
 
+    <!-- Editar y eliminar el reporte propio mientras está pendiente (RN-07, RN-15) -->
+    <string name="editar">Editar</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="editar_reporte">Editar reporte</string>
+    <string name="boton_guardar_cambios">Guardar cambios</string>
+    <string name="editar_cargando">Cargando tu reporte…</string>
+    <string name="editar_error_titulo">No pudimos abrir el reporte para editarlo</string>
+    <string name="editar_guardando">Guardando los cambios…</string>
+    <string name="editar_pendiente_ayuda">Puedes cambiarlo mientras esté pendiente de revisión.</string>
+    <string name="reporte_editado">Guardamos los cambios de tu reporte.</string>
+    <string name="eliminando">Eliminando…</string>
+    <string name="eliminar_titulo">¿Eliminar este reporte?</string>
+    <string name="eliminar_mensaje">No se puede deshacer.</string>
+    <string name="reporte_eliminado">Eliminamos tu reporte.</string>
+    <string name="descartar_titulo">¿Descartar los cambios?</string>
+    <string name="descartar_mensaje">Lo que escribiste o elegiste y todavía no enviaste se va a perder.</string>
+    <string name="descartar">Descartar</string>
+    <string name="seguir_editando">Seguir editando</string>
+
     <!-- Registro del ciudadano (RN-01): los gestores los crea el administrador -->
     <string name="registro_titulo">Crea tu cuenta</string>
     <string name="registro_explicacion">Regístrate como ciudadano para reportar los problemas ambientales de tu barrio. Si eres gestor ambiental, el administrador crea tu cuenta.</string>

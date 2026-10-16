@@ -190,6 +190,13 @@
         <item name="android:minHeight">48dp</item>
     </style>
 
+    <!-- Botón para acciones que no se deshacen (Eliminar): borde y texto arcilla -->
+    <style name="Widget.EcoComunidad.BotonPeligro" parent="Widget.EcoComunidad.BotonSecundario">
+        <item name="android:textColor">@color/arcilla</item>
+        <item name="strokeColor">@color/arcilla</item>
+        <item name="iconTint">@color/arcilla</item>
+    </style>
+
     <!-- Etiqueta de estado del reporte: punto de color y texto en tinta (contraste 4,5:1) -->
     <style name="Widget.EcoComunidad.EtiquetaEstado" parent="">
         <item name="android:background">@drawable/fondo_estado</item>

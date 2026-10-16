@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Crear reporte (RN-06): qué pasa, fotos y dónde es. Todo se envía en una sola petición. -->
+<!--
+  Formulario del reporte. Crear (RN-06): todo se envía en una sola petición.
+  Editar (RN-07, RN-15): el mismo formulario con los datos actuales; se guarda solo lo que cambió.
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -26,6 +29,7 @@
             app:iconTint="@color/verde_bosque" />
 
         <TextView
+            android:id="@+id/titulo_pantalla"
             style="@style/Widget.EcoComunidad.TextoTitulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,393 +39,409 @@
             android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta" />
     </LinearLayout>
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/desplazamiento"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingBottom="24dp">
+        android:layout_weight="1">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <!-- Al editar: mientras se abre el reporte o si no se pudo abrir -->
+        <include
+            android:id="@+id/estado_carga"
+            layout="@layout/vista_estado_carga"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="20dp">
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="20dp"
+            android:visibility="gone" />
 
-            <LinearLayout
-                android:layout_width="0dp"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/desplazamiento"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="24dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_max="560dp">
+                android:paddingHorizontal="20dp">
 
-                <!-- Qué está pasando -->
-                <com.google.android.material.card.MaterialCardView
-                    style="@style/Widget.EcoComunidad.TarjetaClara"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp">
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_max="560dp">
 
-                    <LinearLayout
+                    <!-- Qué está pasando -->
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.EcoComunidad.TarjetaClara"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <TextView
-                            style="@style/Widget.EcoComunidad.TextoTitulo"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:accessibilityHeading="true"
-                            android:text="@string/crear_seccion_problema"
-                            android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
-                            android:textSize="18sp" />
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/campo_categoria"
-                            style="@style/Widget.EcoComunidad.Campo.Desplegable"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:hint="@string/campo_categoria">
-
-                            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                                android:id="@+id/texto_categoria"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="none" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/boton_reintentar_categorias"
-                            style="@style/Widget.EcoComunidad.BotonTexto"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/reintentar"
-                            android:visibility="gone" />
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/campo_titulo"
-                            style="@style/Widget.EcoComunidad.Campo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:hint="@string/campo_titulo">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:imeOptions="actionNext"
-                                android:inputType="textCapSentences"
-                                android:maxLines="1" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/campo_descripcion"
-                            style="@style/Widget.EcoComunidad.Campo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:hint="@string/campo_descripcion">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="top"
-                                android:inputType="textMultiLine|textCapSentences"
-                                android:minLines="3" />
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Fotos -->
-                <com.google.android.material.card.MaterialCardView
-                    style="@style/Widget.EcoComunidad.TarjetaClara"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <TextView
-                            style="@style/Widget.EcoComunidad.TextoTitulo"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:accessibilityHeading="true"
-                            android:text="@string/crear_seccion_fotos"
-                            android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/fotos_ayuda"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
-                            android:textColor="@color/tinta_suave"
-                            android:textSize="14sp" />
-
-                        <HorizontalScrollView
-                            android:id="@+id/carrusel_fotos"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:scrollbars="none"
-                            android:visibility="gone">
-
-                            <LinearLayout
-                                android:id="@+id/fotos"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" />
-                        </HorizontalScrollView>
+                        android:layout_marginTop="12dp">
 
                         <LinearLayout
-                            android:id="@+id/fotos_preparando"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:visibility="gone">
-
-                            <com.google.android.material.progressindicator.CircularProgressIndicator
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:indeterminate="true"
-                                android:importantForAccessibility="no"
-                                app:indicatorColor="@color/verde_bosque"
-                                app:indicatorSize="18dp"
-                                app:trackThickness="2dp" />
+                            android:orientation="vertical"
+                            android:padding="20dp">
 
                             <TextView
+                                style="@style/Widget.EcoComunidad.TextoTitulo"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:text="@string/fotos_preparando"
+                                android:accessibilityHeading="true"
+                                android:text="@string/crear_seccion_problema"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
+                                android:textSize="18sp" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/campo_categoria"
+                                style="@style/Widget.EcoComunidad.Campo.Desplegable"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:hint="@string/campo_categoria">
+
+                                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                                    android:id="@+id/texto_categoria"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="none" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/boton_reintentar_categorias"
+                                style="@style/Widget.EcoComunidad.BotonTexto"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/reintentar"
+                                android:visibility="gone" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/campo_titulo"
+                                style="@style/Widget.EcoComunidad.Campo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:hint="@string/campo_titulo">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:imeOptions="actionNext"
+                                    android:inputType="textCapSentences"
+                                    android:maxLines="1" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/campo_descripcion"
+                                style="@style/Widget.EcoComunidad.Campo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:hint="@string/campo_descripcion">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="top"
+                                    android:inputType="textMultiLine|textCapSentences"
+                                    android:minLines="3" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Fotos -->
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.EcoComunidad.TarjetaClara"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <TextView
+                                style="@style/Widget.EcoComunidad.TextoTitulo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:accessibilityHeading="true"
+                                android:text="@string/crear_seccion_fotos"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/fotos_ayuda"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
                                 android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
                                 android:textColor="@color/tinta_suave"
                                 android:textSize="14sp" />
-                        </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/fotos_error"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:accessibilityLiveRegion="polite"
-                            android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
-                            android:textColor="@color/arcilla"
-                            android:textSize="13sp"
-                            android:visibility="gone" />
+                            <HorizontalScrollView
+                                android:id="@+id/carrusel_fotos"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:scrollbars="none"
+                                android:visibility="gone">
+
+                                <LinearLayout
+                                    android:id="@+id/fotos"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal" />
+                            </HorizontalScrollView>
+
+                            <LinearLayout
+                                android:id="@+id/fotos_preparando"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:visibility="gone">
+
+                                <com.google.android.material.progressindicator.CircularProgressIndicator
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:indeterminate="true"
+                                    android:importantForAccessibility="no"
+                                    app:indicatorColor="@color/verde_bosque"
+                                    app:indicatorSize="18dp"
+                                    app:trackThickness="2dp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="@string/fotos_preparando"
+                                    android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                    android:textColor="@color/tinta_suave"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/fotos_error"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:accessibilityLiveRegion="polite"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                android:textColor="@color/arcilla"
+                                android:textSize="13sp"
+                                android:visibility="gone" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/boton_tomar_foto"
+                                    style="@style/Widget.EcoComunidad.BotonSecundario"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:layout_weight="1"
+                                    android:text="@string/tomar_foto"
+                                    app:icon="@drawable/ic_camara"
+                                    app:iconSize="18dp"
+                                    app:iconTint="@color/verde_bosque" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/boton_elegir_fotos"
+                                    style="@style/Widget.EcoComunidad.BotonSecundario"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/elegir_fotos"
+                                    app:icon="@drawable/ic_imagen"
+                                    app:iconSize="18dp"
+                                    app:iconTint="@color/verde_bosque" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Dónde es -->
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.EcoComunidad.TarjetaClara"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:orientation="horizontal">
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <TextView
+                                style="@style/Widget.EcoComunidad.TextoTitulo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:accessibilityHeading="true"
+                                android:text="@string/crear_seccion_lugar"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
+                                android:textSize="18sp" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/campo_direccion"
+                                style="@style/Widget.EcoComunidad.Campo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:hint="@string/campo_direccion">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:autofillHints="postalAddress"
+                                    android:imeOptions="actionNext"
+                                    android:inputType="textPostalAddress|textCapSentences"
+                                    android:maxLines="1" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/campo_descripcion_ubicacion"
+                                style="@style/Widget.EcoComunidad.Campo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:hint="@string/campo_descripcion_ubicacion">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:imeOptions="actionDone"
+                                    android:inputType="textCapSentences"
+                                    android:maxLines="1" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/mapa_ayuda"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                android:textColor="@color/tinta_suave"
+                                android:textSize="14sp" />
+
+                            <!-- El mapa recorta sus esquinas con la tarjeta -->
+                            <com.google.android.material.card.MaterialCardView
+                                style="@style/Widget.EcoComunidad.MarcoFoto"
+                                android:layout_width="match_parent"
+                                android:layout_height="260dp"
+                                android:layout_marginTop="8dp">
+
+                                <org.osmdroid.views.MapView
+                                    android:id="@+id/mapa"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:contentDescription="@string/mapa_descripcion" />
+                            </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.button.MaterialButton
-                                android:id="@+id/boton_tomar_foto"
+                                android:id="@+id/boton_mi_ubicacion"
                                 style="@style/Widget.EcoComunidad.BotonSecundario"
-                                android:layout_width="0dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginEnd="8dp"
-                                android:layout_weight="1"
-                                android:text="@string/tomar_foto"
-                                app:icon="@drawable/ic_camara"
+                                android:layout_marginTop="12dp"
+                                android:text="@string/usar_mi_ubicacion"
+                                app:icon="@drawable/ic_mi_ubicacion"
+                                app:iconGravity="textStart"
                                 app:iconSize="18dp"
                                 app:iconTint="@color/verde_bosque" />
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/boton_elegir_fotos"
-                                style="@style/Widget.EcoComunidad.BotonSecundario"
-                                android:layout_width="0dp"
+                            <!-- Coordenadas solo informativas: el ciudadano no las escribe (RN-06) -->
+                            <TextView
+                                android:id="@+id/coordenadas"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/elegir_fotos"
-                                app:icon="@drawable/ic_imagen"
-                                app:iconSize="18dp"
-                                app:iconTint="@color/verde_bosque" />
+                                android:layout_marginTop="8dp"
+                                android:accessibilityLiveRegion="polite"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                android:textColor="@color/tinta_suave"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:id="@+id/ubicacion_mensaje"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:accessibilityLiveRegion="polite"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                android:textSize="13sp"
+                                android:visibility="gone" />
                         </LinearLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                    </com.google.android.material.card.MaterialCardView>
 
-                <!-- Dónde es -->
-                <com.google.android.material.card.MaterialCardView
-                    style="@style/Widget.EcoComunidad.TarjetaClara"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp">
+                    <include
+                        android:id="@+id/aviso"
+                        layout="@layout/vista_aviso" />
 
-                    <LinearLayout
+                    <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
+                        android:layout_marginTop="20dp">
 
-                        <TextView
-                            style="@style/Widget.EcoComunidad.TextoTitulo"
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/boton_enviar"
+                            style="@style/Widget.EcoComunidad.BotonPrincipal"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:text="@string/boton_enviar_reporte" />
+
+                        <com.google.android.material.progressindicator.CircularProgressIndicator
+                            android:id="@+id/progreso"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:accessibilityHeading="true"
-                            android:text="@string/crear_seccion_lugar"
-                            android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
-                            android:textSize="18sp" />
+                            android:layout_gravity="center"
+                            android:contentDescription="@string/cargando"
+                            android:indeterminate="true"
+                            android:visibility="gone"
+                            app:indicatorColor="@color/tinta_suave"
+                            app:indicatorSize="18dp"
+                            app:trackThickness="2dp" />
+                    </FrameLayout>
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/campo_direccion"
-                            style="@style/Widget.EcoComunidad.Campo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:hint="@string/campo_direccion">
+                    <!-- Envío de más de 1 s: Brotico piensa (marca.md) -->
+                    <LinearLayout
+                        android:id="@+id/carga_larga"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:accessibilityLiveRegion="polite"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:autofillHints="postalAddress"
-                                android:imeOptions="actionNext"
-                                android:inputType="textPostalAddress|textCapSentences"
-                                android:maxLines="1" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/campo_descripcion_ubicacion"
-                            style="@style/Widget.EcoComunidad.Campo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:hint="@string/campo_descripcion_ubicacion">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:imeOptions="actionDone"
-                                android:inputType="textCapSentences"
-                                android:maxLines="1" />
-                        </com.google.android.material.textfield.TextInputLayout>
+                        <ImageView
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:layout_marginEnd="12dp"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/brotico_piensa" />
 
                         <TextView
-                            android:layout_width="match_parent"
+                            android:id="@+id/texto_carga_larga"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/mapa_ayuda"
+                            android:text="@string/crear_enviando"
                             android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
                             android:textColor="@color/tinta_suave"
                             android:textSize="14sp" />
-
-                        <!-- El mapa recorta sus esquinas con la tarjeta -->
-                        <com.google.android.material.card.MaterialCardView
-                            style="@style/Widget.EcoComunidad.MarcoFoto"
-                            android:layout_width="match_parent"
-                            android:layout_height="260dp"
-                            android:layout_marginTop="8dp">
-
-                            <org.osmdroid.views.MapView
-                                android:id="@+id/mapa"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:contentDescription="@string/mapa_descripcion" />
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/boton_mi_ubicacion"
-                            style="@style/Widget.EcoComunidad.BotonSecundario"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:text="@string/usar_mi_ubicacion"
-                            app:icon="@drawable/ic_mi_ubicacion"
-                            app:iconGravity="textStart"
-                            app:iconSize="18dp"
-                            app:iconTint="@color/verde_bosque" />
-
-                        <!-- Coordenadas solo informativas: el ciudadano no las escribe (RN-06) -->
-                        <TextView
-                            android:id="@+id/coordenadas"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:accessibilityLiveRegion="polite"
-                            android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
-                            android:textColor="@color/tinta_suave"
-                            android:textSize="13sp" />
-
-                        <TextView
-                            android:id="@+id/ubicacion_mensaje"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:accessibilityLiveRegion="polite"
-                            android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
-                            android:textSize="13sp"
-                            android:visibility="gone" />
                     </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <include
-                    android:id="@+id/aviso"
-                    layout="@layout/vista_aviso" />
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/boton_enviar"
-                        style="@style/Widget.EcoComunidad.BotonPrincipal"
-                        android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:text="@string/boton_enviar_reporte" />
-
-                    <com.google.android.material.progressindicator.CircularProgressIndicator
-                        android:id="@+id/progreso"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:contentDescription="@string/cargando"
-                        android:indeterminate="true"
-                        android:visibility="gone"
-                        app:indicatorColor="@color/tinta_suave"
-                        app:indicatorSize="18dp"
-                        app:trackThickness="2dp" />
-                </FrameLayout>
-
-                <!-- Envío de más de 1 s: Brotico piensa (marca.md) -->
-                <LinearLayout
-                    android:id="@+id/carga_larga"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:accessibilityLiveRegion="polite"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:layout_marginEnd="12dp"
-                        android:importantForAccessibility="no"
-                        android:src="@drawable/brotico_piensa" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/crear_enviando"
-                        android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
-                        android:textColor="@color/tinta_suave"
-                        android:textSize="14sp" />
                 </LinearLayout>
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </FrameLayout>
 </LinearLayout>

@@ -24,6 +24,11 @@ import co.ecocomunidad.app.ui.componentes.mostrar
 import co.ecocomunidad.app.ui.componentes.observar
 import co.ecocomunidad.app.ui.navegacion.ARG_ID_REPORTE
 import co.ecocomunidad.app.ui.navegacion.ARG_URL_FOTO
+import co.ecocomunidad.app.ui.navegacion.RESULTADO_REPORTES_CAMBIADOS
+import co.ecocomunidad.app.ui.navegacion.RESULTADO_REPORTE_EDITADO
+import co.ecocomunidad.app.ui.navegacion.RESULTADO_REPORTE_ELIMINADO
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 
 /**
  * Detalle de un reporte. Muestra solo lo que entrega el backend: sin cédula (RN-02) y sin el nombre
@@ -59,10 +64,57 @@ class DetalleReporteFragment : Fragment() {
         reportePintado = null
         lineaPintada = null
         binding.botonVolver.setOnClickListener { findNavController().popBackStack() }
+        binding.botonEditar.setOnClickListener {
+            findNavController().navigate(
+                R.id.editarReporteFragment,
+                bundleOf(ARG_ID_REPORTE to requireArguments().getInt(ARG_ID_REPORTE)),
+            )
+        }
+        binding.botonEliminar.setOnClickListener { confirmarEliminar() }
         observar(viewModel.estado, ::mostrarEstado)
+        escucharEdicion()
+    }
+
+    /** Al volver de editar: se pide de nuevo el reporte y la lista queda para recargar. */
+    private fun escucharEdicion() {
+        val resultados = findNavController().getBackStackEntry(R.id.detalleReporteFragment).savedStateHandle
+        observar(resultados.getStateFlow(RESULTADO_REPORTE_EDITADO, false)) { editado ->
+            if (!editado) return@observar
+            resultados[RESULTADO_REPORTE_EDITADO] = false
+            findNavController().previousBackStackEntry?.savedStateHandle?.set(RESULTADO_REPORTES_CAMBIADOS, true)
+            viewModel.recargar()
+            Snackbar.make(binding.root, R.string.reporte_editado, Snackbar.LENGTH_LONG).show()
+        }
+    }
+
+    private fun confirmarEliminar() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.eliminar_titulo)
+            .setMessage(R.string.eliminar_mensaje)
+            .setPositiveButton(R.string.eliminar) { _, _ -> viewModel.eliminar() }
+            .setNegativeButton(R.string.cancelar, null)
+            .show()
     }
 
     private fun mostrarEstado(estado: DetalleReporteEstado) {
+        if (estado.eliminado) {
+            viewModel.eliminadoAtendido()
+            findNavController().previousBackStackEntry?.savedStateHandle?.set(RESULTADO_REPORTE_ELIMINADO, true)
+            findNavController().popBackStack()
+            return
+        }
+        // La app solo muestra los botones cuando aplican; si el backend dice que no, se ve su mensaje
+        with(binding) {
+            accionesDueno.visibility = if (estado.puedeModificar) View.VISIBLE else View.GONE
+            botonEditar.isEnabled = !estado.eliminando
+            botonEliminar.isEnabled = !estado.eliminando
+            botonEliminar.setText(if (estado.eliminando) R.string.eliminando else R.string.eliminar)
+        }
+        estado.avisoEliminar?.let {
+            Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+            viewModel.avisoEliminarAtendido()
+        }
+
         val reporte = estado.reporte
         val vistaEstado = when {
             estado.cargando -> EstadoVista.Cargando(estado.cargaLarga, R.string.detalle_cargando)
