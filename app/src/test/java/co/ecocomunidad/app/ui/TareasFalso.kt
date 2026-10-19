@@ -6,8 +6,11 @@ import co.ecocomunidad.app.data.TareasRepository
 import co.ecocomunidad.app.data.modelo.Accion
 import co.ecocomunidad.app.data.modelo.EstadoReporte
 import co.ecocomunidad.app.data.modelo.EstadoTarea
+import co.ecocomunidad.app.data.modelo.Foto
 import co.ecocomunidad.app.data.modelo.ReporteBasico
 import co.ecocomunidad.app.data.modelo.TareaGestor
+import kotlinx.coroutines.CompletableDeferred
+import java.io.File
 
 class TareasFalso : TareasRepository {
 
@@ -42,6 +45,36 @@ class TareasFalso : TareasRepository {
     override suspend fun terminar(id: Int): Resultado<TareaGestor> {
         operaciones += "terminar $id"
         return resultadoTerminar ?: cambiar(id, EstadoTarea.TERMINADA)
+    }
+
+    // --- Registrar acción ---
+
+    var accionCreada: Resultado<Accion> = Resultado.Exito(Accion(id = 40, descripcion = "", fecha = "2026-10-05T10:00:00-05:00"))
+    /** null = la acción vuelve con una foto por archivo. */
+    var evidenciasSubidas: Resultado<Accion>? = null
+    /** Si no es null, crearAccion espera a que se complete (para ver el estado de envío). */
+    var esperaCrear: CompletableDeferred<Unit>? = null
+
+    val descripciones = mutableListOf<String>()
+    /** Cada subida: id de la acción y los nombres de los archivos. */
+    val subidas = mutableListOf<Pair<Int, List<String>>>()
+
+    override suspend fun crearAccion(idTarea: Int, descripcion: String): Resultado<Accion> {
+        operaciones += "crear acción $idTarea"
+        descripciones += descripcion
+        esperaCrear?.await()
+        return accionCreada
+    }
+
+    override suspend fun subirEvidencias(idAccion: Int, fotos: List<File>): Resultado<Accion> {
+        operaciones += "subir a $idAccion"
+        subidas += idAccion to fotos.map { it.name }
+        return evidenciasSubidas ?: Resultado.Exito(
+            Accion(
+                id = idAccion, descripcion = "", fecha = "2026-10-05T10:00:00-05:00",
+                fotos = fotos.mapIndexed { i, f -> Foto(i, "https://fotos/${f.name}", "2026-10-05T10:00:00-05:00") },
+            ),
+        )
     }
 
     /** Como el backend: la tarea cambia y la próxima consulta ya la trae así. */

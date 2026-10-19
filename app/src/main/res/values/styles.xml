@@ -249,6 +249,30 @@
         <item name="android:textColor">@color/arcilla</item>
     </style>
 
+    <!-- Recuadro para agregar una foto (Cámara, Galería): mismo tamaño que una miniatura, borde verde -->
+    <style name="Widget.EcoComunidad.RecuadroAgregarFoto" parent="Widget.Material3.CardView.Outlined">
+        <item name="cardBackgroundColor">@color/fondo</item>
+        <item name="cardCornerRadius">14dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/verde_musgo</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <!-- Ícono y texto dentro del recuadro de agregar foto -->
+    <style name="Widget.EcoComunidad.TextoRecuadroFoto" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:drawablePadding">4dp</item>
+        <item name="drawableTint">@color/verde_bosque</item>
+        <item name="android:importantForAccessibility">no</item>
+        <item name="android:textAppearance">@style/TextAppearance.EcoComunidad.Etiqueta</item>
+        <item name="android:textColor">@color/verde_bosque</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <!-- Botón de texto en verde bosque -->
     <style name="Widget.EcoComunidad.BotonTexto" parent="Widget.Material3.Button.TextButton">
         <item name="android:textColor">@color/verde_bosque</item>

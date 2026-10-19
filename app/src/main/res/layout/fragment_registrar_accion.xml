@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Registrar acción (RN-14) con fotos de evidencia (RN-15). El backend recibe la acción y luego sus
+  fotos en otra petición; la pantalla lo muestra como un solo "Guardar acción".
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondo"
+    android:orientation="vertical">
+
+    <!-- Barra: volver y título -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp"
+        android:paddingTop="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/boton_volver"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/volver"
+            app:icon="@drawable/ic_volver"
+            app:iconTint="@color/verde_bosque" />
+
+        <TextView
+            style="@style/Widget.EcoComunidad.TextoTitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:accessibilityHeading="true"
+            android:text="@string/registrar_accion"
+            android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- Mientras se abre la tarea o si no se pudo abrir -->
+        <include
+            android:id="@+id/estado_carga"
+            layout="@layout/vista_estado_carga"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="20dp" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/desplazamiento"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="24dp"
+            android:visibility="gone">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="20dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_max="560dp">
+
+                    <!-- La tarea: "Tarea #id · título" y su estado -->
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.EcoComunidad.TarjetaClara"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <TextView
+                                android:id="@+id/titulo_tarea"
+                                style="@style/Widget.EcoComunidad.TextoTitulo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta"
+                                android:textColor="@color/tinta" />
+
+                            <TextView
+                                android:id="@+id/estado_tarea"
+                                style="@style/Widget.EcoComunidad.EtiquetaEstado"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Qué hiciste -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/campo_descripcion"
+                        style="@style/Widget.EcoComunidad.Campo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:hint="@string/campo_que_hiciste">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="top"
+                            android:inputType="textMultiLine|textCapSentences"
+                            android:minLines="4" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Fotos de evidencia -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/seccion_fotos"
+                        style="@style/Widget.EcoComunidad.TarjetaClara"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    style="@style/Widget.EcoComunidad.TextoTitulo"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:accessibilityHeading="true"
+                                    android:text="@string/fotos_evidencia"
+                                    android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
+                                    android:textSize="18sp" />
+
+                                <TextView
+                                    android:id="@+id/contador_fotos"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:textAppearance="@style/TextAppearance.EcoComunidad.Etiqueta"
+                                    android:textColor="@color/tinta_suave" />
+                            </LinearLayout>
+
+                            <!-- Miniaturas y, al final, los recuadros Cámara y Galería -->
+                            <HorizontalScrollView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:scrollbars="none">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <LinearLayout
+                                        android:id="@+id/fotos"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal" />
+
+                                    <com.google.android.material.card.MaterialCardView
+                                        android:id="@+id/recuadro_camara"
+                                        style="@style/Widget.EcoComunidad.RecuadroAgregarFoto"
+                                        android:layout_width="88dp"
+                                        android:layout_height="88dp"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginEnd="8dp"
+                                        android:contentDescription="@string/tomar_foto_evidencia">
+
+                                        <TextView
+                                            style="@style/Widget.EcoComunidad.TextoRecuadroFoto"
+                                            android:text="@string/camara"
+                                            app:drawableTopCompat="@drawable/ic_camara" />
+                                    </com.google.android.material.card.MaterialCardView>
+
+                                    <com.google.android.material.card.MaterialCardView
+                                        android:id="@+id/recuadro_galeria"
+                                        style="@style/Widget.EcoComunidad.RecuadroAgregarFoto"
+                                        android:layout_width="88dp"
+                                        android:layout_height="88dp"
+                                        android:layout_marginTop="8dp"
+                                        android:contentDescription="@string/elegir_fotos_evidencia">
+
+                                        <TextView
+                                            style="@style/Widget.EcoComunidad.TextoRecuadroFoto"
+                                            android:text="@string/elegir_fotos"
+                                            app:drawableTopCompat="@drawable/ic_imagen" />
+                                    </com.google.android.material.card.MaterialCardView>
+                                </LinearLayout>
+                            </HorizontalScrollView>
+
+                            <LinearLayout
+                                android:id="@+id/fotos_preparando"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:visibility="gone">
+
+                                <com.google.android.material.progressindicator.CircularProgressIndicator
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:indeterminate="true"
+                                    android:importantForAccessibility="no"
+                                    app:indicatorColor="@color/verde_bosque"
+                                    app:indicatorSize="18dp"
+                                    app:trackThickness="2dp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="@string/fotos_preparando"
+                                    android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                    android:textColor="@color/tinta_suave"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/fotos_error"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:accessibilityLiveRegion="polite"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                android:textColor="@color/arcilla"
+                                android:textSize="13sp"
+                                android:visibility="gone" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/accion_aviso_ciudadano"
+                        android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                        android:textColor="@color/tinta_suave"
+                        android:textSize="14sp"
+                        app:lineHeight="20sp" />
+
+                    <!-- Lo que el backend rechazó y no es de un campo, o el límite de fotos -->
+                    <include
+                        android:id="@+id/aviso"
+                        layout="@layout/vista_aviso" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/boton_guardar"
+                            style="@style/Widget.EcoComunidad.BotonPrincipal"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:text="@string/guardar_accion" />
+
+                        <com.google.android.material.progressindicator.CircularProgressIndicator
+                            android:id="@+id/progreso"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:contentDescription="@string/cargando"
+                            android:indeterminate="true"
+                            android:visibility="gone"
+                            app:indicatorColor="@color/tinta_suave"
+                            app:indicatorSize="18dp"
+                            app:trackThickness="2dp" />
+                    </FrameLayout>
+
+                    <!-- Envío de más de 1 s: Brotico piensa (marca.md) -->
+                    <LinearLayout
+                        android:id="@+id/carga_larga"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:accessibilityLiveRegion="polite"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:layout_marginEnd="12dp"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/brotico_piensa" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/accion_guardando"
+                            android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                            android:textColor="@color/tinta_suave"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </FrameLayout>
+</LinearLayout>

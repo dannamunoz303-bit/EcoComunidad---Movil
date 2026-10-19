@@ -11,8 +11,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartReader
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -163,6 +169,112 @@ class TareasRepositoryTest {
         val error = (repositorio.mias() as Resultado.Fallo).error
 
         assertTrue(error is ErrorAuth.SinConexion)
+    }
+
+    // --- Registrar acción (RN-14) y subir evidencias (RN-15) ---
+
+    @Test
+    fun crearAccion_mandaSoloLaDescripcionEnJson() = runTest {
+        responder(201, """{"id":40,"descripcion":"Recogí las bolsas.","fecha":"2026-10-05T10:00:00-05:00","fotos":[]}""")
+
+        val accion = (repositorio.crearAccion(12, "Recogí las bolsas.") as Resultado.Exito).datos
+
+        val peticion = servidor.takeRequest()
+        assertEquals("POST", peticion.method)
+        assertEquals("/api/tareas/12/acciones/", peticion.path)
+        assertTrue(peticion.getHeader("Content-Type")!!.startsWith("application/json"))
+        assertEquals(
+            JsonObject(mapOf("descripcion" to JsonPrimitive("Recogí las bolsas."))),
+            Json.parseToJsonElement(peticion.body.readUtf8()),
+        )
+        assertEquals(40, accion.id)
+        assertTrue(accion.fotos.isEmpty())
+    }
+
+    @Test
+    fun accionConFotos_creaLaAccionYLuegoSubeLasFotosEnMultipart() = runTest {
+        responder(201, """{"id":40,"descripcion":"Recogí las bolsas.","fecha":"2026-10-05T10:00:00-05:00","fotos":[]}""")
+        responder(
+            201,
+            """{"id":40,"descripcion":"Recogí las bolsas.","fecha":"2026-10-05T10:00:00-05:00",
+                "fotos":[{"id":7,"url":"/media/evidencias/a.jpg","fecha":"2026-10-05T10:01:00-05:00"},
+                         {"id":8,"url":"/media/evidencias/b.jpg","fecha":"2026-10-05T10:01:00-05:00"}]}""",
+        )
+
+        val creada = (repositorio.crearAccion(12, "Recogí las bolsas.") as Resultado.Exito).datos
+        val conFotos = (repositorio.subirEvidencias(creada.id, listOf(foto("a.jpg", "AAA"), foto("b.jpg", "BBB"))) as Resultado.Exito).datos
+
+        assertEquals("/api/tareas/12/acciones/", servidor.takeRequest().path)
+        val subida = servidor.takeRequest()
+        assertEquals("POST", subida.method)
+        assertEquals("/api/acciones/40/fotos/", subida.path)
+        // Varias partes con el mismo nombre "fotos", como espera EvidenciasSerializer
+        assertEquals(
+            listOf(
+                Parte("fotos", "a.jpg", "image/jpeg", "AAA"),
+                Parte("fotos", "b.jpg", "image/jpeg", "BBB"),
+            ),
+            partes(subida),
+        )
+        assertEquals(listOf(servidor.url("/media/evidencias/a.jpg").toString(), servidor.url("/media/evidencias/b.jpg").toString()),
+            conFotos.fotos.map { it.url })
+    }
+
+    @Test
+    fun crearAccionSinDescripcion_traeElErrorDelCampo() = runTest {
+        responder(400, """{"descripcion":["La descripción no puede estar vacía."]}""")
+
+        val error = (repositorio.crearAccion(12, " ") as Resultado.Fallo).error as ErrorAuth.Validacion
+
+        assertEquals(listOf("La descripción no puede estar vacía."), error.campos["descripcion"])
+    }
+
+    @Test
+    fun crearAccionEnTareaTerminada_traeElDetail() = runTest {
+        responder(400, """{"detail":"No se puede registrar acciones en una tarea terminada."}""")
+
+        val error = (repositorio.crearAccion(12, "Algo") as Resultado.Fallo).error
+
+        assertEquals("No se puede registrar acciones en una tarea terminada.", error.detail)
+    }
+
+    @Test
+    fun subirDeMasEvidencias_traeElErrorDeFotos() = runTest {
+        responder(400, """{"fotos":"Una acción puede tener máximo 5 evidencias."}""")
+
+        val error = (repositorio.subirEvidencias(40, listOf(foto("a.jpg", "AAA"))) as Resultado.Fallo).error as ErrorAuth.Validacion
+
+        assertEquals(listOf("Una acción puede tener máximo 5 evidencias."), error.campos["fotos"])
+    }
+
+    @Test
+    fun crearAccionSinConexion() = runTest {
+        servidor.shutdown()
+
+        val error = (repositorio.crearAccion(12, "Algo") as Resultado.Fallo).error
+
+        assertTrue(error is ErrorAuth.SinConexion)
+    }
+
+    private fun foto(nombre: String, contenido: String): File =
+        File(carpeta.root, nombre).apply { writeText(contenido) }
+
+    private data class Parte(val nombre: String, val archivo: String?, val tipo: String?, val contenido: String)
+
+    /** Lee las partes del multipart que recibió el servidor, en orden. */
+    private fun partes(peticion: RecordedRequest): List<Parte> {
+        val tipo = peticion.getHeader("Content-Type")!!.toMediaType()
+        assertEquals("multipart/form-data", "${tipo.type}/${tipo.subtype}")
+        val lector = MultipartReader(peticion.body, tipo.parameter("boundary")!!)
+        return generateSequence { lector.nextPart() }.map { parte ->
+            val disposicion = parte.headers["Content-Disposition"]!!
+            Parte(
+                nombre = Regex("""name="([^"]+)"""").find(disposicion)!!.groupValues[1],
+                archivo = Regex("""filename="([^"]+)"""").find(disposicion)?.groupValues?.get(1),
+                tipo = parte.headers["Content-Type"],
+                contenido = parte.body.readUtf8(),
+            )
+        }.toList()
     }
 
     private fun responder(codigo: Int, cuerpo: String) {

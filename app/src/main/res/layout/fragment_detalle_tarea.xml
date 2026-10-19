@@ -235,6 +235,19 @@
                         android:layout_marginTop="8dp"
                         android:orientation="vertical" />
 
+                    <!-- RN-14: solo con la tarea asignada o en proceso; va encima de Iniciar o Terminar -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/boton_registrar_accion"
+                        style="@style/Widget.EcoComunidad.BotonSecundario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/registrar_accion"
+                        android:visibility="gone"
+                        app:icon="@drawable/ic_mas"
+                        app:iconSize="18dp"
+                        app:iconTint="@color/verde_bosque" />
+
                     <!-- Según el estado: Iniciar, Terminar o un aviso (RN-13) -->
                     <include
                         android:id="@+id/aviso"

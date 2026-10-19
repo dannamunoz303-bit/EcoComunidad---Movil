@@ -248,4 +248,23 @@
     <string name="tarea_terminada">Terminaste la tarea. Gracias por tu trabajo.</string>
     <string name="tarea_aviso_terminada">Terminaste esta tarea el %1$s.</string>
     <string name="tarea_aviso_cancelada">Esta tarea fue cancelada. Ya no tienes que atenderla.</string>
+
+    <!-- Registrar acción con fotos de evidencia (RN-14, RN-15) -->
+    <string name="registrar_accion">Registrar acción</string>
+    <string name="accion_tarea_titulo">Tarea #%1$d · %2$s</string>
+    <string name="campo_que_hiciste">¿Qué hiciste?</string>
+    <string name="fotos_evidencia">Fotos de evidencia</string>
+    <string name="contador_fotos">%1$d de %2$d</string>
+    <string name="camara">Cámara</string>
+    <string name="tomar_foto_evidencia">Tomar una foto de evidencia</string>
+    <string name="elegir_fotos_evidencia">Elegir fotos de evidencia de la galería</string>
+    <string name="evidencia_nueva">Foto de evidencia %1$d</string>
+    <string name="accion_aviso_ciudadano">El ciudadano verá esta acción y sus fotos en su reporte.</string>
+    <string name="guardar_accion">Guardar acción</string>
+    <string name="accion_guardando">Guardando tu acción…</string>
+    <string name="sin_foto_titulo">¿Guardar sin foto?</string>
+    <string name="sin_foto_mensaje">Sin foto no podrás terminar la tarea con esta acción. ¿Guardar igual?</string>
+    <string name="guardar_igual">Guardar igual</string>
+    <string name="agregar_foto">Agregar foto</string>
+    <string name="accion_registrada">Guardamos tu acción.</string>
 </resources>

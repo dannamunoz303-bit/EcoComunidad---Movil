@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!--
-      En pantallas estrechas el botón de la barra superior muestra solo el ícono
-      (con su descripción) para que el nombre de marca quepa completo.
-    -->
-    <bool name="barra_compacta">true</bool>
-</resources>

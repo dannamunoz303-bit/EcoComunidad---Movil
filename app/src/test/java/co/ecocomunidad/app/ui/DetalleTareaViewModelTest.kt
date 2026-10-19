@@ -47,6 +47,38 @@ class DetalleTareaViewModelTest {
     }
 
     @Test
+    fun registrarAccion_soloConLaTareaAsignadaOEnProceso() = runTest(main.despachador) {
+        val esperado = mapOf(
+            EstadoTarea.ASIGNADA to true,
+            EstadoTarea.EN_PROCESO to true,
+            EstadoTarea.TERMINADA to false,
+            EstadoTarea.CANCELADA to false,
+        )
+        for ((estado, puede) in esperado) {
+            conTarea(estado)
+            val vm = viewModel()
+            advanceUntilIdle()
+            assertEquals("$estado", puede, vm.estado.value.puedeRegistrarAccion)
+        }
+    }
+
+    @Test
+    fun alVolverConLaAccionGuardada_recargaMisAccionesYAvisa() = runTest(main.despachador) {
+        conTarea(EstadoTarea.EN_PROCESO)
+        val vm = viewModel()
+        advanceUntilIdle()
+        assertEquals(MisAcciones.Lista(emptyList()), vm.estado.value.acciones)
+
+        tareas.acciones = Resultado.Exito(listOf(accion(40, "2026-10-05T10:00:00-05:00")))
+        vm.accionRegistrada()
+        advanceUntilIdle()
+
+        assertEquals(listOf(40), (vm.estado.value.acciones as MisAcciones.Lista).acciones.map { it.id })
+        assertEquals(R.string.accion_registrada, vm.estado.value.mensaje)
+        assertFalse(vm.estado.value.cargando)
+    }
+
+    @Test
     fun cargaLaTareaElReporteYMisAcciones() = runTest(main.despachador) {
         conTarea(EstadoTarea.EN_PROCESO)
         tareas.acciones = Resultado.Exito(listOf(accion(2, "2026-10-03T10:00:00-05:00"), accion(1, "2026-10-02T10:00:00-05:00")))

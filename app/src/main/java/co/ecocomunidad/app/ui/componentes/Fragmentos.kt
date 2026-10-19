@@ -11,10 +11,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import co.ecocomunidad.app.AppContainer
 import co.ecocomunidad.app.EcoComunidadApp
-import co.ecocomunidad.app.R
 import co.ecocomunidad.app.databinding.VistaAvisoBinding
 import co.ecocomunidad.app.databinding.VistaAvisoExitoBinding
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -50,16 +48,6 @@ fun VistaAvisoExitoBinding.mostrar(texto: String?) = mostrarAviso(root, avisoExi
 private fun mostrarAviso(caja: View, vistaTexto: TextView, texto: String?) {
     caja.visibility = if (texto == null) View.GONE else View.VISIBLE
     if (vistaTexto.text?.toString() != texto) vistaTexto.text = texto
-}
-
-/** En pantallas estrechas deja el botón de la barra solo con su ícono, para que el nombre de marca quepa. */
-fun MaterialButton.compactarSiHaceFalta() {
-    if (!resources.getBoolean(R.bool.barra_compacta)) return
-    val etiqueta = text
-    text = null
-    iconPadding = 0
-    contentDescription = etiqueta
-    tooltipText = etiqueta
 }
 
 /** Quita el foco y esconde el teclado antes de enviar un formulario. */

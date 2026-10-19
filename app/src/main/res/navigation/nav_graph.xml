@@ -105,6 +105,15 @@
             app:argType="boolean" />
     </fragment>
 
+    <!-- Se apila sobre el detalle de la tarea; al guardar vuelve a él (ver RESULTADO_ACCION_REGISTRADA) -->
+    <fragment
+        android:id="@+id/registrarAccionFragment"
+        android:name="co.ecocomunidad.app.ui.tareas.RegistrarAccionFragment">
+        <argument
+            android:name="idTarea"
+            app:argType="integer" />
+    </fragment>
+
     <!-- Campana del inicio. Tocar una notificación abre Mis novedades, Mis sanciones o el reporte -->
     <fragment
         android:id="@+id/notificacionesFragment"

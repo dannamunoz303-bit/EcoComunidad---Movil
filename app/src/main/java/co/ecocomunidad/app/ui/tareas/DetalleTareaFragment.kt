@@ -29,6 +29,7 @@ import co.ecocomunidad.app.ui.componentes.mostrar
 import co.ecocomunidad.app.ui.componentes.observar
 import co.ecocomunidad.app.ui.navegacion.ARG_ID_TAREA
 import co.ecocomunidad.app.ui.navegacion.ARG_URL_FOTO
+import co.ecocomunidad.app.ui.navegacion.RESULTADO_ACCION_REGISTRADA
 import co.ecocomunidad.app.ui.reportes.EstadoVista
 import co.ecocomunidad.app.ui.reportes.cargarFoto
 import co.ecocomunidad.app.ui.reportes.fechaLarga
@@ -75,8 +76,22 @@ class DetalleTareaFragment : Fragment() {
         binding.tituloPantalla.text = getString(R.string.tarea_titulo, idTarea)
         binding.botonVolver.setOnClickListener { findNavController().popBackStack() }
         binding.botonEstado.setOnClickListener { confirmar(viewModel.estado.value.accion) }
+        binding.botonRegistrarAccion.setOnClickListener {
+            findNavController().navigate(R.id.registrarAccionFragment, bundleOf(ARG_ID_TAREA to idTarea))
+        }
         prepararMapa()
+        escucharAccionRegistrada()
         observar(viewModel.estado, ::mostrarEstado)
+    }
+
+    /** Al volver de Registrar acción con la acción guardada: se recargan Mis acciones y se avisa. */
+    private fun escucharAccionRegistrada() {
+        val resultados = findNavController().getBackStackEntry(R.id.detalleTareaFragment).savedStateHandle
+        observar(resultados.getStateFlow(RESULTADO_ACCION_REGISTRADA, false)) { registrada ->
+            if (!registrada) return@observar
+            resultados[RESULTADO_ACCION_REGISTRADA] = false
+            viewModel.accionRegistrada()
+        }
     }
 
     private fun confirmar(accion: AccionDisponible) {
@@ -207,6 +222,8 @@ class DetalleTareaFragment : Fragment() {
     /** asignada: Iniciar. en_proceso: Terminar con su ayuda. terminada o cancelada: solo un aviso. */
     private fun mostrarBotones(estado: DetalleTareaEstado, tarea: TareaGestor) = with(binding) {
         val accion = estado.accion
+        botonRegistrarAccion.visibility = if (estado.puedeRegistrarAccion) View.VISIBLE else View.GONE
+        botonRegistrarAccion.isEnabled = !estado.procesando
         marcoBoton.visibility = if (accion == AccionDisponible.NINGUNA) View.GONE else View.VISIBLE
         ayudaTerminar.visibility = if (accion == AccionDisponible.TERMINAR) View.VISIBLE else View.GONE
         botonEstado.isEnabled = !estado.procesando

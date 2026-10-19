@@ -9,6 +9,7 @@ import co.ecocomunidad.app.data.ReportesRepository
 import co.ecocomunidad.app.data.Resultado
 import co.ecocomunidad.app.data.TareasRepository
 import co.ecocomunidad.app.data.modelo.Accion
+import co.ecocomunidad.app.data.modelo.ESTADOS_TAREA_ACTIVOS
 import co.ecocomunidad.app.data.modelo.EstadoTarea
 import co.ecocomunidad.app.data.modelo.Reporte
 import co.ecocomunidad.app.data.modelo.TareaGestor
@@ -59,6 +60,10 @@ data class DetalleTareaEstado(
 ) {
     val accion: AccionDisponible
         get() = tarea?.let { accionDisponible(it.estado) } ?: AccionDisponible.NINGUNA
+
+    /** RN-14: acciones solo con la tarea asignada o en proceso. El backend vuelve a revisar. */
+    val puedeRegistrarAccion: Boolean
+        get() = tarea?.estado in ESTADOS_TAREA_ACTIVOS
 }
 
 /**
@@ -85,6 +90,12 @@ class DetalleTareaViewModel(
     fun iniciar() = cambiarEstado(R.string.tarea_iniciada) { tareas.iniciar(id) }
 
     fun terminar() = cambiarEstado(R.string.tarea_terminada) { tareas.terminar(id) }
+
+    /** Al volver de Registrar acción: se recargan Mis acciones sin ocultar la pantalla. */
+    fun accionRegistrada() {
+        _estado.update { it.copy(mensaje = R.string.accion_registrada, aviso = null) }
+        cargar(silenciosa = true)
+    }
 
     fun mensajeAtendido() = _estado.update { it.copy(mensaje = null) }
 
