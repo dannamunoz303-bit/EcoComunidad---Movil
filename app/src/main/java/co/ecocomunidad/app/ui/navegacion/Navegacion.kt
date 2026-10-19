@@ -15,6 +15,9 @@ const val ARG_CUENTA_CREADA = "cuentaCreada"
 const val ARG_ID_REPORTE = "idReporte"
 const val ARG_URL_FOTO = "url"
 
+/** Detalle de una tarea del gestor. */
+const val ARG_ID_TAREA = "idTarea"
+
 /** Mis novedades: se llega desde el formulario con la novedad recién enviada. */
 const val ARG_NOVEDAD_ENVIADA = "novedadEnviada"
 

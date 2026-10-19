@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Detalle de una tarea del gestor: fotos y datos del reporte, mapa con el pin, mis acciones
+  y, según el estado, iniciar o terminar la tarea (RN-13).
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/raiz"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondo"
+    android:orientation="vertical">
+
+    <!-- Barra: volver y "Tarea #id" -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp"
+        android:paddingTop="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/boton_volver"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/volver"
+            app:icon="@drawable/ic_volver"
+            app:iconTint="@color/verde_bosque" />
+
+        <TextView
+            android:id="@+id/titulo_pantalla"
+            style="@style/Widget.EcoComunidad.TextoTitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:accessibilityHeading="true"
+            android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <include
+            android:id="@+id/estado_carga"
+            layout="@layout/vista_estado_carga"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="20dp" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/contenido"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="24dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Fotos del ciudadano; tocar una la abre en grande -->
+                <HorizontalScrollView
+                    android:id="@+id/carrusel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="20dp"
+                    android:scrollbars="none"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:id="@+id/fotos"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="20dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.EcoComunidad.TarjetaClara"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/categoria"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:layout_weight="1"
+                                    android:textAppearance="@style/TextAppearance.EcoComunidad.Etiqueta"
+                                    android:textColor="@color/verde_musgo" />
+
+                                <TextView
+                                    android:id="@+id/estado"
+                                    style="@style/Widget.EcoComunidad.EtiquetaEstado"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/titulo"
+                                style="@style/Widget.EcoComunidad.TextoTitulo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta"
+                                android:textColor="@color/tinta" />
+
+                            <TextView
+                                android:id="@+id/fechas"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                android:textColor="@color/tinta_suave"
+                                android:textSize="13sp"
+                                app:lineHeight="20sp" />
+
+                            <TextView
+                                android:id="@+id/direccion"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:drawablePadding="6dp"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                android:textSize="14sp"
+                                app:drawableStartCompat="@drawable/ic_ubicacion"
+                                app:drawableTint="@color/verde_musgo" />
+
+                            <TextView
+                                android:id="@+id/descripcion_ubicacion"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="22dp"
+                                android:layout_marginTop="2dp"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                android:textColor="@color/tinta_suave"
+                                android:textSize="14sp" />
+
+                            <!-- Mapa con el pin del reporte (osmdroid, sin clave) -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/marco_mapa"
+                                style="@style/Widget.EcoComunidad.MarcoFoto"
+                                android:layout_width="match_parent"
+                                android:layout_height="200dp"
+                                android:layout_marginTop="12dp">
+
+                                <org.osmdroid.views.MapView
+                                    android:id="@+id/mapa"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:contentDescription="@string/mapa_tarea_descripcion" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Lo que escribió el ciudadano (llega de reportes/{id}/) -->
+                            <TextView
+                                android:id="@+id/descripcion_titulo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/tarea_descripcion_ciudadano"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Etiqueta"
+                                android:textColor="@color/verde_musgo" />
+
+                            <TextView
+                                android:id="@+id/descripcion"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Mis acciones (RN-14) -->
+                    <TextView
+                        style="@style/Widget.EcoComunidad.TextoTitulo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:accessibilityHeading="true"
+                        android:text="@string/mis_acciones"
+                        android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
+                        android:textSize="18sp" />
+
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/progreso_acciones"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:contentDescription="@string/cargando"
+                        android:indeterminate="true"
+                        app:indicatorColor="@color/verde_bosque"
+                        app:trackColor="@color/borde" />
+
+                    <TextView
+                        android:id="@+id/acciones_mensaje"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                        android:textColor="@color/tinta_suave"
+                        android:textSize="14sp"
+                        android:visibility="gone" />
+
+                    <LinearLayout
+                        android:id="@+id/acciones"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical" />
+
+                    <!-- Según el estado: Iniciar, Terminar o un aviso (RN-13) -->
+                    <include
+                        android:id="@+id/aviso"
+                        layout="@layout/vista_aviso" />
+
+                    <include
+                        android:id="@+id/aviso_terminada"
+                        layout="@layout/vista_aviso_exito" />
+
+                    <FrameLayout
+                        android:id="@+id/marco_boton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/boton_estado"
+                            style="@style/Widget.EcoComunidad.BotonPrincipal"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp" />
+
+                        <com.google.android.material.progressindicator.CircularProgressIndicator
+                            android:id="@+id/progreso"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:contentDescription="@string/cargando"
+                            android:indeterminate="true"
+                            android:visibility="gone"
+                            app:indicatorColor="@color/tinta_suave"
+                            app:indicatorSize="18dp"
+                            app:trackThickness="2dp" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/ayuda_terminar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:text="@string/tarea_ayuda_terminar"
+                        android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                        android:textColor="@color/tinta_suave"
+                        android:textSize="13sp"
+                        app:lineHeight="19sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </FrameLayout>
+</LinearLayout>

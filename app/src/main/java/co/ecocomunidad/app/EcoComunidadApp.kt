@@ -12,6 +12,8 @@ import co.ecocomunidad.app.data.ReportesRepository
 import co.ecocomunidad.app.data.ReportesRepositoryRemoto
 import co.ecocomunidad.app.data.SancionesRepository
 import co.ecocomunidad.app.data.SancionesRepositoryRemoto
+import co.ecocomunidad.app.data.TareasRepository
+import co.ecocomunidad.app.data.TareasRepositoryRemoto
 import co.ecocomunidad.app.data.remoto.ApiCliente
 import co.ecocomunidad.app.data.sesion.EventosSesion
 import co.ecocomunidad.app.data.sesion.SesionStore
@@ -59,4 +61,6 @@ class AppContainer(context: Context) {
         NotificacionesRepositoryRemoto(apiCliente.notificacionesApi, apiCliente.json)
     val sancionesRepository: SancionesRepository =
         SancionesRepositoryRemoto(apiCliente.sancionesApi, apiCliente.json)
+    val tareasRepository: TareasRepository =
+        TareasRepositoryRemoto(apiCliente.tareasApi, apiCliente.json, apiCliente.urlBase)
 }

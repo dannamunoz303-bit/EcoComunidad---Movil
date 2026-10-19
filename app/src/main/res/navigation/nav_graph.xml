@@ -48,9 +48,19 @@
         android:id="@+id/inicioCiudadanoFragment"
         android:name="co.ecocomunidad.app.ui.inicio.InicioCiudadanoFragment" />
 
+    <!-- Inicio del gestor: Mis tareas -->
     <fragment
         android:id="@+id/inicioGestorFragment"
-        android:name="co.ecocomunidad.app.ui.inicio.InicioGestorFragment" />
+        android:name="co.ecocomunidad.app.ui.tareas.MisTareasFragment" />
+
+    <!-- Se apila sobre Mis tareas. No hay GET tareas/{id}/: se arma con mias, acciones y el reporte -->
+    <fragment
+        android:id="@+id/detalleTareaFragment"
+        android:name="co.ecocomunidad.app.ui.tareas.DetalleTareaFragment">
+        <argument
+            android:name="idTarea"
+            app:argType="integer" />
+    </fragment>
 
     <!-- Se apilan sobre la lista: atrás vuelve a ella -->
     <fragment

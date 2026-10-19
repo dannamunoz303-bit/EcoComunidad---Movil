@@ -205,4 +205,47 @@
     <string name="cambiar_contrasena">Cambiar contraseña</string>
     <string name="cambiar_explicacion_voluntario">Escribe tu contraseña actual y la nueva. La próxima vez que inicies sesión usarás la nueva.</string>
     <string name="contrasena_cambiada">Tu contraseña quedó cambiada.</string>
+
+    <!-- Mis tareas del gestor (RN-11, RN-13, RN-14) -->
+    <string name="menu">Menú</string>
+    <string name="saludo_gestor">¡Hola, %1$s!</string>
+    <string name="saludo_gestor_sin_nombre">¡Hola!</string>
+    <plurals name="tareas_activas_resumen">
+        <item quantity="one">Tienes %1$d tarea activa</item>
+        <item quantity="other">Tienes %1$d tareas activas</item>
+    </plurals>
+    <string name="filtro_activas">Activas</string>
+    <string name="filtro_terminadas">Terminadas</string>
+    <string name="tareas_cargando">Buscando tus tareas…</string>
+    <string name="tareas_vacio_activas">No tienes tareas activas</string>
+    <string name="tareas_vacio_terminadas">Todavía no has terminado tareas</string>
+    <string name="tareas_error_titulo">No pudimos cargar tus tareas</string>
+    <string name="tarea_estado_asignada">Asignada</string>
+    <string name="tarea_estado_en_proceso">En proceso</string>
+    <string name="tarea_estado_terminada">Terminada</string>
+    <string name="tarea_estado_cancelada">Cancelada</string>
+    <string name="tarea_asignada_el">Asignada el %1$s</string>
+    <string name="tarea_terminada_el">Terminada el %1$s</string>
+    <string name="tarea_descripcion_item">%1$s. %2$s. %3$s. Tarea %4$s</string>
+
+    <!-- Detalle de la tarea -->
+    <string name="tarea_titulo">Tarea #%1$d</string>
+    <string name="tarea_cargando">Abriendo la tarea…</string>
+    <string name="tarea_error_titulo">No pudimos abrir la tarea</string>
+    <string name="tarea_descripcion_ciudadano">Lo que reportó el ciudadano</string>
+    <string name="mapa_tarea_descripcion">Mapa con el lugar del reporte</string>
+    <string name="mis_acciones">Mis acciones</string>
+    <string name="tarea_sin_acciones">Todavía no has registrado acciones.</string>
+    <string name="tarea_acciones_error">No pudimos cargar tus acciones: %1$s</string>
+    <string name="iniciar_tarea">Iniciar tarea</string>
+    <string name="terminar_tarea">Terminar tarea</string>
+    <string name="tarea_ayuda_terminar">Para terminar necesitas al menos una acción con foto de evidencia.</string>
+    <string name="iniciar_titulo">¿Iniciar esta tarea?</string>
+    <string name="iniciar_mensaje">La tarea pasará a en proceso y el ciudadano verá que ya empezaste.</string>
+    <string name="terminar_titulo">¿Terminar esta tarea?</string>
+    <string name="terminar_mensaje">Ya no podrás registrar más acciones en ella.</string>
+    <string name="tarea_iniciada">Iniciaste la tarea. ¡Manos a la obra!</string>
+    <string name="tarea_terminada">Terminaste la tarea. Gracias por tu trabajo.</string>
+    <string name="tarea_aviso_terminada">Terminaste esta tarea el %1$s.</string>
+    <string name="tarea_aviso_cancelada">Esta tarea fue cancelada. Ya no tienes que atenderla.</string>
 </resources>

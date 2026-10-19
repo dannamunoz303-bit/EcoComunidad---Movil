@@ -37,7 +37,11 @@ class ReportesFalso : ReportesRepository {
     /** Si no es null, detalle espera a que se complete (para ver el estado de carga). */
     var esperaDetalle: CompletableDeferred<Unit>? = null
 
+    /** Ids que se pidieron a detalle, en orden. */
+    val detallesPedidos = mutableListOf<Int>()
+
     override suspend fun detalle(id: Int): Resultado<Reporte> {
+        detallesPedidos += id
         esperaDetalle?.await()
         return detalle
     }
