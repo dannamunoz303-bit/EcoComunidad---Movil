@@ -236,4 +236,20 @@ class DetalleReporteViewModelTest {
         assertEquals(1, vm.estado.value.reporte?.id)
         assertTrue(vm.estado.value.linea is LineaDeTiempo.Error)
     }
+
+    @Test
+    fun reportarNovedad_soloElDuenoYEnLosEstadosDeRN18() = runTest(main.despachador) {
+        val permitidos = setOf(EstadoReporte.ASIGNADO, EstadoReporte.EN_PROCESO, EstadoReporte.RESUELTO)
+        for (estado in EstadoReporte.entries) {
+            repositorio.detalle = Resultado.Exito(reporte(1, estado, ciudadano = ANA))
+            val vm = viewModel()
+            advanceUntilIdle()
+            assertEquals("$estado propio", estado in permitidos, vm.estado.value.puedeReportarNovedad)
+        }
+        // Un reporte ajeno nunca muestra el botón, aunque esté en proceso
+        repositorio.detalle = Resultado.Exito(reporte(1, EstadoReporte.EN_PROCESO, ciudadano = LUIS))
+        val ajeno = viewModel()
+        advanceUntilIdle()
+        assertFalse(ajeno.estado.value.puedeReportarNovedad)
+    }
 }

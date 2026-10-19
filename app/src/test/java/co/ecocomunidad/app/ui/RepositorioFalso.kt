@@ -64,7 +64,12 @@ class RepositorioFalso : AuthRepository {
         return resultadoCambio
     }
 
-    override suspend fun usuarioActual(): Resultado<UsuarioActual> = resultadoYo
+    var consultasYo = 0
+
+    override suspend fun usuarioActual(): Resultado<UsuarioActual> {
+        consultasYo++
+        return resultadoYo
+    }
 
     companion object {
         fun usuarioActual(rol: Rol, debeCambiar: Boolean = false) = UsuarioActual(

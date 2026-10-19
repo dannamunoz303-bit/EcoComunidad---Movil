@@ -34,9 +34,15 @@
         android:id="@+id/registroFragment"
         android:name="co.ecocomunidad.app.ui.registro.RegistroFragment" />
 
+    <!-- Obligatoria (RN-05) es la única de la pila; desde "Mi cuenta" se apila y al guardar vuelve -->
     <fragment
         android:id="@+id/cambiarContrasenaFragment"
-        android:name="co.ecocomunidad.app.ui.contrasena.CambiarContrasenaFragment" />
+        android:name="co.ecocomunidad.app.ui.contrasena.CambiarContrasenaFragment">
+        <argument
+            android:name="desdeMiCuenta"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
 
     <fragment
         android:id="@+id/inicioCiudadanoFragment"
@@ -68,6 +74,41 @@
             android:name="idReporte"
             app:argType="integer" />
     </fragment>
+
+    <!-- Novedad sobre un reporte propio (RN-18). Al enviar bien, se reemplaza por "Mis novedades" -->
+    <fragment
+        android:id="@+id/reportarNovedadFragment"
+        android:name="co.ecocomunidad.app.ui.novedades.ReportarNovedadFragment">
+        <argument
+            android:name="idReporte"
+            app:argType="integer" />
+    </fragment>
+
+    <!-- Se abre al enviar una novedad, desde "Mi cuenta" y desde una notificación novedad_respondida -->
+    <fragment
+        android:id="@+id/misNovedadesFragment"
+        android:name="co.ecocomunidad.app.ui.novedades.MisNovedadesFragment">
+        <!-- true al llegar desde el formulario: se muestra que la novedad quedó enviada -->
+        <argument
+            android:name="novedadEnviada"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
+
+    <!-- Campana del inicio. Tocar una notificación abre Mis novedades, Mis sanciones o el reporte -->
+    <fragment
+        android:id="@+id/notificacionesFragment"
+        android:name="co.ecocomunidad.app.ui.notificaciones.NotificacionesFragment" />
+
+    <!-- Desde "Mi cuenta" y desde una notificación de sanción -->
+    <fragment
+        android:id="@+id/misSancionesFragment"
+        android:name="co.ecocomunidad.app.ui.sanciones.MisSancionesFragment" />
+
+    <!-- Menú del inicio del ciudadano -->
+    <fragment
+        android:id="@+id/miCuentaFragment"
+        android:name="co.ecocomunidad.app.ui.cuenta.MiCuentaFragment" />
 
     <fragment
         android:id="@+id/fotoFragment"

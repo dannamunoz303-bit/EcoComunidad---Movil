@@ -21,8 +21,7 @@ import co.ecocomunidad.app.ui.navegacion.ARG_ID_REPORTE
 import co.ecocomunidad.app.ui.navegacion.RESULTADO_REPORTES_CAMBIADOS
 import co.ecocomunidad.app.ui.navegacion.RESULTADO_REPORTE_CREADO
 import co.ecocomunidad.app.ui.navegacion.RESULTADO_REPORTE_ELIMINADO
-import co.ecocomunidad.app.ui.navegacion.Ruta
-import co.ecocomunidad.app.ui.navegacion.irA
+import co.ecocomunidad.app.ui.notificaciones.CampanaViewModel
 import co.ecocomunidad.app.ui.reportes.EncabezadoAdapter
 import co.ecocomunidad.app.ui.reportes.EstadoListaAdapter
 import co.ecocomunidad.app.ui.reportes.EstadoVista
@@ -32,7 +31,7 @@ import co.ecocomunidad.app.ui.reportes.ListaReportesViewModel
 import co.ecocomunidad.app.ui.reportes.ReportesAdapter
 import com.google.android.material.snackbar.Snackbar
 
-/** Pantalla principal del ciudadano: saludo, Cerrar sesión y los reportes ("Todos" y "Mis reportes"). */
+/** Pantalla principal del ciudadano: campana, menú "Mi cuenta", saludo y los reportes ("Todos" y "Mis reportes"). */
 class InicioCiudadanoFragment : Fragment() {
 
     private var _binding: FragmentInicioCiudadanoBinding? = null
@@ -43,6 +42,9 @@ class InicioCiudadanoFragment : Fragment() {
     }
     private val lista: ListaReportesViewModel by viewModels {
         viewModelFactory { initializer { ListaReportesViewModel(contenedor.reportesRepository) } }
+    }
+    private val campana: CampanaViewModel by viewModels {
+        viewModelFactory { initializer { CampanaViewModel(contenedor.notificacionesRepository) } }
     }
 
     private lateinit var encabezado: EncabezadoAdapter
@@ -56,12 +58,8 @@ class InicioCiudadanoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         encabezado = EncabezadoAdapter(
-            alCerrarSesion = {
-                inicio.cerrarSesion {
-                    // La vista puede haberse ido mientras se borraba la sesión
-                    if (view.isAttachedToWindow) findNavController().irA(Ruta.Login())
-                }
-            },
+            alAbrirNotificaciones = { findNavController().navigate(R.id.notificacionesFragment) },
+            alAbrirMiCuenta = { findNavController().navigate(R.id.miCuentaFragment) },
             alElegirFiltro = lista::elegirFiltro,
         )
         estadoLista = EstadoListaAdapter(alReintentar = lista::reintentar)
@@ -86,7 +84,16 @@ class InicioCiudadanoFragment : Fragment() {
         observar(inicio.usuario) { usuario ->
             encabezado.encabezado = encabezado.encabezado.copy(nombre = usuario?.nombre)
         }
+        observar(campana.hayNoLeidas) { hay ->
+            encabezado.encabezado = encabezado.encabezado.copy(hayNoLeidas = hay)
+        }
         observar(lista.estado, ::mostrarEstado)
+    }
+
+    /** Cada vez que el inicio vuelve a verse (por ejemplo, al volver de Notificaciones) se revisa la campana. */
+    override fun onStart() {
+        super.onStart()
+        campana.actualizar()
     }
 
     /**

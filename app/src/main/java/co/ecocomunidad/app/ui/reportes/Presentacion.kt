@@ -52,9 +52,12 @@ val EstadoReporte.color: Int
     }
 
 /** Etiqueta de estado: punto del color del estado, fondo del mismo color muy suave y texto en tinta. */
-fun TextView.mostrarEstado(estado: EstadoReporte) {
-    setText(estado.etiqueta)
-    val color = ContextCompat.getColor(context, estado.color)
+fun TextView.mostrarEstado(estado: EstadoReporte) = mostrarEtiquetaEstado(estado.etiqueta, estado.color)
+
+/** La misma etiqueta para cualquier estado (por ejemplo, el de una novedad). */
+fun TextView.mostrarEtiquetaEstado(@StringRes texto: Int, @ColorRes colorEstado: Int) {
+    setText(texto)
+    val color = ContextCompat.getColor(context, colorEstado)
     TextViewCompat.setCompoundDrawableTintList(this, ColorStateList.valueOf(color))
     backgroundTintList = ColorStateList.valueOf(ColorUtils.setAlphaComponent(color, ALFA_FONDO_ESTADO))
 }

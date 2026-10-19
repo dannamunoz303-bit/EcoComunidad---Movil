@@ -12,7 +12,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <!-- El nombre conserva su ancho completo; el espacio flexible empuja el botón -->
+        <!-- El nombre conserva su ancho completo; el espacio flexible empuja los botones -->
         <include
             layout="@layout/vista_logo_con_nombre"
             android:layout_width="wrap_content"
@@ -23,17 +23,43 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <!-- En pantallas estrechas queda solo el ícono (ver compactarSiHaceFalta) -->
+        <!-- Campana: punto rojo si hay notificaciones sin leer -->
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/boton_notificaciones"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/notificaciones"
+                android:tooltipText="@string/notificaciones"
+                app:icon="@drawable/ic_campana"
+                app:iconTint="@color/verde_bosque" />
+
+            <View
+                android:id="@+id/punto_campana"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="11dp"
+                android:background="@drawable/punto_campana"
+                android:importantForAccessibility="no"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <!-- Menú "Mi cuenta" -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/boton_cerrar_sesion"
-            style="@style/Widget.EcoComunidad.BotonTexto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="48dp"
-            android:text="@string/cerrar_sesion"
-            app:icon="@drawable/ic_salir"
-            app:iconPadding="6dp"
-            app:iconSize="18dp" />
+            android:id="@+id/boton_mi_cuenta"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/mi_cuenta"
+            android:tooltipText="@string/mi_cuenta"
+            app:icon="@drawable/ic_menu"
+            app:iconTint="@color/verde_bosque" />
     </LinearLayout>
 
     <!-- Tarjeta destacada en verde bosque (marca.md) -->

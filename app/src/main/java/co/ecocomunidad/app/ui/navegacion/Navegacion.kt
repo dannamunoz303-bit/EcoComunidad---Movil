@@ -15,6 +15,15 @@ const val ARG_CUENTA_CREADA = "cuentaCreada"
 const val ARG_ID_REPORTE = "idReporte"
 const val ARG_URL_FOTO = "url"
 
+/** Mis novedades: se llega desde el formulario con la novedad recién enviada. */
+const val ARG_NOVEDAD_ENVIADA = "novedadEnviada"
+
+/** Cambiar contraseña abierta desde "Mi cuenta" (voluntario, con botón atrás). */
+const val ARG_DESDE_MI_CUENTA = "desdeMiCuenta"
+
+/** Lo deja Cambiar contraseña en "Mi cuenta" al guardar. */
+const val RESULTADO_CONTRASENA_CAMBIADA = "contrasenaCambiada"
+
 /** Lo deja CrearReporteFragment en la pantalla anterior al crear bien un reporte. */
 const val RESULTADO_REPORTE_CREADO = "reporteCreado"
 

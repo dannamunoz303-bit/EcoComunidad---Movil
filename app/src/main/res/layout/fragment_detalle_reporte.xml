@@ -288,6 +288,16 @@
                             android:layout_marginTop="8dp"
                             android:orientation="vertical" />
                     </LinearLayout>
+
+                    <!-- Solo si el reporte es mío y está asignado, en proceso o resuelto (RN-18) -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/boton_reportar_novedad"
+                        style="@style/Widget.EcoComunidad.BotonSecundario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:text="@string/reportar_novedad"
+                        android:visibility="gone" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Aviso del bloqueo vigente en Mis sanciones: verde si no hay bloqueo, sobrio en arcilla si lo hay. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="4dp">
+
+    <include
+        android:id="@+id/sin_bloqueo"
+        layout="@layout/vista_aviso_exito" />
+
+    <include
+        android:id="@+id/con_bloqueo"
+        layout="@layout/vista_aviso" />
+</FrameLayout>

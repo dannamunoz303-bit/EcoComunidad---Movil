@@ -139,4 +139,70 @@
     <string name="registro_ya_tienes_cuenta">¿Ya tienes cuenta?</string>
     <string name="registro_inicia_sesion">Inicia sesión</string>
     <string name="registro_exito">Tu cuenta quedó creada. Ya puedes iniciar sesión.</string>
+
+    <!-- Novedades del ciudadano (RN-18): queja o incidente sobre un reporte propio -->
+    <string name="reportar_novedad">Reportar novedad</string>
+    <string name="novedad_cargando">Abriendo el reporte…</string>
+    <string name="novedad_error_titulo">No pudimos abrir el reporte</string>
+    <string name="novedad_sobre_reporte">Sobre tu reporte</string>
+    <string name="novedad_que_paso">¿Qué quieres contarnos?</string>
+    <string name="tipo_queja">Queja</string>
+    <string name="tipo_queja_ayuda">Algo no quedó bien o el gestor no atendió</string>
+    <string name="tipo_incidente">Incidente</string>
+    <string name="tipo_incidente_ayuda">Pasó algo nuevo en el lugar</string>
+    <string name="tipo_ayuda">Pedido de ayuda</string>
+    <string name="campo_gestor">¿Sobre qué gestor? (opcional)</string>
+    <string name="gestor_ninguno">Ninguno en particular</string>
+    <string name="gestores_cargando">Cargando los gestores del reporte…</string>
+    <string name="gestores_error">No pudimos cargar los gestores. Puedes enviar la novedad sin elegir uno.</string>
+    <string name="campo_descripcion_novedad">Cuéntanos qué pasó</string>
+    <string name="novedad_aviso_respuesta">El administrador revisará tu novedad y te responderá por notificación.</string>
+    <string name="boton_enviar_novedad">Enviar novedad</string>
+    <string name="novedad_enviando">Enviando tu novedad…</string>
+    <string name="novedad_enviada">Enviamos tu novedad. Te avisaremos cuando el administrador responda.</string>
+
+    <!-- Mis novedades -->
+    <string name="mis_novedades">Mis novedades</string>
+    <string name="novedades_cargando">Buscando tus novedades…</string>
+    <string name="novedades_vacio">Aún no has enviado novedades</string>
+    <string name="novedades_error_titulo">No pudimos cargar tus novedades</string>
+    <string name="novedad_estado_abierta">Abierta</string>
+    <string name="novedad_estado_atendida">Atendida</string>
+    <string name="novedad_reporte">Reporte: %1$s</string>
+    <string name="novedad_fecha">Enviada el %1$s</string>
+    <string name="respuesta_administrador">Respuesta del administrador</string>
+
+    <!-- Notificaciones (sección 9) -->
+    <string name="notificaciones">Notificaciones</string>
+    <string name="notificaciones_sin_leer">Notificaciones, tienes sin leer</string>
+    <string name="notificaciones_cargando">Buscando tus notificaciones…</string>
+    <string name="notificaciones_vacio">No tienes notificaciones</string>
+    <string name="notificaciones_error_titulo">No pudimos cargar tus notificaciones</string>
+    <string name="notificacion_sin_leer">Sin leer. %1$s. %2$s</string>
+    <string name="notificacion_leida">%1$s. %2$s</string>
+
+    <!-- Mis sanciones (RN-19 a RN-21) -->
+    <string name="mis_sanciones">Mis sanciones</string>
+    <string name="sanciones_cargando">Buscando tus sanciones…</string>
+    <string name="sanciones_vacio">No tienes sanciones</string>
+    <string name="sanciones_error_titulo">No pudimos cargar tus sanciones</string>
+    <string name="sin_bloqueos">No tienes bloqueos activos</string>
+    <string name="bloqueado_hasta">Estás bloqueado hasta el %1$s</string>
+    <string name="bloqueo_permanente_activo">Tu cuenta tiene un bloqueo permanente</string>
+    <string name="sancion_advertencia">Advertencia</string>
+    <string name="sancion_bloqueo_temporal">Bloqueo temporal</string>
+    <string name="sancion_bloqueo_permanente">Bloqueo permanente</string>
+    <string name="sancion_fecha">Desde el %1$s</string>
+    <string name="sancion_reporte">Reporte: %1$s</string>
+    <string name="sancion_hasta">Hasta el %1$s</string>
+    <string name="sancion_levantada">Levantado el %1$s</string>
+
+    <!-- Mi cuenta -->
+    <string name="mi_cuenta">Mi cuenta</string>
+    <string name="nombre_completo">%1$s %2$s</string>
+    <string name="rol_ciudadano">Ciudadano</string>
+    <string name="rol_administrador">Administrador</string>
+    <string name="cambiar_contrasena">Cambiar contraseña</string>
+    <string name="cambiar_explicacion_voluntario">Escribe tu contraseña actual y la nueva. La próxima vez que inicies sesión usarás la nueva.</string>
+    <string name="contrasena_cambiada">Tu contraseña quedó cambiada.</string>
 </resources>

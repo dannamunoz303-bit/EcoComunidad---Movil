@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Una notificación: ícono del tipo, mensaje y fecha. Sin leer: negrita y punto verde; leída: gris. -->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tarjeta"
+    style="@style/Widget.EcoComunidad.TarjetaReporte"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:minHeight="72dp"
+        android:orientation="horizontal"
+        android:padding="14dp">
+
+        <!-- Círculo claro con el ícono del tipo -->
+        <ImageView
+            android:id="@+id/icono"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/fondo_circulo"
+            android:backgroundTint="@color/fondo"
+            android:importantForAccessibility="no"
+            android:padding="9dp"
+            app:tint="@color/verde_bosque" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/mensaje"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                android:textSize="15sp"
+                app:lineHeight="21sp" />
+
+            <TextView
+                android:id="@+id/fecha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                android:textColor="@color/tinta_suave"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/punto"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginStart="12dp"
+            android:background="@drawable/punto_no_leida"
+            android:importantForAccessibility="no" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

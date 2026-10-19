@@ -6,6 +6,7 @@ import co.ecocomunidad.app.data.ErrorAuth
 import co.ecocomunidad.app.data.ReportesRepository
 import co.ecocomunidad.app.data.Resultado
 import co.ecocomunidad.app.data.modelo.Accion
+import co.ecocomunidad.app.data.modelo.ESTADOS_REPORTE_CON_NOVEDAD
 import co.ecocomunidad.app.data.modelo.EstadoReporte
 import co.ecocomunidad.app.data.modelo.Reporte
 import co.ecocomunidad.app.data.modelo.UsuarioResumen
@@ -59,6 +60,10 @@ data class DetalleReporteEstado(
      */
     val puedeModificar: Boolean
         get() = esPropio && reporte?.estado == EstadoReporte.PENDIENTE
+
+    /** RN-18: novedades solo sobre el reporte propio y en los estados permitidos. El backend vuelve a revisar. */
+    val puedeReportarNovedad: Boolean
+        get() = esPropio && reporte?.estado in ESTADOS_REPORTE_CON_NOVEDAD
 }
 
 class DetalleReporteViewModel(

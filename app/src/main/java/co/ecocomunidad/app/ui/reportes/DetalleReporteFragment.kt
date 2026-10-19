@@ -71,6 +71,12 @@ class DetalleReporteFragment : Fragment() {
             )
         }
         binding.botonEliminar.setOnClickListener { confirmarEliminar() }
+        binding.botonReportarNovedad.setOnClickListener {
+            findNavController().navigate(
+                R.id.reportarNovedadFragment,
+                bundleOf(ARG_ID_REPORTE to requireArguments().getInt(ARG_ID_REPORTE)),
+            )
+        }
         observar(viewModel.estado, ::mostrarEstado)
         escucharEdicion()
     }
@@ -106,6 +112,7 @@ class DetalleReporteFragment : Fragment() {
         // La app solo muestra los botones cuando aplican; si el backend dice que no, se ve su mensaje
         with(binding) {
             accionesDueno.visibility = if (estado.puedeModificar) View.VISIBLE else View.GONE
+            botonReportarNovedad.visibility = if (estado.puedeReportarNovedad) View.VISIBLE else View.GONE
             botonEditar.isEnabled = !estado.eliminando
             botonEliminar.isEnabled = !estado.eliminando
             botonEliminar.setText(if (estado.eliminando) R.string.eliminando else R.string.eliminar)

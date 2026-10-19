@@ -23,6 +23,19 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_max="480dp">
 
+            <!-- Solo desde "Mi cuenta"; el cambio obligatorio (RN-05) no tiene a dónde volver -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/boton_volver"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="start"
+                android:layout_marginStart="-12dp"
+                android:contentDescription="@string/volver"
+                android:visibility="gone"
+                app:icon="@drawable/ic_volver"
+                app:iconTint="@color/verde_bosque" />
+
             <include
                 layout="@layout/vista_logo_con_nombre"
                 android:layout_width="match_parent"
@@ -49,6 +62,7 @@
                         android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta" />
 
                     <TextView
+                        android:id="@+id/explicacion"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"

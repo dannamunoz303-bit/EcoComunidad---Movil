@@ -40,4 +40,10 @@ class ApiCliente(
     val authApi: AuthApi by lazy { retrofit.create() }
 
     val reportesApi: ReportesApi by lazy { retrofit.create() }
+
+    val novedadesApi: NovedadesApi by lazy { retrofit.create() }
+
+    val notificacionesApi: NotificacionesApi by lazy { retrofit.create() }
+
+    val sancionesApi: SancionesApi by lazy { retrofit.create() }
 }

@@ -1,6 +1,7 @@
 package co.ecocomunidad.app.ui.reportes
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -10,14 +11,17 @@ import co.ecocomunidad.app.data.modelo.Reporte
 import co.ecocomunidad.app.databinding.ItemEncabezadoCiudadanoBinding
 import co.ecocomunidad.app.databinding.ItemReporteBinding
 import co.ecocomunidad.app.databinding.VistaEstadoCargaBinding
-import co.ecocomunidad.app.ui.componentes.compactarSiHaceFalta
 
-/** Lo que muestra el encabezado: el nombre para el saludo y la pestaña elegida. */
-data class Encabezado(val nombre: String?, val filtro: FiltroReportes)
+/** Lo que muestra el encabezado: el nombre para el saludo, la pestaña elegida y el punto de la campana. */
+data class Encabezado(val nombre: String?, val filtro: FiltroReportes, val hayNoLeidas: Boolean = false)
 
-/** Barra con Cerrar sesión, saludo de Brotico y las pestañas "Todos" y "Mis reportes". Siempre un elemento. */
+/**
+ * Barra con la campana de notificaciones y el menú "Mi cuenta", saludo de Brotico y las pestañas
+ * "Todos" y "Mis reportes". Siempre un elemento.
+ */
 class EncabezadoAdapter(
-    private val alCerrarSesion: () -> Unit,
+    private val alAbrirNotificaciones: () -> Unit,
+    private val alAbrirMiCuenta: () -> Unit,
     private val alElegirFiltro: (FiltroReportes) -> Unit,
 ) : RecyclerView.Adapter<EncabezadoAdapter.Vista>() {
 
@@ -34,11 +38,8 @@ class EncabezadoAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Vista {
         val binding = ItemEncabezadoCiudadanoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        binding.botonCerrarSesion.compactarSiHaceFalta()
-        binding.botonCerrarSesion.setOnClickListener {
-            it.isEnabled = false
-            alCerrarSesion()
-        }
+        binding.botonNotificaciones.setOnClickListener { alAbrirNotificaciones() }
+        binding.botonMiCuenta.setOnClickListener { alAbrirMiCuenta() }
         binding.filtros.setOnCheckedStateChangeListener { _, elegidos ->
             val filtro = if (elegidos.firstOrNull() == R.id.filtro_mios) FiltroReportes.MIOS else FiltroReportes.TODOS
             alElegirFiltro(filtro)
@@ -53,6 +54,10 @@ class EncabezadoAdapter(
             ?: contexto.getString(R.string.saludo_sin_nombre)
         val chip = if (encabezado.filtro == FiltroReportes.MIOS) R.id.filtro_mios else R.id.filtro_todos
         if (filtros.checkedChipId != chip) filtros.check(chip)
+        puntoCampana.visibility = if (encabezado.hayNoLeidas) View.VISIBLE else View.GONE
+        botonNotificaciones.contentDescription = contexto.getString(
+            if (encabezado.hayNoLeidas) R.string.notificaciones_sin_leer else R.string.notificaciones,
+        )
     }
 }
 

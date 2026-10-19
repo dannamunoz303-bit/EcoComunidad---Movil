@@ -17,16 +17,24 @@ import co.ecocomunidad.app.ui.componentes.cerrarTeclado
 import co.ecocomunidad.app.ui.componentes.contenedor
 import co.ecocomunidad.app.ui.componentes.mostrar
 import co.ecocomunidad.app.ui.componentes.observar
+import co.ecocomunidad.app.ui.navegacion.ARG_DESDE_MI_CUENTA
+import co.ecocomunidad.app.ui.navegacion.RESULTADO_CONTRASENA_CAMBIADA
 import co.ecocomunidad.app.ui.navegacion.irA
 
-/** Cambio obligatorio de la contraseña temporal (RN-05). Es la única pantalla de la pila. */
+/**
+ * Cambio obligatorio de la contraseña temporal (RN-05): es la única pantalla de la pila.
+ * Desde "Mi cuenta" es voluntario: tiene botón atrás y al guardar vuelve a "Mi cuenta".
+ */
 class CambiarContrasenaFragment : Fragment() {
 
     private var _binding: FragmentCambiarContrasenaBinding? = null
     private val binding get() = _binding!!
 
+    private val desdeMiCuenta: Boolean
+        get() = arguments?.getBoolean(ARG_DESDE_MI_CUENTA) == true
+
     private val viewModel: CambiarContrasenaViewModel by viewModels {
-        viewModelFactory { initializer { CambiarContrasenaViewModel(contenedor.authRepository) } }
+        viewModelFactory { initializer { CambiarContrasenaViewModel(contenedor.authRepository, desdeMiCuenta) } }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -44,6 +52,13 @@ class CambiarContrasenaFragment : Fragment() {
         }
         binding.botonGuardar.setOnClickListener { guardar() }
         binding.botonCerrarSesion.setOnClickListener { viewModel.cerrarSesion() }
+        if (desdeMiCuenta) {
+            binding.botonVolver.visibility = View.VISIBLE
+            binding.botonVolver.setOnClickListener { findNavController().popBackStack() }
+            binding.explicacion.setText(R.string.cambiar_explicacion_voluntario)
+            // Cerrar sesión ya está en "Mi cuenta"
+            binding.botonCerrarSesion.visibility = View.GONE
+        }
 
         observar(viewModel.estado, ::mostrarEstado)
     }
@@ -54,6 +69,12 @@ class CambiarContrasenaFragment : Fragment() {
     }
 
     private fun mostrarEstado(estado: CambiarContrasenaEstado) {
+        if (estado.guardada) {
+            viewModel.guardadaAtendida()
+            findNavController().previousBackStackEntry?.savedStateHandle?.set(RESULTADO_CONTRASENA_CAMBIADA, true)
+            findNavController().popBackStack()
+            return
+        }
         estado.destino?.let {
             viewModel.destinoAtendido()
             findNavController().irA(it)

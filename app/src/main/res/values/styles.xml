@@ -212,6 +212,43 @@
         <item name="android:maxLines">1</item>
     </style>
 
+    <!-- Opción grande que se marca (tipo de novedad): borde verde bosque y ícono de listo al elegirla -->
+    <style name="Widget.EcoComunidad.OpcionNovedad" parent="Widget.EcoComunidad.TarjetaReporte">
+        <item name="android:checkable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="strokeColor">@color/borde_opcion</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="checkedIcon">@drawable/ic_listo</item>
+        <item name="checkedIconTint">@color/verde_bosque</item>
+        <item name="checkedIconMargin">16dp</item>
+        <item name="checkedIconGravity">TOP_END</item>
+    </style>
+
+    <!-- Fila de un menú (Mi cuenta): ícono a la izquierda, flecha a la derecha, alto táctil de 56 dp -->
+    <style name="Widget.EcoComunidad.OpcionMenu" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingHorizontal">20dp</item>
+        <item name="android:drawablePadding">16dp</item>
+        <item name="drawableTint">@color/verde_bosque</item>
+        <item name="drawableEndCompat">@drawable/ic_flecha_derecha</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:textAppearance">@style/TextAppearance.EcoComunidad.Cuerpo</item>
+        <item name="android:textColor">@color/tinta</item>
+    </style>
+
+    <!-- Cerrar sesión: arcilla, sin flecha -->
+    <style name="Widget.EcoComunidad.OpcionMenu.Peligro">
+        <item name="drawableTint">@color/arcilla</item>
+        <item name="drawableEndCompat">@null</item>
+        <item name="android:textColor">@color/arcilla</item>
+    </style>
+
     <!-- Botón de texto en verde bosque -->
     <style name="Widget.EcoComunidad.BotonTexto" parent="Widget.Material3.Button.TextButton">
         <item name="android:textColor">@color/verde_bosque</item>

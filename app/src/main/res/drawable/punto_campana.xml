@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Punto rojo de la campana (hay notificaciones sin leer). Arcilla con borde del fondo para que se separe del ícono -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <solid android:color="@color/arcilla" />
+    <stroke android:width="2dp" android:color="@color/fondo" />
+    <size android:width="12dp" android:height="12dp" />
+</shape>

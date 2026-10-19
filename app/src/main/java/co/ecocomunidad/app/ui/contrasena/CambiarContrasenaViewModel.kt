@@ -25,13 +25,18 @@ data class CambiarContrasenaEstado(
     val cargando: Boolean = false,
     val aviso: String? = null,
     val destino: Ruta? = null,
+    /** Desde "Mi cuenta": se guardó y la pantalla vuelve atrás. */
+    val guardada: Boolean = false,
 )
 
 /**
- * Cambio obligatorio (RN-05). Las reglas de la contraseña (RN-03) las valida el backend;
- * aquí solo se revisa que no haya campos vacíos y que la confirmación coincida.
+ * Cambio obligatorio (RN-05) o, con [desdeMiCuenta], voluntario. Las reglas de la contraseña (RN-03)
+ * las valida el backend; aquí solo se revisa que no haya campos vacíos y que la confirmación coincida.
  */
-class CambiarContrasenaViewModel(private val repositorio: AuthRepository) : ViewModel() {
+class CambiarContrasenaViewModel(
+    private val repositorio: AuthRepository,
+    private val desdeMiCuenta: Boolean = false,
+) : ViewModel() {
 
     private val _estado = MutableStateFlow(CambiarContrasenaEstado())
     val estado: StateFlow<CambiarContrasenaEstado> = _estado.asStateFlow()
@@ -64,6 +69,10 @@ class CambiarContrasenaViewModel(private val repositorio: AuthRepository) : View
         viewModelScope.launch {
             when (val r = repositorio.cambiarContrasena(e.actual, e.nueva)) {
                 is Resultado.Exito -> {
+                    if (desdeMiCuenta) {
+                        _estado.update { CambiarContrasenaEstado(guardada = true) }
+                        return@launch
+                    }
                     val usuario = repositorio.usuario.first()
                     val destino = usuario?.let { destinoPara(it.rol, debeCambiarContrasena = false) } ?: Ruta.Login()
                     _estado.update { CambiarContrasenaEstado(destino = destino) }
@@ -81,6 +90,8 @@ class CambiarContrasenaViewModel(private val repositorio: AuthRepository) : View
     }
 
     fun destinoAtendido() = _estado.update { it.copy(destino = null) }
+
+    fun guardadaAtendida() = _estado.update { it.copy(guardada = false) }
 
     /** Los mensajes de validación del backend se muestran tal cual, debajo de su campo. */
     private fun CambiarContrasenaEstado.conError(error: ErrorAuth): CambiarContrasenaEstado {
