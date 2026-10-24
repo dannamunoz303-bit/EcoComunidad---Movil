@@ -138,6 +138,14 @@
                         android:orientation="vertical"
                         android:paddingVertical="8dp">
 
+                        <!-- Solo el gestor (RN-10): se muestra al saber el rol -->
+                        <TextView
+                            android:id="@+id/opcion_todos_reportes"
+                            style="@style/Widget.EcoComunidad.OpcionMenu"
+                            android:text="@string/todos_los_reportes"
+                            android:visibility="gone"
+                            app:drawableStartCompat="@drawable/ic_lista" />
+
                         <TextView
                             android:id="@+id/opcion_novedades"
                             style="@style/Widget.EcoComunidad.OpcionMenu"

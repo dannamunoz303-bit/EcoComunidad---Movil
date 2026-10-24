@@ -38,7 +38,8 @@ data class ListaReportesEstado(
 }
 
 /**
- * Lista del ciudadano. Muestra exactamente lo que devuelve la API (RN-10 la aplica el backend).
+ * Lista del ciudadano (pestañas Todos y Mis reportes) y de "Todos los reportes" del gestor, que solo
+ * usa Todos. Muestra exactamente lo que devuelve la API (RN-10 la aplica el backend).
  * El backend no pagina, así que cada carga trae la lista completa.
  */
 class ListaReportesViewModel(private val repositorio: ReportesRepository) : ViewModel() {

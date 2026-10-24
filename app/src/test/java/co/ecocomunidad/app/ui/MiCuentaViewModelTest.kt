@@ -33,6 +33,7 @@ class MiCuentaViewModelTest {
 
     @Test
     fun opcionesSegunElRol() {
+        // El ciudadano no cambia: sus reportes ya están en el inicio
         assertEquals(
             listOf(
                 OpcionCuenta.MIS_NOVEDADES,
@@ -42,9 +43,14 @@ class MiCuentaViewModelTest {
             ),
             opcionesCuenta(Rol.CIUDADANO),
         )
-        // RN-19: las sanciones son solo para ciudadanos
+        // Gestor: "Todos los reportes" primero (RN-10) y sin sanciones (RN-19)
         assertEquals(
-            listOf(OpcionCuenta.MIS_NOVEDADES, OpcionCuenta.CAMBIAR_CONTRASENA, OpcionCuenta.CERRAR_SESION),
+            listOf(
+                OpcionCuenta.TODOS_LOS_REPORTES,
+                OpcionCuenta.MIS_NOVEDADES,
+                OpcionCuenta.CAMBIAR_CONTRASENA,
+                OpcionCuenta.CERRAR_SESION,
+            ),
             opcionesCuenta(Rol.GESTOR),
         )
     }

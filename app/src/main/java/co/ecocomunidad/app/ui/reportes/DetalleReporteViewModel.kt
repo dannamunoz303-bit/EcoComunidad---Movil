@@ -9,6 +9,7 @@ import co.ecocomunidad.app.data.modelo.Accion
 import co.ecocomunidad.app.data.modelo.ESTADOS_REPORTE_CON_NOVEDAD
 import co.ecocomunidad.app.data.modelo.EstadoReporte
 import co.ecocomunidad.app.data.modelo.Reporte
+import co.ecocomunidad.app.data.modelo.Rol
 import co.ecocomunidad.app.data.modelo.UsuarioResumen
 import co.ecocomunidad.app.data.sesion.UsuarioSesion
 import co.ecocomunidad.app.ui.navegacion.mensajeDeError
@@ -44,7 +45,10 @@ data class DetalleReporteEstado(
     /** La carga pasó de 1 s: se muestra Brotico pensando (marca.md). */
     val cargaLarga: Boolean = false,
     val reporte: Reporte? = null,
-    /** El reporte es del usuario con sesión (para el motivo del rechazo). */
+    /**
+     * El reporte es del ciudadano con sesión (para el motivo del rechazo y los botones de dueño).
+     * Siempre false para el gestor, que lo abre en solo lectura desde "Todos los reportes".
+     */
     val esPropio: Boolean = false,
     val linea: LineaDeTiempo = LineaDeTiempo.Cargando,
     val error: ErrorCarga? = null,
@@ -117,11 +121,11 @@ class DetalleReporteViewModel(
 
             when (r) {
                 is Resultado.Exito -> {
-                    val idUsuario = usuario.first()?.id
+                    val sesion = usuario.first()
                     _estado.value = DetalleReporteEstado(
                         cargando = false,
                         reporte = r.datos,
-                        esPropio = idUsuario != null && r.datos.ciudadano?.id == idUsuario,
+                        esPropio = sesion?.rol == Rol.CIUDADANO && r.datos.ciudadano?.id == sesion.id,
                     )
                     cargarLinea()
                 }

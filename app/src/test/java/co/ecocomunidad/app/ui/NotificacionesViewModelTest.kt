@@ -11,7 +11,7 @@ import co.ecocomunidad.app.ui.notificaciones.CampanaViewModel
 import co.ecocomunidad.app.ui.notificaciones.DestinoNotificacion
 import co.ecocomunidad.app.ui.notificaciones.NotificacionesViewModel
 import co.ecocomunidad.app.ui.notificaciones.destinoDe
-import co.ecocomunidad.app.ui.notificaciones.tareaDelReporte
+import co.ecocomunidad.app.ui.tareas.tareaDelReporte
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals

@@ -6,14 +6,13 @@ import co.ecocomunidad.app.data.ErrorAuth
 import co.ecocomunidad.app.data.NotificacionesRepository
 import co.ecocomunidad.app.data.Resultado
 import co.ecocomunidad.app.data.TareasRepository
-import co.ecocomunidad.app.data.modelo.ESTADOS_TAREA_ACTIVOS
 import co.ecocomunidad.app.data.modelo.Notificacion
 import co.ecocomunidad.app.data.modelo.Rol
-import co.ecocomunidad.app.data.modelo.TareaGestor
 import co.ecocomunidad.app.data.modelo.TipoNotificacion
 import co.ecocomunidad.app.data.sesion.UsuarioSesion
 import co.ecocomunidad.app.ui.navegacion.mensajeDeError
 import co.ecocomunidad.app.ui.reportes.ErrorCarga
+import co.ecocomunidad.app.ui.tareas.tareaDelReporte
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -63,15 +62,6 @@ fun destinoDe(notificacion: Notificacion, rol: Rol): DestinoNotificacion? = when
     }
     // El administrador no usa la app
     Rol.ADMINISTRADOR -> null
-}
-
-/**
- * La tarea del gestor en el reporte: la activa si la hay (RN-11: solo una por gestor y reporte) y,
- * si no, la más reciente. [tareas] viene de tareas/mias/, más nuevas primero.
- */
-fun tareaDelReporte(tareas: List<TareaGestor>, idReporte: Int): TareaGestor? {
-    val delReporte = tareas.filter { it.reporte.id == idReporte }
-    return delReporte.firstOrNull { it.estado in ESTADOS_TAREA_ACTIVOS } ?: delReporte.firstOrNull()
 }
 
 data class NotificacionesEstado(

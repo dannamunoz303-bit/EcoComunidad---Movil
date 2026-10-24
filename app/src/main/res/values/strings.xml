@@ -239,6 +239,11 @@
     <string name="tarea_terminada_el">Terminada el %1$s</string>
     <string name="tarea_descripcion_item">%1$s. %2$s. %3$s. Tarea %4$s</string>
 
+    <!-- Todos los reportes del gestor (RN-10) -->
+    <string name="todos_los_reportes">Todos los reportes</string>
+    <string name="todos_reportes_explicacion">Reportes de la comunidad que ya revisó el administrador.</string>
+    <string name="todos_reportes_vacio">Todavía no hay reportes revisados por el administrador. Cuando los haya, aparecerán aquí.</string>
+
     <!-- Detalle de la tarea -->
     <string name="tarea_titulo">Tarea #%1$d</string>
     <string name="tarea_cargando">Abriendo la tarea…</string>

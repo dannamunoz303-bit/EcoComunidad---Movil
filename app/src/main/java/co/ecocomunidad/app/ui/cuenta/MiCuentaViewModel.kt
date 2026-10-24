@@ -15,11 +15,14 @@ fun inicialesDe(nombre: String, apellido: String): String =
     listOf(nombre, apellido).mapNotNull { it.trim().firstOrNull()?.uppercaseChar() }.joinToString("")
 
 /** Opciones de "Mi cuenta", en el orden de la pantalla. */
-enum class OpcionCuenta { MIS_NOVEDADES, MIS_SANCIONES, CAMBIAR_CONTRASENA, CERRAR_SESION }
+enum class OpcionCuenta { TODOS_LOS_REPORTES, MIS_NOVEDADES, MIS_SANCIONES, CAMBIAR_CONTRASENA, CERRAR_SESION }
 
-/** Las sanciones son solo para ciudadanos (RN-19): el gestor no ve "Mis sanciones". */
+/**
+ * El gestor ve "Todos los reportes" (RN-10; el ciudadano ya los tiene en su inicio) y no ve
+ * "Mis sanciones", que son solo para ciudadanos (RN-19).
+ */
 fun opcionesCuenta(rol: Rol): List<OpcionCuenta> = when (rol) {
-    Rol.CIUDADANO -> OpcionCuenta.entries
+    Rol.CIUDADANO -> OpcionCuenta.entries - OpcionCuenta.TODOS_LOS_REPORTES
     else -> OpcionCuenta.entries - OpcionCuenta.MIS_SANCIONES
 }
 

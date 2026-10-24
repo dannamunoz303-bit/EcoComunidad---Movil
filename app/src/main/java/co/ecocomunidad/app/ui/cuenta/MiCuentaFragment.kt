@@ -40,6 +40,7 @@ class MiCuentaFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val nav = findNavController()
         binding.botonVolver.setOnClickListener { nav.popBackStack() }
+        binding.opcionTodosReportes.setOnClickListener { nav.navigate(R.id.todosLosReportesFragment) }
         binding.opcionNovedades.setOnClickListener { nav.navigate(R.id.misNovedadesFragment) }
         binding.opcionSanciones.setOnClickListener { nav.navigate(R.id.misSancionesFragment) }
         binding.opcionContrasena.setOnClickListener {
@@ -84,6 +85,7 @@ class MiCuentaFragment : Fragment() {
         )
         val opciones = opcionesCuenta(usuario.rol)
         mapOf(
+            OpcionCuenta.TODOS_LOS_REPORTES to opcionTodosReportes,
             OpcionCuenta.MIS_NOVEDADES to opcionNovedades,
             OpcionCuenta.MIS_SANCIONES to opcionSanciones,
             OpcionCuenta.CAMBIAR_CONTRASENA to opcionContrasena,

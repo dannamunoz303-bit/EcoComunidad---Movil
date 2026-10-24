@@ -62,7 +62,8 @@
             app:argType="integer" />
     </fragment>
 
-    <!-- Se apilan sobre la lista: atrás vuelve a ella -->
+    <!-- Se apilan sobre la lista: atrás vuelve a ella. El gestor abre el detalle del reporte desde
+         Todos los reportes, en solo lectura -->
     <fragment
         android:id="@+id/detalleReporteFragment"
         android:name="co.ecocomunidad.app.ui.reportes.DetalleReporteFragment">
@@ -133,6 +134,11 @@
     <fragment
         android:id="@+id/misSancionesFragment"
         android:name="co.ecocomunidad.app.ui.sanciones.MisSancionesFragment" />
+
+    <!-- Todos los reportes del gestor (RN-10), desde "Mi cuenta". Tocar uno abre su tarea o el detalle del reporte -->
+    <fragment
+        android:id="@+id/todosLosReportesFragment"
+        android:name="co.ecocomunidad.app.ui.tareas.TodosLosReportesFragment" />
 
     <!-- Botón ☰ del inicio del ciudadano y de Mis tareas del gestor. Las opciones dependen del rol -->
     <fragment

@@ -37,6 +37,29 @@ class DetalleReporteViewModelTest {
     private fun viewModel() = DetalleReporteViewModel(repositorio, usuario, id = 1)
 
     @Test
+    fun gestor_veElReporteEnSoloLectura() = runTest(main.despachador) {
+        // Mismo id que Ana: aun así no es dueño, porque no es ciudadano
+        usuario.value = RepositorioFalso.usuarioSesion(Rol.GESTOR)
+        repositorio.tareas = RepositorioFalso.fallo(ErrorAuth.Servidor(403, "No puedes ver las tareas de este reporte.", null))
+
+        for (estado in EstadoReporte.entries) {
+            repositorio.detalle = Resultado.Exito(reporte(1, estado, ciudadano = ANA))
+            val vm = viewModel()
+            advanceUntilIdle()
+
+            with(vm.estado.value) {
+                assertEquals("$estado", 1, reporte?.id)
+                assertFalse("$estado", esPropio)
+                // Sin Editar, Eliminar ni Reportar novedad
+                assertFalse("$estado", puedeModificar)
+                assertFalse("$estado", puedeReportarNovedad)
+                // RN-14: sin tarea en el reporte no ve las acciones
+                assertEquals("$estado", LineaDeTiempo.NoDisponible, linea)
+            }
+        }
+    }
+
+    @Test
     fun reportePropio_conLineaDeTiempoMasRecientePrimero() = runTest(main.despachador) {
         repositorio.detalle = Resultado.Exito(reporte(1, ciudadano = ANA))
         repositorio.tareas = Resultado.Exito(
