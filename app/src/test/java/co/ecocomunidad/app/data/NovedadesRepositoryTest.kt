@@ -153,6 +153,65 @@ class NovedadesRepositoryTest {
         assertTrue(error is ErrorAuth.SinConexion)
     }
 
+    // --- Novedad del gestor (RN-18): ayuda o incidente, con su tarea activa ---
+
+    @Test
+    fun crearDelGestor_mandaReporteYTarea() = runTest {
+        sesion.guardarTokens("access-gestor", "refresh-gestor")
+        responder(201, novedadJson(id = 30, tarea = "12", tipo = "ayuda"))
+
+        val r = repositorio.crear(
+            NuevaNovedad(reporteId = 5, tipo = TipoNovedad.AYUDA, descripcion = "Necesito otro gestor.", tareaId = 12),
+        )
+
+        val peticion = servidor.takeRequest()
+        assertEquals("POST", peticion.method)
+        assertEquals("/api/novedades/", peticion.path)
+        assertEquals("Bearer access-gestor", peticion.getHeader("Authorization"))
+        assertEquals(
+            JsonObject(
+                mapOf(
+                    "reporte" to JsonPrimitive(5),
+                    "tipo" to JsonPrimitive("ayuda"),
+                    "descripcion" to JsonPrimitive("Necesito otro gestor."),
+                    "tarea" to JsonPrimitive(12),
+                ),
+            ),
+            Json.parseToJsonElement(peticion.body.readUtf8()).jsonObject,
+        )
+        with((r as Resultado.Exito).datos) {
+            assertEquals(30, id)
+            assertEquals(TipoNovedad.AYUDA, tipo)
+            assertEquals(12, tareaId)
+            assertEquals(EstadoNovedad.ABIERTA, estado)
+        }
+    }
+
+    @Test
+    fun crearDelGestor_error400ConLaTareaNoActiva() = runTest {
+        // novedades/servicios.py, _validar_gestor
+        responder(400, """{"tarea":["Tu tarea en este reporte no está activa."]}""")
+
+        val r = repositorio.crear(
+            NuevaNovedad(reporteId = 5, tipo = TipoNovedad.INCIDENTE, descripcion = "Llovió.", tareaId = 12),
+        )
+
+        val error = (r as Resultado.Fallo).error as ErrorAuth.Validacion
+        assertEquals(listOf("Tu tarea en este reporte no está activa."), error.campos["tarea"])
+        assertEquals("Tu tarea en este reporte no está activa.", error.detail)
+    }
+
+    @Test
+    fun crearDelGestor_sinConexion() = runTest {
+        servidor.shutdown()
+
+        val r = repositorio.crear(
+            NuevaNovedad(reporteId = 5, tipo = TipoNovedad.AYUDA, descripcion = "Necesito ayuda.", tareaId = 12),
+        )
+
+        assertTrue((r as Resultado.Fallo).error is ErrorAuth.SinConexion)
+    }
+
     private fun responder(codigo: Int, cuerpo: String) {
         servidor.enqueue(
             MockResponse().setResponseCode(codigo)
@@ -167,8 +226,9 @@ class NovedadesRepositoryTest {
         tarea: String = "null",
         estado: String = "abierta",
         respuesta: String = "null",
+        tipo: String = "queja",
     ) = """{"id":$id,"reporte":5,"reporte_titulo":"Basura en la esquina","tarea":$tarea,
-        "creado_por":{"id":7,"nombre":"Ana","apellido":"Pérez"},"tipo":"queja",
+        "creado_por":{"id":7,"nombre":"Ana","apellido":"Pérez"},"tipo":"$tipo",
         "descripcion":"No recogieron todo.","estado":"$estado","respuesta":$respuesta,
         "fecha":"2026-10-05T09:00:00-05:00"}"""
 }

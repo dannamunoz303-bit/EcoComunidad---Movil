@@ -293,6 +293,21 @@
                         android:textColor="@color/tinta_suave"
                         android:textSize="13sp"
                         app:lineHeight="19sp" />
+
+                    <!-- RN-18: novedad del gestor, solo con la tarea asignada o en proceso -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/boton_pedir_ayuda"
+                        style="@style/Widget.EcoComunidad.BotonTexto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="12dp"
+                        android:minHeight="48dp"
+                        android:text="@string/pedir_ayuda_enlace"
+                        android:visibility="gone"
+                        app:icon="@drawable/ic_alerta"
+                        app:iconSize="18dp"
+                        app:iconTint="@color/ambar" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

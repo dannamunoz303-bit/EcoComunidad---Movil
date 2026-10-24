@@ -22,7 +22,7 @@ import co.ecocomunidad.app.ui.navegacion.Ruta
 import co.ecocomunidad.app.ui.navegacion.irA
 import com.google.android.material.snackbar.Snackbar
 
-/** Mi cuenta del ciudadano: quién tiene la sesión y las opciones de la cuenta. */
+/** Mi cuenta del ciudadano y del gestor: quién tiene la sesión y las opciones de su rol ([opcionesCuenta]). */
 class MiCuentaFragment : Fragment() {
 
     private var _binding: FragmentMiCuentaBinding? = null
@@ -82,6 +82,13 @@ class MiCuentaFragment : Fragment() {
                 Rol.ADMINISTRADOR -> R.string.rol_administrador
             },
         )
+        val opciones = opcionesCuenta(usuario.rol)
+        mapOf(
+            OpcionCuenta.MIS_NOVEDADES to opcionNovedades,
+            OpcionCuenta.MIS_SANCIONES to opcionSanciones,
+            OpcionCuenta.CAMBIAR_CONTRASENA to opcionContrasena,
+            OpcionCuenta.CERRAR_SESION to opcionCerrarSesion,
+        ).forEach { (opcion, vista) -> vista.visibility = if (opcion in opciones) View.VISIBLE else View.GONE }
     }
 
     override fun onDestroyView() {

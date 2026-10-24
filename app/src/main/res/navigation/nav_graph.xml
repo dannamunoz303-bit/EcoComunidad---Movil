@@ -94,7 +94,17 @@
             app:argType="integer" />
     </fragment>
 
-    <!-- Se abre al enviar una novedad, desde "Mi cuenta" y desde una notificación novedad_respondida -->
+    <!-- Pedir ayuda o avisar un incidente (RN-18), sobre el detalle de la tarea. Mismo formulario que
+         el del ciudadano, en modo gestor. Al enviar bien, se reemplaza por "Mis novedades" -->
+    <fragment
+        android:id="@+id/pedirAyudaFragment"
+        android:name="co.ecocomunidad.app.ui.novedades.ReportarNovedadFragment">
+        <argument
+            android:name="idTarea"
+            app:argType="integer" />
+    </fragment>
+
+    <!-- Ciudadano y gestor. Se abre al enviar una novedad, desde "Mi cuenta" y desde una notificación novedad_respondida -->
     <fragment
         android:id="@+id/misNovedadesFragment"
         android:name="co.ecocomunidad.app.ui.novedades.MisNovedadesFragment">
@@ -114,17 +124,17 @@
             app:argType="integer" />
     </fragment>
 
-    <!-- Campana del inicio. Tocar una notificación abre Mis novedades, Mis sanciones o el reporte -->
+    <!-- Campana del inicio (ciudadano y gestor). Tocar una notificación abre su pantalla: ver destinoDe -->
     <fragment
         android:id="@+id/notificacionesFragment"
         android:name="co.ecocomunidad.app.ui.notificaciones.NotificacionesFragment" />
 
-    <!-- Desde "Mi cuenta" y desde una notificación de sanción -->
+    <!-- Solo el ciudadano (RN-19): desde "Mi cuenta" y desde una notificación de sanción -->
     <fragment
         android:id="@+id/misSancionesFragment"
         android:name="co.ecocomunidad.app.ui.sanciones.MisSancionesFragment" />
 
-    <!-- Menú del inicio del ciudadano -->
+    <!-- Botón ☰ del inicio del ciudadano y de Mis tareas del gestor. Las opciones dependen del rol -->
     <fragment
         android:id="@+id/miCuentaFragment"
         android:name="co.ecocomunidad.app.ui.cuenta.MiCuentaFragment" />

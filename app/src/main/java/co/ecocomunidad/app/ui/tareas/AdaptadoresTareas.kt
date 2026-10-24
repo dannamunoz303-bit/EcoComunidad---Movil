@@ -25,7 +25,7 @@ data class EncabezadoGestor(
 /** Barra (logo, campana y menú), saludo de Brotico con las tareas activas y pestañas. Siempre un elemento. */
 class EncabezadoGestorAdapter(
     private val alAbrirNotificaciones: () -> Unit,
-    private val alAbrirMenu: (View) -> Unit,
+    private val alAbrirMiCuenta: () -> Unit,
     private val alElegirFiltro: (FiltroTareas) -> Unit,
 ) : RecyclerView.Adapter<EncabezadoGestorAdapter.Vista>() {
 
@@ -43,7 +43,7 @@ class EncabezadoGestorAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Vista {
         val binding = ItemEncabezadoGestorBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         binding.botonNotificaciones.setOnClickListener { alAbrirNotificaciones() }
-        binding.botonMiCuenta.setOnClickListener { alAbrirMenu(it) }
+        binding.botonMiCuenta.setOnClickListener { alAbrirMiCuenta() }
         binding.filtros.setOnCheckedStateChangeListener { _, elegidos ->
             val filtro = if (elegidos.firstOrNull() == R.id.filtro_terminadas) FiltroTareas.TERMINADAS else FiltroTareas.ACTIVAS
             alElegirFiltro(filtro)

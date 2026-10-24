@@ -43,7 +43,10 @@ import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.Marker
 
-/** Detalle de una tarea del gestor: el reporte, el mapa, mis acciones e iniciar o terminar (RN-13). */
+/**
+ * Detalle de una tarea del gestor: el reporte, el mapa, mis acciones, iniciar o terminar (RN-13)
+ * y el enlace para pedir ayuda o avisar un incidente (RN-18).
+ */
 class DetalleTareaFragment : Fragment() {
 
     private var _binding: FragmentDetalleTareaBinding? = null
@@ -78,6 +81,9 @@ class DetalleTareaFragment : Fragment() {
         binding.botonEstado.setOnClickListener { confirmar(viewModel.estado.value.accion) }
         binding.botonRegistrarAccion.setOnClickListener {
             findNavController().navigate(R.id.registrarAccionFragment, bundleOf(ARG_ID_TAREA to idTarea))
+        }
+        binding.botonPedirAyuda.setOnClickListener {
+            findNavController().navigate(R.id.pedirAyudaFragment, bundleOf(ARG_ID_TAREA to idTarea))
         }
         prepararMapa()
         escucharAccionRegistrada()
@@ -224,6 +230,8 @@ class DetalleTareaFragment : Fragment() {
         val accion = estado.accion
         botonRegistrarAccion.visibility = if (estado.puedeRegistrarAccion) View.VISIBLE else View.GONE
         botonRegistrarAccion.isEnabled = !estado.procesando
+        botonPedirAyuda.visibility = if (estado.puedePedirAyuda) View.VISIBLE else View.GONE
+        botonPedirAyuda.isEnabled = !estado.procesando
         marcoBoton.visibility = if (accion == AccionDisponible.NINGUNA) View.GONE else View.VISIBLE
         ayudaTerminar.visibility = if (accion == AccionDisponible.TERMINAR) View.VISIBLE else View.GONE
         botonEstado.isEnabled = !estado.procesando

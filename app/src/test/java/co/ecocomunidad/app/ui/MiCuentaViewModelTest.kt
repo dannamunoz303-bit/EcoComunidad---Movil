@@ -4,7 +4,9 @@ import co.ecocomunidad.app.data.modelo.Rol
 import co.ecocomunidad.app.ui.RepositorioFalso.Companion.usuarioSesion
 import co.ecocomunidad.app.ui.contrasena.CambiarContrasenaViewModel
 import co.ecocomunidad.app.ui.cuenta.MiCuentaViewModel
+import co.ecocomunidad.app.ui.cuenta.OpcionCuenta
 import co.ecocomunidad.app.ui.cuenta.inicialesDe
+import co.ecocomunidad.app.ui.cuenta.opcionesCuenta
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -27,6 +29,24 @@ class MiCuentaViewModelTest {
         assertEquals("AP", inicialesDe("Ana", "Pérez"))
         assertEquals("ÁG", inicialesDe(" ángela", "gómez "))
         assertEquals("L", inicialesDe("Luis", ""))
+    }
+
+    @Test
+    fun opcionesSegunElRol() {
+        assertEquals(
+            listOf(
+                OpcionCuenta.MIS_NOVEDADES,
+                OpcionCuenta.MIS_SANCIONES,
+                OpcionCuenta.CAMBIAR_CONTRASENA,
+                OpcionCuenta.CERRAR_SESION,
+            ),
+            opcionesCuenta(Rol.CIUDADANO),
+        )
+        // RN-19: las sanciones son solo para ciudadanos
+        assertEquals(
+            listOf(OpcionCuenta.MIS_NOVEDADES, OpcionCuenta.CAMBIAR_CONTRASENA, OpcionCuenta.CERRAR_SESION),
+            opcionesCuenta(Rol.GESTOR),
+        )
     }
 
     @Test

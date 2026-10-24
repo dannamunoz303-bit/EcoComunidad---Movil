@@ -63,6 +63,30 @@ class DetalleTareaViewModelTest {
     }
 
     @Test
+    fun pedirAyuda_soloConLaTareaAsignadaOEnProceso() = runTest(main.despachador) {
+        val esperado = mapOf(
+            EstadoTarea.ASIGNADA to true,
+            EstadoTarea.EN_PROCESO to true,
+            EstadoTarea.TERMINADA to false,
+            EstadoTarea.CANCELADA to false,
+        )
+        for ((estado, puede) in esperado) {
+            conTarea(estado)
+            val vm = viewModel()
+            advanceUntilIdle()
+            assertEquals("$estado", puede, vm.estado.value.puedePedirAyuda)
+        }
+    }
+
+    @Test
+    fun pedirAyuda_noSeMuestraMientrasCarga() = runTest(main.despachador) {
+        conTarea(EstadoTarea.ASIGNADA)
+        val vm = viewModel()
+
+        assertFalse(vm.estado.value.puedePedirAyuda)
+    }
+
+    @Test
     fun alVolverConLaAccionGuardada_recargaMisAccionesYAvisa() = runTest(main.despachador) {
         conTarea(EstadoTarea.EN_PROCESO)
         val vm = viewModel()

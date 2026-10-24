@@ -18,14 +18,16 @@ import co.ecocomunidad.app.ui.reportes.EstadoVista
 import co.ecocomunidad.app.ui.reportes.mostrar
 import com.google.android.material.snackbar.Snackbar
 
-/** Las novedades del ciudadano. Por ahora se llega al enviar una; en el paso 10, también desde "Mi cuenta". */
+/** Mis novedades del ciudadano o del gestor: al enviar una, desde "Mi cuenta" y desde una notificación. */
 class MisNovedadesFragment : Fragment() {
 
     private var _binding: FragmentMisNovedadesBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: MisNovedadesViewModel by viewModels {
-        viewModelFactory { initializer { MisNovedadesViewModel(contenedor.novedadesRepository) } }
+        viewModelFactory {
+            initializer { MisNovedadesViewModel(contenedor.novedadesRepository, contenedor.authRepository.usuario) }
+        }
     }
 
     private val adaptador = NovedadesAdapter()
@@ -42,6 +44,7 @@ class MisNovedadesFragment : Fragment() {
         if (savedInstanceState == null && arguments?.getBoolean(ARG_NOVEDAD_ENVIADA) == true) {
             Snackbar.make(binding.root, R.string.novedad_enviada, Snackbar.LENGTH_LONG).show()
         }
+        observar(viewModel.conTarea) { adaptador.conTarea = it }
         observar(viewModel.estado, ::mostrarEstado)
     }
 

@@ -3,7 +3,9 @@ package co.ecocomunidad.app.ui
 import co.ecocomunidad.app.data.ErrorAuth
 import co.ecocomunidad.app.data.Resultado
 import co.ecocomunidad.app.data.modelo.EstadoNovedad
+import co.ecocomunidad.app.data.modelo.Rol
 import co.ecocomunidad.app.ui.NovedadesFalso.Companion.novedad
+import co.ecocomunidad.app.ui.RepositorioFalso.Companion.usuarioSesion
 import co.ecocomunidad.app.ui.novedades.MisNovedadesViewModel
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -20,6 +22,18 @@ class MisNovedadesViewModelTest {
     val main = ReglaMain()
 
     private val repositorio = NovedadesFalso()
+    private val sesion = RepositorioFalso().apply { usuario.value = usuarioSesion(Rol.CIUDADANO) }
+
+    @Test
+    fun laTareaSeMuestraSoloAlGestor() = runTest(main.despachador) {
+        val vm = MisNovedadesViewModel(repositorio, sesion.usuario)
+        advanceUntilIdle()
+        assertFalse(vm.conTarea.value)
+
+        sesion.usuario.value = usuarioSesion(Rol.GESTOR)
+        advanceUntilIdle()
+        assertTrue(vm.conTarea.value)
+    }
 
     @Test
     fun lista_masNuevaPrimeroConLaRespuesta() = runTest(main.despachador) {
@@ -30,7 +44,7 @@ class MisNovedadesViewModelTest {
                 novedad(2, fecha = "2026-10-03T09:00:00-05:00"),
             ),
         )
-        val vm = MisNovedadesViewModel(repositorio)
+        val vm = MisNovedadesViewModel(repositorio, sesion.usuario)
 
         advanceUntilIdle()
 
@@ -44,7 +58,7 @@ class MisNovedadesViewModelTest {
 
     @Test
     fun sinNovedades_estadoVacio() = runTest(main.despachador) {
-        val vm = MisNovedadesViewModel(repositorio)
+        val vm = MisNovedadesViewModel(repositorio, sesion.usuario)
 
         advanceUntilIdle()
 
@@ -54,7 +68,7 @@ class MisNovedadesViewModelTest {
     @Test
     fun error_yReintentar() = runTest(main.despachador) {
         repositorio.mias = RepositorioFalso.fallo(ErrorAuth.SinConexion(IOException()))
-        val vm = MisNovedadesViewModel(repositorio)
+        val vm = MisNovedadesViewModel(repositorio, sesion.usuario)
         advanceUntilIdle()
 
         with(vm.estado.value) {

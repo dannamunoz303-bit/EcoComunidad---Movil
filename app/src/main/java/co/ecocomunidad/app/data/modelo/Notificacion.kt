@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * Códigos de tipo de la sección 9 que la app del ciudadano trata aparte. El backend puede mandar
+ * Códigos de tipo de la sección 9 que la app trata aparte. El backend puede mandar
  * otros (por ejemplo bloqueo_levantado o contrasena_restablecida): por eso [Notificacion.tipo] es texto.
  */
 object TipoNotificacion {
@@ -16,6 +16,8 @@ object TipoNotificacion {
     const val SANCION = "sancion"
     const val BLOQUEO_LEVANTADO = "bloqueo_levantado"
     const val REPORTE_ELIMINADO = "reporte_eliminado"
+    const val TAREA_ASIGNADA = "tarea_asignada"
+    const val TAREA_CANCELADA = "tarea_cancelada"
 }
 
 /** NotificacionSerializer (sección 4.10). reporte_id llega como "reporte". */

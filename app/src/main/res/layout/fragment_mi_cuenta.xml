@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Mi cuenta del ciudadano: datos de auth/yo/ y las opciones de la cuenta. -->
+<!-- Mi cuenta del ciudadano y del gestor: datos de auth/yo/ y las opciones de la cuenta según el rol. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/raiz"
@@ -144,10 +144,12 @@
                             android:text="@string/mis_novedades"
                             app:drawableStartCompat="@drawable/ic_mensaje" />
 
+                        <!-- Solo el ciudadano (RN-19): se muestra al saber el rol -->
                         <TextView
                             android:id="@+id/opcion_sanciones"
                             style="@style/Widget.EcoComunidad.OpcionMenu"
                             android:text="@string/mis_sanciones"
+                            android:visibility="gone"
                             app:drawableStartCompat="@drawable/ic_escudo" />
 
                         <TextView

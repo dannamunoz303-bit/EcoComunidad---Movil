@@ -3,6 +3,7 @@ package co.ecocomunidad.app.ui
 import co.ecocomunidad.app.data.ErrorAuth
 import co.ecocomunidad.app.data.Resultado
 import co.ecocomunidad.app.data.modelo.EstadoReporte
+import co.ecocomunidad.app.data.modelo.EstadoTarea
 import co.ecocomunidad.app.data.modelo.NuevaNovedad
 import co.ecocomunidad.app.data.modelo.TipoNovedad
 import co.ecocomunidad.app.ui.ReportesFalso.Companion.ANA
@@ -11,6 +12,7 @@ import co.ecocomunidad.app.ui.ReportesFalso.Companion.reporte
 import co.ecocomunidad.app.ui.ReportesFalso.Companion.tarea
 import co.ecocomunidad.app.data.modelo.UsuarioResumen
 import co.ecocomunidad.app.ui.novedades.CampoNovedad
+import co.ecocomunidad.app.ui.novedades.ModoNovedad
 import co.ecocomunidad.app.ui.novedades.OpcionGestor
 import co.ecocomunidad.app.ui.novedades.ReportarNovedadViewModel
 import kotlinx.coroutines.CompletableDeferred
@@ -34,8 +36,15 @@ class ReportarNovedadViewModelTest {
         detalle = Resultado.Exito(reporte(1, EstadoReporte.EN_PROCESO, ciudadano = ANA))
     }
     private val novedades = NovedadesFalso()
+    private val tareas = TareasFalso()
 
-    private fun viewModel() = ReportarNovedadViewModel(reportes, novedades, idReporte = 1)
+    private fun viewModel() = ReportarNovedadViewModel(reportes, tareas, novedades, ModoNovedad.Ciudadano(idReporte = 1))
+
+    /** Gestor con la tarea 12 sobre el reporte 7. */
+    private fun viewModelGestor(estado: EstadoTarea = EstadoTarea.EN_PROCESO): ReportarNovedadViewModel {
+        tareas.mias = Resultado.Exito(listOf(TareasFalso.tarea(12, estado, reporte = 7)))
+        return ReportarNovedadViewModel(reportes, tareas, novedades, ModoNovedad.Gestor(idTarea = 12))
+    }
 
     @Test
     fun cargaElReporteYLosGestoresSinRepetir() = runTest(main.despachador) {
@@ -209,6 +218,118 @@ class ReportarNovedadViewModelTest {
 
         assertNull(vm.estado.value.errorReporte)
         assertEquals(EstadoReporte.RESUELTO, vm.estado.value.reporte?.estado)
+    }
+
+    // --- Gestor: pedir ayuda o avisar (RN-18) ---
+
+    @Test
+    fun gestor_cargaSuTareaYNoPideGestores() = runTest(main.despachador) {
+        val vm = viewModelGestor()
+        advanceUntilIdle()
+
+        with(vm.estado.value) {
+            assertFalse(cargandoReporte)
+            assertEquals(12, tarea?.id)
+            assertEquals("Basura en la esquina", tarea?.reporte?.titulo)
+            assertEquals(EstadoTarea.EN_PROCESO, tarea?.estado)
+            assertFalse(cargandoGestores)
+            assertTrue(gestores.isEmpty())
+        }
+        // No se pide el reporte ni sus tareas: el desplegable es solo del ciudadano
+        assertTrue(reportes.detallesPedidos.isEmpty())
+        assertTrue(reportes.tareasPedidas.isEmpty())
+        assertEquals(listOf(TipoNovedad.AYUDA, TipoNovedad.INCIDENTE), vm.modo.tipos)
+    }
+
+    @Test
+    fun gestor_noPuedeElegirQueja() = runTest(main.despachador) {
+        val vm = viewModelGestor()
+        advanceUntilIdle()
+
+        vm.elegirTipo(TipoNovedad.QUEJA)
+        assertNull(vm.estado.value.tipo)
+        vm.elegirTipo(TipoNovedad.AYUDA)
+        assertEquals(TipoNovedad.AYUDA, vm.estado.value.tipo)
+    }
+
+    @Test
+    fun gestor_descripcionVacia_noEnvia() = runTest(main.despachador) {
+        val vm = viewModelGestor()
+        advanceUntilIdle()
+
+        vm.elegirTipo(TipoNovedad.AYUDA)
+        vm.cambiarDescripcion("  ")
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertEquals("Cuéntanos qué pasó.", vm.estado.value.errores[CampoNovedad.DESCRIPCION])
+        assertTrue(novedades.creadas.isEmpty())
+    }
+
+    @Test
+    fun gestor_sinTipo_pideAyudaOIncidente() = runTest(main.despachador) {
+        val vm = viewModelGestor()
+        advanceUntilIdle()
+
+        vm.cambiarDescripcion("Se dañó el camión.")
+        vm.enviar()
+
+        assertEquals("Elige si necesitas ayuda o es un incidente.", vm.estado.value.errores[CampoNovedad.TIPO])
+        assertTrue(novedades.creadas.isEmpty())
+    }
+
+    @Test
+    fun gestor_enviaElReporteYSuTarea() = runTest(main.despachador) {
+        val vm = viewModelGestor()
+        advanceUntilIdle()
+
+        vm.elegirTipo(TipoNovedad.AYUDA)
+        vm.cambiarDescripcion(" Necesito otro gestor, hay mucho escombro. ")
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertEquals(
+            NuevaNovedad(
+                reporteId = 7,
+                tipo = TipoNovedad.AYUDA,
+                descripcion = "Necesito otro gestor, hay mucho escombro.",
+                tareaId = 12,
+            ),
+            novedades.creadas.single(),
+        )
+        assertTrue(vm.estado.value.enviada)
+    }
+
+    @Test
+    fun gestor_errorDeLaTarea_vaAlAviso() = runTest(main.despachador) {
+        novedades.creada = RepositorioFalso.fallo(
+            ErrorAuth.Validacion(mapOf("tarea" to listOf("Tu tarea en este reporte no está activa."))),
+        )
+        val vm = viewModelGestor()
+        advanceUntilIdle()
+
+        vm.elegirTipo(TipoNovedad.INCIDENTE)
+        vm.cambiarDescripcion("Llovió y no se puede seguir.")
+        vm.enviar()
+        advanceUntilIdle()
+
+        // No hay campo de gestor en su formulario: el mensaje va en el aviso
+        with(vm.estado.value) {
+            assertEquals("Tu tarea en este reporte no está activa.", aviso)
+            assertTrue(errores.isEmpty())
+            assertFalse(enviada)
+            assertEquals("Llovió y no se puede seguir.", descripcion)
+        }
+    }
+
+    @Test
+    fun gestor_tareaQueNoAbre_muestraError() = runTest(main.despachador) {
+        tareas.mias = RepositorioFalso.fallo(ErrorAuth.SinConexion(IOException()))
+        val vm = ReportarNovedadViewModel(reportes, tareas, novedades, ModoNovedad.Gestor(idTarea = 12))
+        advanceUntilIdle()
+
+        assertTrue(vm.estado.value.errorReporte?.sinConexion == true)
+        assertNull(vm.estado.value.tarea)
     }
 
     @Test

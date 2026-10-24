@@ -4,7 +4,7 @@ import co.ecocomunidad.app.data.modelo.NuevaNovedad
 import co.ecocomunidad.app.data.modelo.Novedad
 
 /**
- * Novedades del ciudadano (RN-18). Cada novedad la ven solo quien la creó y el administrador:
+ * Novedades del ciudadano y del gestor (RN-18). Cada novedad la ven solo quien la creó y el administrador:
  * eso lo decide el backend. La implementación real es [NovedadesRepositoryRemoto].
  */
 interface NovedadesRepository {

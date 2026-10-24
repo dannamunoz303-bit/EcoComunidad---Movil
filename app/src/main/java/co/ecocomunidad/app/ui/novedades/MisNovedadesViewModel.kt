@@ -6,13 +6,19 @@ import co.ecocomunidad.app.data.ErrorAuth
 import co.ecocomunidad.app.data.NovedadesRepository
 import co.ecocomunidad.app.data.Resultado
 import co.ecocomunidad.app.data.modelo.Novedad
+import co.ecocomunidad.app.data.modelo.Rol
+import co.ecocomunidad.app.data.sesion.UsuarioSesion
 import co.ecocomunidad.app.ui.navegacion.mensajeDeError
 import co.ecocomunidad.app.ui.reportes.ErrorCarga
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.OffsetDateTime
@@ -28,11 +34,18 @@ data class MisNovedadesEstado(
     val vacio: Boolean get() = !cargando && error == null && novedades.isEmpty()
 }
 
-/** Las novedades que creó el ciudadano, con la respuesta del administrador si ya la hay (RN-18). */
-class MisNovedadesViewModel(private val repositorio: NovedadesRepository) : ViewModel() {
+/** Las novedades que creó el ciudadano o el gestor, con la respuesta del administrador si ya la hay (RN-18). */
+class MisNovedadesViewModel(
+    private val repositorio: NovedadesRepository,
+    usuario: Flow<UsuarioSesion?>,
+) : ViewModel() {
 
     private val _estado = MutableStateFlow(MisNovedadesEstado())
     val estado: StateFlow<MisNovedadesEstado> = _estado.asStateFlow()
+
+    /** El gestor ve en cada tarjeta su tarea ("título · Tarea #id"); el ciudadano, solo el reporte. */
+    val conTarea: StateFlow<Boolean> =
+        usuario.map { it?.rol == Rol.GESTOR }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     private var trabajo: Job? = null
 

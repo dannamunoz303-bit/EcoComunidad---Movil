@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 // Campos de la sección 4.8 con los nombres que usa la API (novedades/serializers.py del backend):
 // reporte_id llega como "reporte" y tarea_id como "tarea".
 
-/** Tipo de novedad (sección 4.8). El ciudadano solo crea queja o incidente (RN-18). */
+/** Tipo de novedad (sección 4.8). El ciudadano crea queja o incidente; el gestor, ayuda o incidente (RN-18). */
 @Serializable
 enum class TipoNovedad {
     @SerialName("ayuda") AYUDA,
@@ -40,7 +40,10 @@ data class Novedad(
     val fecha: String,
 )
 
-/** Cuerpo de POST novedades/ (CrearNovedadSerializer). [tareaId] null no se envía. */
+/**
+ * Cuerpo de POST novedades/ (CrearNovedadSerializer). [tareaId] null no se envía: es opcional para el
+ * ciudadano y obligatorio para el gestor (su tarea activa en ese reporte).
+ */
 @Serializable
 data class NuevaNovedad(
     @SerialName("reporte") val reporteId: Int,

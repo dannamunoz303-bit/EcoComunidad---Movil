@@ -64,6 +64,10 @@ data class DetalleTareaEstado(
     /** RN-14: acciones solo con la tarea asignada o en proceso. El backend vuelve a revisar. */
     val puedeRegistrarAccion: Boolean
         get() = tarea?.estado in ESTADOS_TAREA_ACTIVOS
+
+    /** RN-18: el gestor crea novedades solo sobre su tarea activa (asignada o en proceso). */
+    val puedePedirAyuda: Boolean
+        get() = tarea?.estado in ESTADOS_TAREA_ACTIVOS
 }
 
 /**

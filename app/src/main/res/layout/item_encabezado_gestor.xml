@@ -50,14 +50,14 @@
                 android:visibility="gone" />
         </FrameLayout>
 
-        <!-- Menú: por ahora solo Cerrar sesión -->
+        <!-- Abre Mi cuenta del gestor -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/boton_mi_cuenta"
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:contentDescription="@string/menu"
-            android:tooltipText="@string/menu"
+            android:contentDescription="@string/mi_cuenta"
+            android:tooltipText="@string/mi_cuenta"
             app:icon="@drawable/ic_menu"
             app:iconTint="@color/verde_bosque" />
     </LinearLayout>

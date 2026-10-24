@@ -15,18 +15,27 @@ import co.ecocomunidad.app.databinding.FragmentNotificacionesBinding
 import co.ecocomunidad.app.ui.componentes.contenedor
 import co.ecocomunidad.app.ui.componentes.observar
 import co.ecocomunidad.app.ui.navegacion.ARG_ID_REPORTE
+import co.ecocomunidad.app.ui.navegacion.ARG_ID_TAREA
 import co.ecocomunidad.app.ui.reportes.EstadoVista
 import co.ecocomunidad.app.ui.reportes.mostrar
 import com.google.android.material.snackbar.Snackbar
 
-/** Notificaciones del ciudadano (sección 9). Se abre desde la campana del inicio. */
+/** Notificaciones del ciudadano y del gestor (sección 9). Se abre desde la campana del inicio. */
 class NotificacionesFragment : Fragment() {
 
     private var _binding: FragmentNotificacionesBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: NotificacionesViewModel by viewModels {
-        viewModelFactory { initializer { NotificacionesViewModel(contenedor.notificacionesRepository) } }
+        viewModelFactory {
+            initializer {
+                NotificacionesViewModel(
+                    contenedor.notificacionesRepository,
+                    contenedor.tareasRepository,
+                    contenedor.authRepository.usuario,
+                )
+            }
+        }
     }
 
     private val adaptador = NotificacionesAdapter { viewModel.tocar(it) }
@@ -81,6 +90,12 @@ class NotificacionesFragment : Fragment() {
             DestinoNotificacion.MisSanciones -> nav.navigate(R.id.misSancionesFragment)
             is DestinoNotificacion.Reporte ->
                 nav.navigate(R.id.detalleReporteFragment, bundleOf(ARG_ID_REPORTE to destino.id))
+            // Mis tareas es el inicio del gestor: está debajo en la pila
+            DestinoNotificacion.MisTareas -> nav.popBackStack(R.id.inicioGestorFragment, false)
+            is DestinoNotificacion.Tarea ->
+                nav.navigate(R.id.detalleTareaFragment, bundleOf(ARG_ID_TAREA to destino.id))
+            // El ViewModel ya la cambió por Tarea o MisTareas
+            is DestinoNotificacion.TareaDelReporte -> Unit
         }
     }
 

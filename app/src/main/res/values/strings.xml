@@ -161,6 +161,16 @@
     <string name="novedad_enviando">Enviando tu novedad…</string>
     <string name="novedad_enviada">Enviamos tu novedad. Te avisaremos cuando el administrador responda.</string>
 
+    <!-- Novedad del gestor (RN-18): ayuda o incidente sobre su tarea activa -->
+    <string name="pedir_ayuda_enlace">Pedir ayuda o avisar un incidente</string>
+    <string name="pedir_ayuda_titulo">Pedir ayuda o avisar</string>
+    <string name="novedad_sobre_tarea">Sobre tu tarea</string>
+    <string name="opcion_ayuda">Ayuda</string>
+    <string name="opcion_ayuda_explicacion">Necesito otro gestor o más materiales</string>
+    <string name="incidente_gestor_explicacion">Pasó algo que impide seguir el trabajo</string>
+    <string name="pedir_ayuda_aviso">El administrador puede asignar otro gestor a este reporte.</string>
+    <string name="boton_enviar">Enviar</string>
+
     <!-- Mis novedades -->
     <string name="mis_novedades">Mis novedades</string>
     <string name="novedades_cargando">Buscando tus novedades…</string>
@@ -169,6 +179,8 @@
     <string name="novedad_estado_abierta">Abierta</string>
     <string name="novedad_estado_atendida">Atendida</string>
     <string name="novedad_reporte">Reporte: %1$s</string>
+    <!-- Solo en las del gestor, que siempre traen su tarea -->
+    <string name="novedad_reporte_tarea">%1$s · Tarea #%2$d</string>
     <string name="novedad_fecha">Enviada el %1$s</string>
     <string name="respuesta_administrador">Respuesta del administrador</string>
 
@@ -207,7 +219,6 @@
     <string name="contrasena_cambiada">Tu contraseña quedó cambiada.</string>
 
     <!-- Mis tareas del gestor (RN-11, RN-13, RN-14) -->
-    <string name="menu">Menú</string>
     <string name="saludo_gestor">¡Hola, %1$s!</string>
     <string name="saludo_gestor_sin_nombre">¡Hola!</string>
     <plurals name="tareas_activas_resumen">

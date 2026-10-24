@@ -6,9 +6,11 @@ import co.ecocomunidad.app.data.ErrorAuth
 import co.ecocomunidad.app.data.NovedadesRepository
 import co.ecocomunidad.app.data.ReportesRepository
 import co.ecocomunidad.app.data.Resultado
+import co.ecocomunidad.app.data.TareasRepository
 import co.ecocomunidad.app.data.modelo.NuevaNovedad
 import co.ecocomunidad.app.data.modelo.Reporte
 import co.ecocomunidad.app.data.modelo.Tarea
+import co.ecocomunidad.app.data.modelo.TareaGestor
 import co.ecocomunidad.app.data.modelo.TipoNovedad
 import co.ecocomunidad.app.ui.navegacion.mensajeDeError
 import co.ecocomunidad.app.ui.reportes.ErrorCarga
@@ -30,9 +32,33 @@ enum class CampoNovedad(val claves: Set<String>) {
 /** Un gestor del reporte para el desplegable. Se envía el id de su tarea (tarea_id). */
 data class OpcionGestor(val tareaId: Int, val nombre: String)
 
+/** Quién escribe la novedad (RN-18): cambia los tipos, lo que se muestra arriba y lo que se envía. */
+sealed interface ModoNovedad {
+    /** Los tipos que puede elegir, en el orden de la pantalla. */
+    val tipos: List<TipoNovedad>
+
+    /** Los campos que se ven en el formulario. Un error del backend en otro campo va al aviso. */
+    val campos: Set<CampoNovedad>
+
+    /** Queja o incidente sobre un reporte propio. El gestor (tarea_id) es opcional. */
+    data class Ciudadano(val idReporte: Int) : ModoNovedad {
+        override val tipos = listOf(TipoNovedad.QUEJA, TipoNovedad.INCIDENTE)
+        override val campos = CampoNovedad.entries.toSet()
+    }
+
+    /** Pedir ayuda o avisar un incidente sobre su tarea. La tarea es obligatoria y no se elige. */
+    data class Gestor(val idTarea: Int) : ModoNovedad {
+        override val tipos = listOf(TipoNovedad.AYUDA, TipoNovedad.INCIDENTE)
+        override val campos = setOf(CampoNovedad.TIPO, CampoNovedad.DESCRIPCION)
+    }
+}
+
 data class ReportarNovedadEstado(
+    /** Lo de la tarjeta de arriba: el reporte (ciudadano) o la tarea (gestor). */
     val cargandoReporte: Boolean = true,
     val reporte: Reporte? = null,
+    /** Solo el gestor: su tarea, con lo básico del reporte. */
+    val tarea: TareaGestor? = null,
     val errorReporte: ErrorCarga? = null,
     /** Gestores con tarea en el reporte, sin repetir. Vacía si no hay o no se pudieron cargar. */
     val gestores: List<OpcionGestor> = emptyList(),
@@ -53,13 +79,15 @@ data class ReportarNovedadEstado(
 )
 
 /**
- * Reportar novedad (RN-18): el ciudadano se queja o avisa de un incidente sobre su reporte.
- * Aquí solo se revisa que no falte nada; si el reporte ya no lo permite, lo dice el backend.
+ * Novedad sobre un reporte (RN-18). El ciudadano se queja o avisa de un incidente sobre su reporte;
+ * el gestor pide ayuda o avisa de un incidente sobre su tarea activa (ver [ModoNovedad]).
+ * Aquí solo se revisa que no falte nada; si ya no se permite, lo dice el backend.
  */
 class ReportarNovedadViewModel(
     private val reportes: ReportesRepository,
+    private val tareas: TareasRepository,
     private val novedades: NovedadesRepository,
-    private val idReporte: Int,
+    val modo: ModoNovedad,
 ) : ViewModel() {
 
     private val _estado = MutableStateFlow(ReportarNovedadEstado())
@@ -73,27 +101,43 @@ class ReportarNovedadViewModel(
 
     fun reintentar() = cargar()
 
-    /** El reporte (para la tarjeta de arriba) y sus gestores. Si fallan los gestores, se puede enviar sin elegir. */
     private fun cargar() {
         trabajo?.cancel()
+        trabajo = when (modo) {
+            is ModoNovedad.Ciudadano -> cargarReporte(modo.idReporte)
+            is ModoNovedad.Gestor -> cargarTarea(modo.idTarea)
+        }
+    }
+
+    /** El reporte (para la tarjeta de arriba) y sus gestores. Si fallan los gestores, se puede enviar sin elegir. */
+    private fun cargarReporte(idReporte: Int): Job {
         _estado.update {
             it.copy(cargandoReporte = true, errorReporte = null, cargandoGestores = true, errorGestores = null)
         }
-        trabajo = viewModelScope.launch {
-            launch { cargarGestores() }
+        return viewModelScope.launch {
+            launch { cargarGestores(idReporte) }
             when (val r = reportes.detalle(idReporte)) {
                 is Resultado.Exito -> _estado.update { it.copy(cargandoReporte = false, reporte = r.datos) }
-                is Resultado.Fallo -> _estado.update {
-                    it.copy(
-                        cargandoReporte = false,
-                        errorReporte = ErrorCarga(mensajeDeError(r.error), sinConexion = r.error is ErrorAuth.SinConexion),
-                    )
-                }
+                is Resultado.Fallo -> _estado.update { it.copy(cargandoReporte = false, errorReporte = errorCarga(r.error)) }
             }
         }
     }
 
-    private suspend fun cargarGestores() {
+    /** La tarea del gestor (tareas/mias/): de ahí salen el reporte y la tarjeta de arriba. No hay desplegable. */
+    private fun cargarTarea(idTarea: Int): Job {
+        _estado.update { it.copy(cargandoReporte = true, errorReporte = null, cargandoGestores = false) }
+        return viewModelScope.launch {
+            when (val r = tareas.tarea(idTarea)) {
+                is Resultado.Exito -> _estado.update { it.copy(cargandoReporte = false, tarea = r.datos) }
+                is Resultado.Fallo -> _estado.update { it.copy(cargandoReporte = false, errorReporte = errorCarga(r.error)) }
+            }
+        }
+    }
+
+    private fun errorCarga(error: ErrorAuth) =
+        ErrorCarga(mensajeDeError(error), sinConexion = error is ErrorAuth.SinConexion)
+
+    private suspend fun cargarGestores(idReporte: Int) {
         when (val r = reportes.tareas(idReporte)) {
             is Resultado.Exito -> _estado.update { it.copy(cargandoGestores = false, gestores = opciones(r.datos)) }
             is Resultado.Fallo -> _estado.update {
@@ -108,8 +152,9 @@ class ReportarNovedadViewModel(
             .distinctBy { it.first }
             .map { it.second }
 
-    fun elegirTipo(tipo: TipoNovedad) = _estado.update {
-        it.copy(tipo = tipo, errores = it.errores - CampoNovedad.TIPO)
+    fun elegirTipo(tipo: TipoNovedad) {
+        if (tipo !in modo.tipos) return
+        _estado.update { it.copy(tipo = tipo, errores = it.errores - CampoNovedad.TIPO) }
     }
 
     /** null = "Ninguno en particular". */
@@ -129,19 +174,28 @@ class ReportarNovedadViewModel(
         if (e.enviando) return
 
         val errores = buildMap {
-            if (e.tipo == null) put(CampoNovedad.TIPO, "Elige si es una queja o un incidente.")
+            if (e.tipo == null) put(CampoNovedad.TIPO, errorTipo())
             if (e.descripcion.isBlank()) put(CampoNovedad.DESCRIPCION, "Cuéntanos qué pasó.")
         }
         if (errores.isNotEmpty()) {
             _estado.update { it.copy(errores = errores, aviso = null) }
             return
         }
-        val nueva = NuevaNovedad(
-            reporteId = idReporte,
-            tipo = e.tipo!!,
-            descripcion = e.descripcion.trim(),
-            tareaId = e.gestor?.tareaId,
-        )
+        val nueva = when (modo) {
+            is ModoNovedad.Ciudadano -> NuevaNovedad(
+                reporteId = modo.idReporte,
+                tipo = e.tipo!!,
+                descripcion = e.descripcion.trim(),
+                tareaId = e.gestor?.tareaId,
+            )
+            // El formulario solo se ve con la tarea cargada
+            is ModoNovedad.Gestor -> NuevaNovedad(
+                reporteId = e.tarea?.reporte?.id ?: return,
+                tipo = e.tipo!!,
+                descripcion = e.descripcion.trim(),
+                tareaId = modo.idTarea,
+            )
+        }
 
         _estado.update { it.copy(enviando = true, aviso = null, errores = emptyMap()) }
         viewModelScope.launch {
@@ -163,13 +217,21 @@ class ReportarNovedadViewModel(
 
     fun enviadaAtendida() = _estado.update { it.copy(enviada = false) }
 
-    /** Los mensajes del backend van en su campo; los demás ("reporte", "detail"…), en el aviso. */
+    private fun errorTipo() = when (modo) {
+        is ModoNovedad.Ciudadano -> "Elige si es una queja o un incidente."
+        is ModoNovedad.Gestor -> "Elige si necesitas ayuda o es un incidente."
+    }
+
+    /**
+     * Los mensajes del backend van en su campo; los demás ("reporte", "detail"…) y los de campos que
+     * no se ven (la tarea del gestor), en el aviso.
+     */
     private fun ReportarNovedadEstado.conError(error: ErrorAuth): ReportarNovedadEstado {
         if (error !is ErrorAuth.Validacion) return copy(aviso = mensajeDeError(error))
         val porCampo = mutableMapOf<CampoNovedad, MutableList<String>>()
         val otros = mutableListOf<String>()
         for ((clave, mensajes) in error.campos) {
-            val campo = CampoNovedad.entries.firstOrNull { clave in it.claves }
+            val campo = modo.campos.firstOrNull { clave in it.claves }
             if (campo != null) porCampo.getOrPut(campo) { mutableListOf() } += mensajes else otros += mensajes
         }
         val aviso = when {

@@ -15,7 +15,7 @@ const val ARG_CUENTA_CREADA = "cuentaCreada"
 const val ARG_ID_REPORTE = "idReporte"
 const val ARG_URL_FOTO = "url"
 
-/** Detalle de una tarea del gestor y Registrar acción. */
+/** Detalle de una tarea del gestor, Registrar acción y Pedir ayuda o avisar. */
 const val ARG_ID_TAREA = "idTarea"
 
 /** Lo deja Registrar acción en el detalle de la tarea cuando la acción quedó guardada. */

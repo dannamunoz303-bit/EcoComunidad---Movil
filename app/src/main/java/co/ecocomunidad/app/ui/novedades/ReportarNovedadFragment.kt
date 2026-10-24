@@ -23,29 +23,52 @@ import co.ecocomunidad.app.ui.componentes.contenedor
 import co.ecocomunidad.app.ui.componentes.mostrar
 import co.ecocomunidad.app.ui.componentes.observar
 import co.ecocomunidad.app.ui.navegacion.ARG_ID_REPORTE
+import co.ecocomunidad.app.ui.navegacion.ARG_ID_TAREA
 import co.ecocomunidad.app.ui.navegacion.ARG_NOVEDAD_ENVIADA
 import co.ecocomunidad.app.ui.reportes.EstadoVista
 import co.ecocomunidad.app.ui.reportes.mostrarEstado
+import co.ecocomunidad.app.ui.reportes.mostrarEtiquetaEstado
+import co.ecocomunidad.app.ui.tareas.color
+import co.ecocomunidad.app.ui.tareas.etiqueta
 import co.ecocomunidad.app.ui.reportes.mostrar as mostrarEstadoCarga
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-/** Queja o incidente sobre un reporte propio (RN-18). Al enviar bien, abre "Mis novedades". */
+/**
+ * Novedad sobre un reporte (RN-18). Con idReporte (reportarNovedadFragment) es la queja o incidente del
+ * ciudadano; con idTarea (pedirAyudaFragment), el pedido de ayuda o incidente del gestor.
+ * Al enviar bien, abre "Mis novedades" en su lugar: atrás vuelve al detalle del reporte o de la tarea.
+ */
 class ReportarNovedadFragment : Fragment() {
 
     private var _binding: FragmentReportarNovedadBinding? = null
     private val binding get() = _binding!!
+
+    private val modo: ModoNovedad
+        get() = with(requireArguments()) {
+            if (containsKey(ARG_ID_TAREA)) ModoNovedad.Gestor(getInt(ARG_ID_TAREA))
+            else ModoNovedad.Ciudadano(getInt(ARG_ID_REPORTE))
+        }
 
     private val viewModel: ReportarNovedadViewModel by viewModels {
         viewModelFactory {
             initializer {
                 ReportarNovedadViewModel(
                     contenedor.reportesRepository,
+                    contenedor.tareasRepository,
                     contenedor.novedadesRepository,
-                    requireArguments().getInt(ARG_ID_REPORTE),
+                    modo,
                 )
             }
         }
     }
+
+    /** La tarjeta de cada tipo. Solo se ven las de [ModoNovedad.tipos]. */
+    private val opciones
+        get() = mapOf(
+            TipoNovedad.AYUDA to binding.opcionAyuda,
+            TipoNovedad.QUEJA to binding.opcionQueja,
+            TipoNovedad.INCIDENTE to binding.opcionIncidente,
+        )
 
     /** Lo último que se pintó en el desplegable, para no rehacerlo en cada emisión. */
     private var gestoresPintados: List<OpcionGestor>? = null
@@ -62,8 +85,8 @@ class ReportarNovedadFragment : Fragment() {
         // Atrás del sistema: si hay algo sin enviar, se pregunta antes de perderlo
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) { volver() }
 
-        binding.opcionQueja.setOnClickListener { viewModel.elegirTipo(TipoNovedad.QUEJA) }
-        binding.opcionIncidente.setOnClickListener { viewModel.elegirTipo(TipoNovedad.INCIDENTE) }
+        prepararModo()
+        for ((tipo, opcion) in opciones) opcion.setOnClickListener { viewModel.elegirTipo(tipo) }
         // La posición 0 es "Ninguno en particular"
         binding.textoGestor.setOnItemClickListener { _, _, posicion, _ ->
             viewModel.elegirGestor(gestoresPintados?.getOrNull(posicion - 1))
@@ -78,14 +101,28 @@ class ReportarNovedadFragment : Fragment() {
         observar(viewModel.estado, ::mostrarEstado)
     }
 
+    /** Lo que no cambia mientras se ve la pantalla: textos y campos de cada modo. */
+    private fun prepararModo() = with(binding) {
+        val gestor = viewModel.modo is ModoNovedad.Gestor
+        for ((tipo, opcion) in opciones) {
+            opcion.visibility = if (tipo in viewModel.modo.tipos) View.VISIBLE else View.GONE
+        }
+        tituloPantalla.setText(if (gestor) R.string.pedir_ayuda_titulo else R.string.reportar_novedad)
+        etiquetaTarjeta.setText(if (gestor) R.string.novedad_sobre_tarea else R.string.novedad_sobre_reporte)
+        explicacionIncidente.setText(if (gestor) R.string.incidente_gestor_explicacion else R.string.tipo_incidente_ayuda)
+        avisoRespuesta.setText(if (gestor) R.string.pedir_ayuda_aviso else R.string.novedad_aviso_respuesta)
+        campoGestor.visibility = if (gestor) View.GONE else View.VISIBLE
+    }
+
     private fun mostrarEstado(estado: ReportarNovedadEstado) {
         if (estado.enviada) {
             viewModel.enviadaAtendida()
             // Se reemplaza el formulario: atrás desde "Mis novedades" vuelve al detalle
-            findNavController().navigate(
+            val nav = findNavController()
+            nav.navigate(
                 R.id.misNovedadesFragment,
                 bundleOf(ARG_NOVEDAD_ENVIADA to true),
-                navOptions { popUpTo(R.id.reportarNovedadFragment) { inclusive = true } },
+                navOptions { popUpTo(nav.currentDestination!!.id) { inclusive = true } },
             )
             return
         }
@@ -97,22 +134,30 @@ class ReportarNovedadFragment : Fragment() {
                 tituloReporte.text = it.titulo
                 estadoReporte.mostrarEstado(it.estado)
             }
+            estado.tarea?.let {
+                tituloReporte.text = getString(R.string.accion_tarea_titulo, it.id, it.reporte.titulo)
+                estadoReporte.mostrarEtiquetaEstado(it.estado.etiqueta, it.estado.color)
+            }
 
-            opcionQueja.isChecked = estado.tipo == TipoNovedad.QUEJA
-            opcionIncidente.isChecked = estado.tipo == TipoNovedad.INCIDENTE
-            opcionQueja.isEnabled = habilitado
-            opcionIncidente.isEnabled = habilitado
+            for ((tipo, opcion) in opciones) {
+                opcion.isChecked = estado.tipo == tipo
+                opcion.isEnabled = habilitado
+            }
             val mensajeTipo = estado.errores[CampoNovedad.TIPO]
             errorTipo.text = mensajeTipo
             errorTipo.visibility = if (mensajeTipo == null) View.GONE else View.VISIBLE
 
-            mostrarGestores(estado, habilitado)
+            if (viewModel.modo is ModoNovedad.Ciudadano) mostrarGestores(estado, habilitado)
             campoDescripcion.mostrar(estado.descripcion, estado.errores[CampoNovedad.DESCRIPCION])
             campoDescripcion.isEnabled = habilitado
 
             aviso.mostrar(estado.aviso)
             botonEnviar.isEnabled = habilitado
-            botonEnviar.text = if (estado.enviando) "" else getString(R.string.boton_enviar_novedad)
+            botonEnviar.text = when {
+                estado.enviando -> ""
+                viewModel.modo is ModoNovedad.Gestor -> getString(R.string.boton_enviar)
+                else -> getString(R.string.boton_enviar_novedad)
+            }
             progreso.visibility = if (estado.enviando) View.VISIBLE else View.GONE
             cargaLarga.visibility = if (estado.cargaLarga) View.VISIBLE else View.GONE
         }
@@ -125,11 +170,18 @@ class ReportarNovedadFragment : Fragment() {
         estabaEnviando = estado.enviando
     }
 
-    /** Mientras se abre el reporte (o si no se pudo) no se muestra el formulario. */
+    /** Mientras se abre el reporte o la tarea (o si no se pudo) no se muestra el formulario. */
     private fun mostrarCarga(estado: ReportarNovedadEstado) = with(binding) {
+        val gestor = viewModel.modo is ModoNovedad.Gestor
         val vistaEstado = when {
-            estado.cargandoReporte -> EstadoVista.Cargando(conBrotico = false, texto = R.string.novedad_cargando)
-            estado.errorReporte != null -> EstadoVista.Error(R.string.novedad_error_titulo, estado.errorReporte)
+            estado.cargandoReporte -> EstadoVista.Cargando(
+                conBrotico = false,
+                texto = if (gestor) R.string.tarea_cargando else R.string.novedad_cargando,
+            )
+            estado.errorReporte != null -> EstadoVista.Error(
+                if (gestor) R.string.tarea_error_titulo else R.string.novedad_error_titulo,
+                estado.errorReporte,
+            )
             else -> null
         }
         estadoCarga.root.visibility = if (vistaEstado == null) View.GONE else View.VISIBLE
@@ -175,7 +227,7 @@ class ReportarNovedadFragment : Fragment() {
     private fun desplazarAlPrimerError() {
         val errores = viewModel.estado.value.errores
         val vista = when {
-            CampoNovedad.TIPO in errores -> binding.opcionQueja
+            CampoNovedad.TIPO in errores -> opciones.getValue(viewModel.modo.tipos.first())
             CampoNovedad.GESTOR in errores -> binding.campoGestor
             CampoNovedad.DESCRIPCION in errores -> binding.campoDescripcion
             else -> return

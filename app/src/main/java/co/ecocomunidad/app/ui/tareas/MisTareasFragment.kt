@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -19,8 +18,6 @@ import co.ecocomunidad.app.ui.componentes.contenedor
 import co.ecocomunidad.app.ui.componentes.observar
 import co.ecocomunidad.app.ui.inicio.InicioViewModel
 import co.ecocomunidad.app.ui.navegacion.ARG_ID_TAREA
-import co.ecocomunidad.app.ui.navegacion.Ruta
-import co.ecocomunidad.app.ui.navegacion.irA
 import co.ecocomunidad.app.ui.notificaciones.CampanaViewModel
 import co.ecocomunidad.app.ui.reportes.EstadoListaAdapter
 import co.ecocomunidad.app.ui.reportes.EstadoVista
@@ -28,7 +25,7 @@ import com.google.android.material.snackbar.Snackbar
 
 /**
  * Inicio del gestor: Mis tareas. Pestañas Activas (asignada y en proceso) y Terminadas.
- * El menú por ahora solo tiene Cerrar sesión; Mi cuenta del gestor va en otro paso.
+ * La campana abre Notificaciones y el botón ☰, Mi cuenta.
  */
 class MisTareasFragment : Fragment() {
 
@@ -60,7 +57,7 @@ class MisTareasFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         encabezado = EncabezadoGestorAdapter(
             alAbrirNotificaciones = { findNavController().navigate(R.id.notificacionesFragment) },
-            alAbrirMenu = ::abrirMenu,
+            alAbrirMiCuenta = { findNavController().navigate(R.id.miCuentaFragment) },
             alElegirFiltro = tareas::elegirFiltro,
         )
         estadoLista = EstadoListaAdapter(alReintentar = tareas::reintentar)
@@ -88,21 +85,6 @@ class MisTareasFragment : Fragment() {
         campana.actualizar()
         if (yaSeVio) tareas.recargar()
         yaSeVio = true
-    }
-
-    /** Por ahora el menú solo tiene Cerrar sesión. */
-    private fun abrirMenu(ancla: View) {
-        PopupMenu(requireContext(), ancla).apply {
-            menu.add(R.string.cerrar_sesion)
-            setOnMenuItemClickListener {
-                val vista = view ?: return@setOnMenuItemClickListener true
-                inicio.cerrarSesion {
-                    // La vista puede haberse ido mientras se borraba la sesión
-                    if (vista.isAttachedToWindow) findNavController().irA(Ruta.Login())
-                }
-                true
-            }
-        }.show()
     }
 
     private fun mostrarEstado(estado: MisTareasEstado) {

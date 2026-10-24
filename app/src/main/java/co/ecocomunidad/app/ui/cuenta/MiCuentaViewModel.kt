@@ -3,6 +3,7 @@ package co.ecocomunidad.app.ui.cuenta
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.ecocomunidad.app.data.AuthRepository
+import co.ecocomunidad.app.data.modelo.Rol
 import co.ecocomunidad.app.data.sesion.UsuarioSesion
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,8 +14,17 @@ import kotlinx.coroutines.launch
 fun inicialesDe(nombre: String, apellido: String): String =
     listOf(nombre, apellido).mapNotNull { it.trim().firstOrNull()?.uppercaseChar() }.joinToString("")
 
+/** Opciones de "Mi cuenta", en el orden de la pantalla. */
+enum class OpcionCuenta { MIS_NOVEDADES, MIS_SANCIONES, CAMBIAR_CONTRASENA, CERRAR_SESION }
+
+/** Las sanciones son solo para ciudadanos (RN-19): el gestor no ve "Mis sanciones". */
+fun opcionesCuenta(rol: Rol): List<OpcionCuenta> = when (rol) {
+    Rol.CIUDADANO -> OpcionCuenta.entries
+    else -> OpcionCuenta.entries - OpcionCuenta.MIS_SANCIONES
+}
+
 /**
- * Mi cuenta: los datos de auth/yo/. Se muestra al instante lo guardado con la sesión y se pide
+ * Mi cuenta del ciudadano y del gestor: los datos de auth/yo/. Se muestra al instante lo guardado con la sesión y se pide
  * auth/yo/ para actualizarlo (el repositorio guarda la respuesta y [usuario] cambia solo).
  */
 class MiCuentaViewModel(private val repositorio: AuthRepository) : ViewModel() {
