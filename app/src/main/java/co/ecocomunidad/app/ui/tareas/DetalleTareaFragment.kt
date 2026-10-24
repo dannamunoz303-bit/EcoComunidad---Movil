@@ -82,6 +82,7 @@ class DetalleTareaFragment : Fragment() {
         binding.botonRegistrarAccion.setOnClickListener {
             findNavController().navigate(R.id.registrarAccionFragment, bundleOf(ARG_ID_TAREA to idTarea))
         }
+        binding.botonReintentarAcciones.setOnClickListener { viewModel.reintentarAcciones() }
         binding.botonPedirAyuda.setOnClickListener {
             findNavController().navigate(R.id.pedirAyudaFragment, bundleOf(ARG_ID_TAREA to idTarea))
         }
@@ -196,6 +197,7 @@ class DetalleTareaFragment : Fragment() {
         }
         accionesMensaje.text = mensaje
         accionesMensaje.visibility = if (mensaje == null) View.GONE else View.VISIBLE
+        botonReintentarAcciones.visibility = if (acciones is MisAcciones.Error) View.VISIBLE else View.GONE
         if (acciones is MisAcciones.Lista) {
             acciones.acciones.forEachIndexed { i, accion ->
                 agregarAccion(accion, esUltima = i == acciones.acciones.lastIndex)

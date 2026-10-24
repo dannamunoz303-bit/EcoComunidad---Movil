@@ -10,6 +10,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.PathInterpolator
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.withScale
+import androidx.core.graphics.withTranslation
 import androidx.core.graphics.PathParser
 import co.ecocomunidad.app.R
 
@@ -65,35 +67,26 @@ class LogoAnimadoView @JvmOverloads constructor(
         val hojaIzq = avance(tiempoMs, 900f, 450f, rebote)
         val hojaDer = avance(tiempoMs, 1_100f, 450f, rebote)
 
-        canvas.save()
-        canvas.scale(width / 64f, height / 64f)
+        canvas.withScale(width / 64f, height / 64f) {
+            dibujarMovido(this, losaIzquierda, pinturaPavimento, separacion)
+            dibujarMovido(this, losaDerecha, pinturaPavimento, -separacion)
 
-        dibujarMovido(canvas, losaIzquierda, pinturaPavimento, separacion)
-        dibujarMovido(canvas, losaDerecha, pinturaPavimento, -separacion)
-
-        if (dibujado > 0f) {
-            talloParcial.reset()
-            medidaTallo.getSegment(0f, medidaTallo.length * dibujado, talloParcial, true)
-            canvas.drawPath(talloParcial, pinturaTallo)
+            if (dibujado > 0f) {
+                talloParcial.reset()
+                medidaTallo.getSegment(0f, medidaTallo.length * dibujado, talloParcial, true)
+                drawPath(talloParcial, pinturaTallo)
+            }
+            if (hojaIzq > 0f) dibujarEscalado(this, hojaIzquierda, pinturaHojaIzquierda, hojaIzq, 32f, 35f)
+            if (hojaDer > 0f) dibujarEscalado(this, hojaDerecha, pinturaHojaDerecha, hojaDer, 32f, 29f)
         }
-        if (hojaIzq > 0f) dibujarEscalado(canvas, hojaIzquierda, pinturaHojaIzquierda, hojaIzq, 32f, 35f)
-        if (hojaDer > 0f) dibujarEscalado(canvas, hojaDerecha, pinturaHojaDerecha, hojaDer, 32f, 29f)
-
-        canvas.restore()
     }
 
     private fun dibujarMovido(canvas: Canvas, trazo: Path, pintura: Paint, dx: Float) {
-        canvas.save()
-        canvas.translate(dx, 0f)
-        canvas.drawPath(trazo, pintura)
-        canvas.restore()
+        canvas.withTranslation(dx, 0f) { drawPath(trazo, pintura) }
     }
 
     private fun dibujarEscalado(canvas: Canvas, trazo: Path, pintura: Paint, escala: Float, x: Float, y: Float) {
-        canvas.save()
-        canvas.scale(escala, escala, x, y)
-        canvas.drawPath(trazo, pintura)
-        canvas.restore()
+        canvas.withScale(escala, escala, x, y) { drawPath(trazo, pintura) }
     }
 
     private fun relleno(color: Int) = Paint(Paint.ANTI_ALIAS_FLAG).apply {

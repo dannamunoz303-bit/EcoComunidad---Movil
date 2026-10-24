@@ -71,6 +71,7 @@ class DetalleReporteFragment : Fragment() {
             )
         }
         binding.botonEliminar.setOnClickListener { confirmarEliminar() }
+        binding.botonReintentarAcciones.setOnClickListener { viewModel.reintentarLinea() }
         binding.botonReportarNovedad.setOnClickListener {
             findNavController().navigate(
                 R.id.reportarNovedadFragment,
@@ -189,6 +190,7 @@ class DetalleReporteFragment : Fragment() {
         }
         accionesMensaje.text = mensaje
         accionesMensaje.visibility = if (mensaje == null) View.GONE else View.VISIBLE
+        botonReintentarAcciones.visibility = if (linea is LineaDeTiempo.Error) View.VISIBLE else View.GONE
 
         if (linea is LineaDeTiempo.Lista) {
             linea.acciones.forEachIndexed { i, accion ->
@@ -202,7 +204,7 @@ class DetalleReporteFragment : Fragment() {
         val item = ItemAccionBinding.inflate(layoutInflater, binding.acciones, false)
         item.fecha.text = fechaLarga(accion.fecha)
         // RN-14: el ciudadano dueño ve el nombre del gestor
-        item.gestor.text = gestor?.let { getString(R.string.detalle_gestor, it.nombre, it.apellido) }
+        item.gestor.text = gestor?.let { getString(R.string.nombre_completo, it.nombre, it.apellido) }
         item.gestor.visibility = if (gestor == null) View.GONE else View.VISIBLE
         item.descripcion.text = accion.descripcion
         item.linea.visibility = if (esUltima) View.INVISIBLE else View.VISIBLE

@@ -2,10 +2,8 @@ package co.ecocomunidad.app.ui.reportes.crear
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ActivityNotFoundException
 import android.content.pm.PackageManager
 import android.graphics.Rect
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -13,11 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.activity.addCallback
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.viewmodel.initializer
@@ -32,6 +27,7 @@ import co.ecocomunidad.app.ui.componentes.cerrarTeclado
 import co.ecocomunidad.app.ui.componentes.contenedor
 import co.ecocomunidad.app.ui.componentes.mostrar
 import co.ecocomunidad.app.ui.componentes.observar
+import co.ecocomunidad.app.ui.componentes.SelectorFotos
 import co.ecocomunidad.app.ui.navegacion.ARG_ID_REPORTE
 import co.ecocomunidad.app.ui.navegacion.RESULTADO_REPORTE_CREADO
 import co.ecocomunidad.app.ui.navegacion.RESULTADO_REPORTE_EDITADO
@@ -46,7 +42,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -55,9 +50,7 @@ import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
-import java.io.File
 import java.util.Locale
-import java.util.UUID
 
 /**
  * Formulario del reporte. Sin argumentos crea uno nuevo (RN-06); con [ARG_ID_REPORTE] edita uno
@@ -87,22 +80,12 @@ class CrearReporteFragment : Fragment() {
         }
     }
 
-    /** Dónde guarda la cámara la foto que está tomando. Se conserva si el sistema cierra la app mientras tanto. */
-    private var uriCamara: Uri? = null
-
-    private val tomarFoto = registerForActivityResult(ActivityResultContracts.TakePicture()) { tomada ->
-        val uri = uriCamara
-        uriCamara = null
-        if (tomada && uri != null) viewModel.agregarFotos(listOf(uri.toString()))
-    }
-
-    // El selector de fotos del sistema (Photo Picker): no necesita permisos de almacenamiento
-    private val elegirVarias = registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(MAXIMO_FOTOS)) { uris ->
-        viewModel.agregarFotos(uris.map { it.toString() })
-    }
-    private val elegirUna = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) viewModel.agregarFotos(listOf(uri.toString()))
-    }
+    private val selectorFotos = SelectorFotos(
+        fragmento = this,
+        maximo = MAXIMO_FOTOS,
+        disponibles = { viewModel.estado.value.fotosDisponibles },
+        alElegir = { viewModel.agregarFotos(it) },
+    )
 
     private val pedirUbicacion = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permisos ->
         if (permisos.values.any { it }) obtenerUbicacion() else mostrarMensajeUbicacion(R.string.ubicacion_sin_permiso)
@@ -120,11 +103,6 @@ class CrearReporteFragment : Fragment() {
     /** El mapa se centra cuando la ubicación llega del GPS; al tocar o arrastrar, no. */
     private var centrarEnLaUbicacion = false
     private var mensajeUbicacion: Int? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        uriCamara = savedInstanceState?.getString(ESTADO_URI_CAMARA)?.toUri()
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentCrearReporteBinding.inflate(inflater, container, false)
@@ -148,8 +126,8 @@ class CrearReporteFragment : Fragment() {
         }
         campos.forEach { (campo, vista) -> vista.alEscribir { viewModel.cambiar(campo, it) } }
 
-        binding.botonTomarFoto.setOnClickListener { abrirCamara() }
-        binding.botonElegirFotos.setOnClickListener { abrirGaleria() }
+        binding.botonTomarFoto.setOnClickListener { selectorFotos.abrirCamara() }
+        binding.botonElegirFotos.setOnClickListener { selectorFotos.abrirGaleria() }
         binding.botonMiUbicacion.setOnClickListener { usarMiUbicacion() }
         binding.botonEnviar.setOnClickListener {
             cerrarTeclado()
@@ -259,25 +237,6 @@ class CrearReporteFragment : Fragment() {
     }
 
     // --- Fotos ---
-
-    private fun abrirCamara() {
-        val contexto = requireContext()
-        val archivo = File(ReductorFotos.carpetaCamara(contexto), "camara_${UUID.randomUUID()}.jpg")
-        val uri = FileProvider.getUriForFile(contexto, ReductorFotos.autoridadArchivos(contexto), archivo)
-        uriCamara = uri
-        try {
-            tomarFoto.launch(uri)
-        } catch (e: ActivityNotFoundException) {
-            uriCamara = null
-            Snackbar.make(binding.root, R.string.sin_camara, Snackbar.LENGTH_LONG).show()
-        }
-    }
-
-    private fun abrirGaleria() {
-        val solicitud = PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-        // El selector de varias pide al menos 2; si solo cabe una más, se usa el de una
-        if (viewModel.estado.value.fotosDisponibles == 1) elegirUna.launch(solicitud) else elegirVarias.launch(solicitud)
-    }
 
     private fun mostrarFotos(estado: FormularioReporteEstado, habilitado: Boolean) = with(binding) {
         fotosAyuda.text = getString(R.string.fotos_ayuda, MAXIMO_FOTOS, estado.fotos.size)
@@ -488,7 +447,7 @@ class CrearReporteFragment : Fragment() {
         vista.post { vista.requestRectangleOnScreen(Rect(0, 0, vista.width, vista.height), false) }
     }
 
-    // --- Ciclo de vida del mapa y de la cámara ---
+    // --- Ciclo de vida del mapa ---
 
     override fun onResume() {
         super.onResume()
@@ -500,11 +459,6 @@ class CrearReporteFragment : Fragment() {
         super.onPause()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        uriCamara?.let { outState.putString(ESTADO_URI_CAMARA, it.toString()) }
-    }
-
     override fun onDestroyView() {
         busquedaUbicacion?.cancel()
         busquedaUbicacion = null
@@ -514,7 +468,6 @@ class CrearReporteFragment : Fragment() {
     }
 
     private companion object {
-        const val ESTADO_URI_CAMARA = "uriCamara"
         val PERMISOS_UBICACION = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,

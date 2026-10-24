@@ -108,6 +108,13 @@ class DetalleReporteViewModel(
 
     fun avisoEliminarAtendido() = _estado.update { it.copy(avisoEliminar = null) }
 
+    /** Reintentar de la sección de acciones, sin volver a pedir el reporte. */
+    fun reintentarLinea() {
+        if (_estado.value.linea !is LineaDeTiempo.Error) return
+        _estado.update { it.copy(linea = LineaDeTiempo.Cargando) }
+        trabajo = viewModelScope.launch { cargarLinea() }
+    }
+
     private fun cargar() {
         trabajo?.cancel()
         _estado.value = DetalleReporteEstado()

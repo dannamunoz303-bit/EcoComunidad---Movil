@@ -9,8 +9,6 @@
     <color name="verde_musgo">#FF3B7A55</color>
     <!-- Detalles sobre verde oscuro -->
     <color name="verde_brote">#FFA8D9B8</color>
-    <!-- Cuerpo de Brotico -->
-    <color name="brotico">#FF5BB37E</color>
     <color name="fondo">#FFF3F6F1</color>
     <!-- Tarjetas -->
     <color name="superficie">#FFFFFFFF</color>

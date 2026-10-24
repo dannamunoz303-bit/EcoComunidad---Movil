@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Desde API 27 la barra de navegación también puede ir clara, como la de estado. -->
+<resources>
+    <style name="Theme.EcoComunidad" parent="Base.Theme.EcoComunidad">
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

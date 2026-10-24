@@ -87,6 +87,26 @@ class DetalleTareaViewModelTest {
     }
 
     @Test
+    fun accionesQueNoCargan_seReintentanSinOcultarLaTarea() = runTest(main.despachador) {
+        conTarea(EstadoTarea.EN_PROCESO)
+        tareas.acciones = RepositorioFalso.fallo(ErrorAuth.SinConexion(IOException()))
+        val vm = viewModel()
+        advanceUntilIdle()
+        assertTrue(vm.estado.value.acciones is MisAcciones.Error)
+
+        tareas.acciones = Resultado.Exito(listOf(accion(3, "2026-10-05T10:00:00-05:00")))
+        vm.reintentarAcciones()
+        assertEquals(MisAcciones.Cargando, vm.estado.value.acciones)
+        advanceUntilIdle()
+
+        with(vm.estado.value) {
+            assertEquals(listOf(3), (acciones as MisAcciones.Lista).acciones.map { it.id })
+            assertFalse(cargando)
+            assertEquals(12, tarea?.id)
+        }
+    }
+
+    @Test
     fun alVolverConLaAccionGuardada_recargaMisAccionesYAvisa() = runTest(main.despachador) {
         conTarea(EstadoTarea.EN_PROCESO)
         val vm = viewModel()

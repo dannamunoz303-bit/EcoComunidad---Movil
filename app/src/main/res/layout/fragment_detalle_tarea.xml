@@ -228,6 +228,15 @@
                         android:textSize="14sp"
                         android:visibility="gone" />
 
+                    <!-- Solo si no se pudieron cargar las acciones -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/boton_reintentar_acciones"
+                        style="@style/Widget.EcoComunidad.BotonTexto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/reintentar"
+                        android:visibility="gone" />
+
                     <LinearLayout
                         android:id="@+id/acciones"
                         android:layout_width="match_parent"

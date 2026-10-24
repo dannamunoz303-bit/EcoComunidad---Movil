@@ -77,7 +77,7 @@ class NovedadesAdapter : ListAdapter<Novedad, NovedadesAdapter.Vista>(Diferencia
         val tarea = novedad.tareaId?.takeIf { conTarea }
         return when {
             titulo != null && tarea != null -> contexto.getString(R.string.novedad_reporte_tarea, titulo, tarea)
-            titulo != null -> contexto.getString(R.string.novedad_reporte, titulo)
+            titulo != null -> contexto.getString(R.string.reporte_con_titulo, titulo)
             tarea != null -> contexto.getString(R.string.tarea_titulo, tarea)
             else -> null
         }

@@ -1,17 +1,11 @@
 package co.ecocomunidad.app.ui.tareas
 
-import android.content.ActivityNotFoundException
 import android.graphics.Rect
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.FileProvider
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.viewmodel.initializer
@@ -26,6 +20,7 @@ import co.ecocomunidad.app.ui.componentes.cerrarTeclado
 import co.ecocomunidad.app.ui.componentes.contenedor
 import co.ecocomunidad.app.ui.componentes.mostrar
 import co.ecocomunidad.app.ui.componentes.observar
+import co.ecocomunidad.app.ui.componentes.SelectorFotos
 import co.ecocomunidad.app.ui.navegacion.ARG_ID_TAREA
 import co.ecocomunidad.app.ui.navegacion.RESULTADO_ACCION_REGISTRADA
 import co.ecocomunidad.app.ui.reportes.EstadoVista
@@ -37,13 +32,11 @@ import coil3.request.crossfade
 import coil3.request.error
 import coil3.request.placeholder
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import java.io.File
-import java.util.UUID
 
 /**
  * Registrar acción (RN-14) con fotos de evidencia (RN-15). La cámara, la galería y la reducción de
- * fotos funcionan igual que en Crear reporte: sin permisos (intent de cámara y selector del sistema).
+ * fotos son las mismas de Crear reporte ([SelectorFotos] y ReductorFotos).
  */
 class RegistrarAccionFragment : Fragment() {
 
@@ -64,32 +57,16 @@ class RegistrarAccionFragment : Fragment() {
         }
     }
 
-    /** Dónde guarda la cámara la foto que está tomando. Se conserva si el sistema cierra la app mientras tanto. */
-    private var uriCamara: Uri? = null
-
-    private val tomarFoto = registerForActivityResult(ActivityResultContracts.TakePicture()) { tomada ->
-        val uri = uriCamara
-        uriCamara = null
-        if (tomada && uri != null) viewModel.agregarFotos(listOf(uri.toString()))
-    }
-
-    // El selector de fotos del sistema (Photo Picker): no necesita permisos de almacenamiento
-    private val elegirVarias =
-        registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(MAXIMO_EVIDENCIAS)) { uris ->
-            viewModel.agregarFotos(uris.map { it.toString() })
-        }
-    private val elegirUna = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) viewModel.agregarFotos(listOf(uri.toString()))
-    }
+    private val selectorFotos = SelectorFotos(
+        fragmento = this,
+        maximo = MAXIMO_EVIDENCIAS,
+        disponibles = { viewModel.estado.value.fotosDisponibles },
+        alElegir = { viewModel.agregarFotos(it) },
+    )
 
     /** Lo último que se pintó, para no rehacer las miniaturas en cada emisión. */
     private var fotosPintadas: List<File>? = null
     private var estabaEnviando = false
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        uriCamara = savedInstanceState?.getString(ESTADO_URI_CAMARA)?.toUri()
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentRegistrarAccionBinding.inflate(inflater, container, false)
@@ -102,8 +79,8 @@ class RegistrarAccionFragment : Fragment() {
         // Atrás del sistema: si hay algo sin guardar, se pregunta antes de perderlo
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) { volver() }
         binding.campoDescripcion.alEscribir(viewModel::cambiarDescripcion)
-        binding.recuadroCamara.setOnClickListener { abrirCamara() }
-        binding.recuadroGaleria.setOnClickListener { abrirGaleria() }
+        binding.recuadroCamara.setOnClickListener { selectorFotos.abrirCamara() }
+        binding.recuadroGaleria.setOnClickListener { selectorFotos.abrirGaleria() }
         binding.botonGuardar.setOnClickListener {
             cerrarTeclado()
             viewModel.guardar()
@@ -206,27 +183,6 @@ class RegistrarAccionFragment : Fragment() {
             .show()
     }
 
-    // --- Fotos (igual que en Crear reporte) ---
-
-    private fun abrirCamara() {
-        val contexto = requireContext()
-        val archivo = File(ReductorFotos.carpetaCamara(contexto), "camara_${UUID.randomUUID()}.jpg")
-        val uri = FileProvider.getUriForFile(contexto, ReductorFotos.autoridadArchivos(contexto), archivo)
-        uriCamara = uri
-        try {
-            tomarFoto.launch(uri)
-        } catch (e: ActivityNotFoundException) {
-            uriCamara = null
-            Snackbar.make(binding.root, R.string.sin_camara, Snackbar.LENGTH_LONG).show()
-        }
-    }
-
-    private fun abrirGaleria() {
-        val solicitud = PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-        // El selector de varias pide al menos 2; si solo cabe una más, se usa el de una
-        if (viewModel.estado.value.fotosDisponibles == 1) elegirUna.launch(solicitud) else elegirVarias.launch(solicitud)
-    }
-
     // --- Salir ---
 
     /** Volver: si hay algo sin guardar, se pregunta si se descarta. */
@@ -257,18 +213,12 @@ class RegistrarAccionFragment : Fragment() {
         vista.post { vista.requestRectangleOnScreen(Rect(0, 0, vista.width, vista.height), false) }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        uriCamara?.let { outState.putString(ESTADO_URI_CAMARA, it.toString()) }
-    }
-
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
     }
 
     private companion object {
-        const val ESTADO_URI_CAMARA = "uriCamara"
         const val ALFA_DESHABILITADO = 0.4f
     }
 }

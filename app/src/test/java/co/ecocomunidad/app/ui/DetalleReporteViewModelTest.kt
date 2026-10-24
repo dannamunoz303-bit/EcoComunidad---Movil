@@ -60,6 +60,24 @@ class DetalleReporteViewModelTest {
     }
 
     @Test
+    fun accionesQueNoCargan_seReintentanSinVolverAPedirElReporte() = runTest(main.despachador) {
+        repositorio.detalle = Resultado.Exito(reporte(1, ciudadano = ANA))
+        repositorio.tareas = RepositorioFalso.fallo(ErrorAuth.SinConexion(IOException()))
+        val vm = viewModel()
+        advanceUntilIdle()
+        assertTrue(vm.estado.value.linea is LineaDeTiempo.Error)
+
+        repositorio.tareas = Resultado.Exito(listOf(tarea(10, LUIS, accion(1, "2026-10-02T09:30:00-05:00"))))
+        vm.reintentarLinea()
+        assertEquals(LineaDeTiempo.Cargando, vm.estado.value.linea)
+        advanceUntilIdle()
+
+        assertEquals(listOf(1), (vm.estado.value.linea as LineaDeTiempo.Lista).acciones.map { it.accion.id })
+        assertEquals(listOf(1), repositorio.detallesPedidos)
+        assertEquals(1, vm.estado.value.reporte?.id)
+    }
+
+    @Test
     fun reportePropio_conLineaDeTiempoMasRecientePrimero() = runTest(main.despachador) {
         repositorio.detalle = Resultado.Exito(reporte(1, ciudadano = ANA))
         repositorio.tareas = Resultado.Exito(

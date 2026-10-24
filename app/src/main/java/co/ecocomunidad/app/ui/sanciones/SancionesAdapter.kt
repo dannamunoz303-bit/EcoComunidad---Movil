@@ -81,7 +81,7 @@ class SancionesAdapter : ListAdapter<SancionConReporte, SancionesAdapter.Vista>(
         tipo.mostrarEtiquetaEstado(sancion.tipo.etiqueta, sancion.tipo.color)
         fecha.text = contexto.getString(R.string.sancion_fecha, fechaLarga(sancion.fechaInicio))
         motivo.text = sancion.motivo
-        reporte.text = tituloReporte?.let { contexto.getString(R.string.sancion_reporte, it) }
+        reporte.text = tituloReporte?.let { contexto.getString(R.string.reporte_con_titulo, it) }
         reporte.visibility = if (tituloReporte == null) View.GONE else View.VISIBLE
 
         // Temporal: hasta cuándo. Permanente con fecha_fin: se levantó ese día (RN-21)

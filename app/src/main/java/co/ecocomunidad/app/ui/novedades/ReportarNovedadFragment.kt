@@ -179,7 +179,7 @@ class ReportarNovedadFragment : Fragment() {
                 texto = if (gestor) R.string.tarea_cargando else R.string.novedad_cargando,
             )
             estado.errorReporte != null -> EstadoVista.Error(
-                if (gestor) R.string.tarea_error_titulo else R.string.novedad_error_titulo,
+                if (gestor) R.string.tarea_error_titulo else R.string.detalle_error_titulo,
                 estado.errorReporte,
             )
             else -> null

@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Miniatura de una foto del reporte nuevo, con el botón para quitarla. -->
+<!--
+  Miniatura de una foto nueva (reporte o evidencia), con el botón para quitarla. La descripción de
+  la foto y del botón ("Foto 2 del reporte", "Quitar foto 2") la pone el código, con su número.
+-->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="96dp"
     android:layout_height="96dp"
     android:layout_marginEnd="8dp">
@@ -17,7 +21,8 @@
             android:id="@+id/foto"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            tools:ignore="ContentDescription" />
     </com.google.android.material.card.MaterialCardView>
 
     <!-- 40 dp de toque aunque el círculo se vea pequeño en la esquina -->

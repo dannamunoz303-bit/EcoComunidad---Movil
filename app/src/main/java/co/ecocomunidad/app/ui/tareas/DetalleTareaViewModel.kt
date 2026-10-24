@@ -105,6 +105,21 @@ class DetalleTareaViewModel(
 
     fun avisoAtendido() = _estado.update { it.copy(aviso = null) }
 
+    /** Reintentar de "Mis acciones", sin ocultar la tarea. */
+    fun reintentarAcciones() {
+        if (_estado.value.acciones !is MisAcciones.Error) return
+        _estado.update { it.copy(acciones = MisAcciones.Cargando) }
+        viewModelScope.launch {
+            val lista = misAcciones(tareas.acciones(id))
+            _estado.update { it.copy(acciones = lista) }
+        }
+    }
+
+    private fun misAcciones(r: Resultado<List<Accion>>): MisAcciones = when (r) {
+        is Resultado.Exito -> MisAcciones.Lista(r.datos)
+        is Resultado.Fallo -> MisAcciones.Error(mensajeDeError(r.error))
+    }
+
     private fun cambiarEstado(@StringRes exito: Int, llamada: suspend () -> Resultado<TareaGestor>) {
         if (_estado.value.procesando) return
         _estado.update { it.copy(procesando = true, aviso = null) }
@@ -151,10 +166,7 @@ class DetalleTareaViewModel(
                 }
             }
 
-            val lista = when (val r = acciones.await()) {
-                is Resultado.Exito -> MisAcciones.Lista(r.datos)
-                is Resultado.Fallo -> MisAcciones.Error(mensajeDeError(r.error))
-            }
+            val lista = misAcciones(acciones.await())
             _estado.update { it.copy(acciones = lista) }
         }
     }

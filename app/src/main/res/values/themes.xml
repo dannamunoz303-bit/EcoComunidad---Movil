@@ -25,7 +25,6 @@
 
         <item name="android:windowBackground">@color/fondo</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar">true</item>
 
         <!-- Texto por defecto en Instrument Sans; los estilos de Material usan los de marca -->
         <item name="fontFamily">@font/instrument_sans</item>

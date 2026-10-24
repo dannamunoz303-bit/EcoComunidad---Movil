@@ -27,11 +27,10 @@
     <string name="campo_contrasena_confirmar">Repite la contraseña nueva</string>
     <string name="boton_guardar_contrasena">Guardar contraseña</string>
 
-    <!-- Inicio de ciudadano y gestor (temporal) -->
+    <!-- Inicio de ciudadano y gestor -->
     <string name="saludo_con_nombre">¡Hola de nuevo, %1$s!</string>
     <string name="saludo_sin_nombre">¡Hola de nuevo!</string>
     <string name="saludo_barrio">Tu barrio te está esperando.</string>
-    <string name="brotico_saludando">Brotico saludando</string>
     <string name="rol_gestor">Gestor ambiental</string>
 
     <!-- Estados del reporte (sección 6.1), en texto legible -->
@@ -51,7 +50,6 @@
     <string name="reportes_error_titulo">No pudimos cargar los reportes</string>
     <string name="reintentar">Reintentar</string>
     <string name="reporte_descripcion_item">%1$s, %2$s. %3$s. Estado: %4$s.</string>
-    <string name="foto_del_reporte">Foto del reporte</string>
 
     <!-- Detalle del reporte -->
     <string name="volver">Volver</string>
@@ -66,7 +64,6 @@
     <string name="detalle_acciones_titulo">Acciones del gestor</string>
     <string name="detalle_sin_acciones">Todavía no hay acciones registradas en este reporte.</string>
     <string name="detalle_acciones_error">No pudimos cargar las acciones: %1$s</string>
-    <string name="detalle_gestor">%1$s %2$s</string>
     <string name="foto_numero">Foto %1$d de %2$d. Toca para verla en grande.</string>
     <string name="evidencia_numero">Evidencia %1$d de %2$d. Toca para verla en grande.</string>
     <string name="foto_ampliada">Foto en grande</string>
@@ -143,7 +140,6 @@
     <!-- Novedades del ciudadano (RN-18): queja o incidente sobre un reporte propio -->
     <string name="reportar_novedad">Reportar novedad</string>
     <string name="novedad_cargando">Abriendo el reporte…</string>
-    <string name="novedad_error_titulo">No pudimos abrir el reporte</string>
     <string name="novedad_sobre_reporte">Sobre tu reporte</string>
     <string name="novedad_que_paso">¿Qué quieres contarnos?</string>
     <string name="tipo_queja">Queja</string>
@@ -178,7 +174,7 @@
     <string name="novedades_error_titulo">No pudimos cargar tus novedades</string>
     <string name="novedad_estado_abierta">Abierta</string>
     <string name="novedad_estado_atendida">Atendida</string>
-    <string name="novedad_reporte">Reporte: %1$s</string>
+    <string name="reporte_con_titulo">Reporte: %1$s</string>
     <!-- Solo en las del gestor, que siempre traen su tarea -->
     <string name="novedad_reporte_tarea">%1$s · Tarea #%2$d</string>
     <string name="novedad_fecha">Enviada el %1$s</string>
@@ -186,7 +182,7 @@
 
     <!-- Notificaciones (sección 9) -->
     <string name="notificaciones">Notificaciones</string>
-    <string name="notificaciones_sin_leer">Notificaciones, tienes sin leer</string>
+    <string name="notificaciones_sin_leer">Notificaciones. Tienes algunas sin leer</string>
     <string name="notificaciones_cargando">Buscando tus notificaciones…</string>
     <string name="notificaciones_vacio">No tienes notificaciones</string>
     <string name="notificaciones_error_titulo">No pudimos cargar tus notificaciones</string>
@@ -199,13 +195,12 @@
     <string name="sanciones_vacio">No tienes sanciones</string>
     <string name="sanciones_error_titulo">No pudimos cargar tus sanciones</string>
     <string name="sin_bloqueos">No tienes bloqueos activos</string>
-    <string name="bloqueado_hasta">Estás bloqueado hasta el %1$s</string>
+    <string name="bloqueado_hasta">Tu cuenta está bloqueada hasta el %1$s</string>
     <string name="bloqueo_permanente_activo">Tu cuenta tiene un bloqueo permanente</string>
     <string name="sancion_advertencia">Advertencia</string>
     <string name="sancion_bloqueo_temporal">Bloqueo temporal</string>
     <string name="sancion_bloqueo_permanente">Bloqueo permanente</string>
     <string name="sancion_fecha">Desde el %1$s</string>
-    <string name="sancion_reporte">Reporte: %1$s</string>
     <string name="sancion_hasta">Hasta el %1$s</string>
     <string name="sancion_levantada">Levantado el %1$s</string>
 
@@ -257,7 +252,7 @@
     <string name="terminar_tarea">Terminar tarea</string>
     <string name="tarea_ayuda_terminar">Para terminar necesitas al menos una acción con foto de evidencia.</string>
     <string name="iniciar_titulo">¿Iniciar esta tarea?</string>
-    <string name="iniciar_mensaje">La tarea pasará a en proceso y el ciudadano verá que ya empezaste.</string>
+    <string name="iniciar_mensaje">La tarea quedará en proceso y el ciudadano verá que ya empezaste.</string>
     <string name="terminar_titulo">¿Terminar esta tarea?</string>
     <string name="terminar_mensaje">Ya no podrás registrar más acciones en ella.</string>
     <string name="tarea_iniciada">Iniciaste la tarea. ¡Manos a la obra!</string>

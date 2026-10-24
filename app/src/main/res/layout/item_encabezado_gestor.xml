@@ -79,7 +79,7 @@
             <ImageView
                 android:layout_width="88dp"
                 android:layout_height="88dp"
-                android:contentDescription="@string/brotico_saludando"
+                android:importantForAccessibility="no"
                 android:src="@drawable/brotico_saluda" />
 
             <LinearLayout
