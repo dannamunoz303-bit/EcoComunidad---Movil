@@ -29,6 +29,8 @@ data class ReporteBasico(
     val latitud: String? = null,
     val longitud: String? = null,
     val estado: EstadoReporte,
+    /** RN-25: tareas/mias/ ya llegan ordenadas por esta urgencia (alta primero) y luego por fecha. */
+    val urgencia: Urgencia? = null,
 )
 
 /** TareaGestorSerializer (GET tareas/mias/ y las respuestas de iniciar y terminar). Sección 4.5. */

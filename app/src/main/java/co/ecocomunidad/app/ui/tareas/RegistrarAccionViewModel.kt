@@ -33,7 +33,7 @@ data class RegistrarAccionEstado(
     val errorDescripcion: String? = null,
     val errorFotos: String? = null,
     val enviando: Boolean = false,
-    /** El envío pasó de 1 s: se muestra Brotico pensando (marca.md). */
+    /** El envío pasó de 1 s: se muestra el texto de espera junto al indicador. */
     val cargaLarga: Boolean = false,
     /** Mensaje del backend que no es de un campo, o un aviso de la app (por ejemplo, el límite de fotos). */
     val aviso: String? = null,

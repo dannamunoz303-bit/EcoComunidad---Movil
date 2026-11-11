@@ -106,7 +106,7 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun mientrasCarga_bloqueaYTrasUnSegundoMuestraBrotico() = runTest(main.despachador) {
+    fun mientrasCarga_bloqueaYTrasUnSegundoMuestraCargaLarga() = runTest(main.despachador) {
         val espera = CompletableDeferred<Unit>()
         repositorio.esperaLogin = espera
         val vm = viewModel()

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Foto del reporte en el carrusel del detalle. -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/Widget.EcoComunidad.MarcoFoto"
     android:layout_width="260dp"
     android:layout_height="190dp"
@@ -13,5 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:importantForAccessibility="no"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_imagen"
+        tools:scaleType="center" />
 </com.google.android.material.card.MaterialCardView>

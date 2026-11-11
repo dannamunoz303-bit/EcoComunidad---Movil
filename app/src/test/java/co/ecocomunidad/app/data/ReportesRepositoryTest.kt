@@ -4,7 +4,10 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import co.ecocomunidad.app.data.modelo.CambiosReporte
 import co.ecocomunidad.app.data.modelo.EstadoReporte
 import co.ecocomunidad.app.data.modelo.EstadoTarea
+import co.ecocomunidad.app.data.modelo.Municipio
 import co.ecocomunidad.app.data.modelo.NuevoReporte
+import co.ecocomunidad.app.data.modelo.Urgencia
+import co.ecocomunidad.app.data.modelo.Zona
 import co.ecocomunidad.app.data.remoto.ApiCliente
 import co.ecocomunidad.app.data.sesion.EventosSesion
 import co.ecocomunidad.app.data.sesion.SesionStore
@@ -187,7 +190,7 @@ class ReportesRepositoryTest {
         assertEquals(
             listOf(
                 "categoria", "titulo", "descripcion", "direccion", "descripcion_ubicacion",
-                "latitud", "longitud", "fotos", "fotos",
+                "municipio", "vereda", "latitud", "longitud", "fotos", "fotos",
             ),
             partes.map { it.nombre },
         )
@@ -197,6 +200,8 @@ class ReportesRepositoryTest {
         assertEquals("Bolsas acumuladas", valores["descripcion"])
         assertEquals("Calle 10 # 5-20", valores["direccion"])
         assertEquals("Frente al parque", valores["descripcion_ubicacion"])
+        assertEquals("1", valores["municipio"])
+        assertEquals("La Playa", valores["vereda"])
         // Siempre con punto y 8 decimales, sin importar el idioma del teléfono
         assertEquals("4.60971000", valores["latitud"])
         assertEquals("-74.08175000", valores["longitud"])
@@ -213,6 +218,59 @@ class ReportesRepositoryTest {
         repositorio.crear(nuevo(fotos = listOf(foto("a.jpg", "AAA")), descripcionUbicacion = null))
 
         assertTrue(partes(servidor.takeRequest()).none { it.nombre == "descripcion_ubicacion" })
+    }
+
+    @Test
+    fun crearSinVereda_noEnviaEseCampo_peroSiElMunicipio() = runTest {
+        responder(201, reporteJson(id = 9, estado = "pendiente"))
+
+        repositorio.crear(nuevo(fotos = listOf(foto("a.jpg", "AAA")), vereda = null))
+
+        val partes = partes(servidor.takeRequest())
+        assertTrue(partes.none { it.nombre == "vereda" })
+        assertEquals("1", partes.single { it.nombre == "municipio" }.contenido)
+    }
+
+    @Test
+    fun editar_mandaElMunicipioComoIdYLaVereda() = runTest {
+        responder(200, reporteJson(id = 5, estado = "pendiente"))
+
+        repositorio.editar(5, CambiosReporte(municipio = 2, vereda = ""))
+
+        assertEquals("""{"municipio":2,"vereda":""}""", servidor.takeRequest().body.readUtf8())
+    }
+
+    @Test
+    fun detalle_traeMunicipioZonaVeredaYUrgencia() = runTest {
+        responder(
+            200,
+            reporteJson(
+                id = 5,
+                municipio = """{"id":1,"nombre":"Popayán"}""",
+                vereda = "\"La Playa\"",
+                zona = """{"id":2,"nombre":"centro"}""",
+                urgencia = "\"alta\"",
+            ),
+        )
+
+        val reporte = (repositorio.detalle(5) as Resultado.Exito).datos
+
+        assertEquals(Municipio(1, "Popayán"), reporte.municipio)
+        assertEquals("La Playa", reporte.vereda)
+        assertEquals(Zona(2, "centro"), reporte.zona)
+        assertEquals(Urgencia.ALTA, reporte.urgencia)
+    }
+
+    @Test
+    fun detalle_reporteViejoSinMunicipioNiZona() = runTest {
+        responder(200, reporteJson(id = 5, urgencia = "\"baja\""))
+
+        val reporte = (repositorio.detalle(5) as Resultado.Exito).datos
+
+        assertNull(reporte.municipio)
+        assertNull(reporte.vereda)
+        assertNull(reporte.zona)
+        assertEquals(Urgencia.BAJA, reporte.urgencia)
     }
 
     @Test
@@ -352,12 +410,14 @@ class ReportesRepositoryTest {
     private fun foto(nombre: String, contenido: String): File =
         File(carpeta.root, nombre).apply { writeText(contenido) }
 
-    private fun nuevo(fotos: List<File>, descripcionUbicacion: String? = null) = NuevoReporte(
+    private fun nuevo(fotos: List<File>, descripcionUbicacion: String? = null, vereda: String? = "La Playa") = NuevoReporte(
         categoria = 3,
         titulo = "Basura en el parque",
         descripcion = "Bolsas acumuladas",
         direccion = "Calle 10 # 5-20",
         descripcionUbicacion = descripcionUbicacion,
+        municipio = 1,
+        vereda = vereda,
         latitud = 4.60971,
         longitud = -74.08175,
         fotos = fotos,
@@ -396,10 +456,15 @@ class ReportesRepositoryTest {
         ciudadano: String = """{"id":7,"nombre":"Ana","apellido":"Pérez"}""",
         motivo: String = "null",
         urlFoto: String = "https://res.cloudinary.com/demo/image/upload/a.jpg",
+        municipio: String = "null",
+        vereda: String = "null",
+        zona: String = "null",
+        urgencia: String = "\"media\"",
     ) = """{"id":$id,"ciudadano":$ciudadano,"categoria_id":3,"categoria":"Basura acumulada",
         "titulo":"Basura en la esquina","descripcion":"Hay bolsas desde el lunes.",
         "direccion":"Calle 10 # 5-20","descripcion_ubicacion":"Frente al parque",
-        "latitud":"4.60971000","longitud":"-74.08175000","estado":"$estado","motivo_rechazo":$motivo,
+        "municipio":$municipio,"vereda":$vereda,"zona":$zona,
+        "latitud":"4.60971000","longitud":"-74.08175000","estado":"$estado","urgencia":$urgencia,"motivo_rechazo":$motivo,
         "eliminado":false,"fecha_creacion":"2026-10-01T10:00:00-05:00",
         "fecha_actualizacion":"2026-10-02T10:00:00-05:00","fecha_revision":null,
         "fotos":[{"id":1,"url":"$urlFoto","fecha":"2026-10-01T10:00:00-05:00"}]}"""

@@ -4,6 +4,7 @@
   vacío o error y las tareas van en la misma lista para que se desplacen juntos.
 -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/raiz"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -21,6 +22,8 @@
             android:clipToPadding="false"
             android:paddingHorizontal="20dp"
             android:paddingTop="16dp"
-            android:paddingBottom="24dp" />
+            android:paddingBottom="24dp"
+            tools:listitem="@layout/vista_previa_mis_tareas"
+            tools:itemCount="1" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

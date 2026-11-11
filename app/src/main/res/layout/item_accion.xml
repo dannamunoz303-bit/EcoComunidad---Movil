@@ -2,6 +2,7 @@
 <!-- Una acción del gestor en la línea de tiempo: punto y línea a la izquierda, contenido a la derecha. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:baselineAligned="false"
@@ -41,7 +42,8 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.EcoComunidad.Etiqueta"
             android:textColor="@color/verde_musgo"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            tools:text="22 de octubre de 2026 a las 10:20 a. m." />
 
         <TextView
             android:id="@+id/gestor"
@@ -50,7 +52,8 @@
             android:layout_marginTop="2dp"
             android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
             android:textColor="@color/tinta_suave"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            tools:text="Carlos Pérez" />
 
         <TextView
             android:id="@+id/descripcion"
@@ -58,7 +61,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
-            app:lineHeight="22sp" />
+            app:lineHeight="22sp"
+            tools:text="Pusimos barreras absorbentes en la orilla para contener el aceite y tomamos muestras del agua." />
 
         <HorizontalScrollView
             android:id="@+id/carrusel_evidencias"

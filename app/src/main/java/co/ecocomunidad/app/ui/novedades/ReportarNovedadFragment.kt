@@ -175,7 +175,7 @@ class ReportarNovedadFragment : Fragment() {
         val gestor = viewModel.modo is ModoNovedad.Gestor
         val vistaEstado = when {
             estado.cargandoReporte -> EstadoVista.Cargando(
-                conBrotico = false,
+                cargaLarga = false,
                 texto = if (gestor) R.string.tarea_cargando else R.string.novedad_cargando,
             )
             estado.errorReporte != null -> EstadoVista.Error(

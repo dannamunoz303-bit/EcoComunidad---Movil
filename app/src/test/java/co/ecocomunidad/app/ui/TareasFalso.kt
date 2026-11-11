@@ -9,6 +9,7 @@ import co.ecocomunidad.app.data.modelo.EstadoTarea
 import co.ecocomunidad.app.data.modelo.Foto
 import co.ecocomunidad.app.data.modelo.ReporteBasico
 import co.ecocomunidad.app.data.modelo.TareaGestor
+import co.ecocomunidad.app.data.modelo.Urgencia
 import kotlinx.coroutines.CompletableDeferred
 import java.io.File
 
@@ -86,12 +87,13 @@ class TareasFalso : TareasRepository {
     }
 
     companion object {
-        fun tarea(id: Int, estado: EstadoTarea, reporte: Int = 1) = TareaGestor(
+        fun tarea(id: Int, estado: EstadoTarea, reporte: Int = 1, urgencia: Urgencia? = null) = TareaGestor(
             id = id,
             reporte = ReporteBasico(
                 id = reporte, titulo = "Basura en la esquina", categoria = "Basura acumulada",
                 direccion = "Calle 10 # 5-20", latitud = "4.60971000", longitud = "-74.08175000",
                 estado = EstadoReporte.EN_PROCESO,
+                urgencia = urgencia,
             ),
             estado = estado,
             fechaAsignacion = "2026-10-02T09:00:00-05:00",

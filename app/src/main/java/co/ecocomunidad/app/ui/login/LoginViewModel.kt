@@ -22,7 +22,7 @@ data class LoginEstado(
     val errorCorreo: String? = null,
     val errorContrasena: String? = null,
     val cargando: Boolean = false,
-    /** La carga pasó de 1 s: se muestra Brotico pensando (marca.md). */
+    /** La carga pasó de 1 s: se muestra el indicador con su texto. */
     val cargaLarga: Boolean = false,
     /** Error del último intento o motivo por el que se volvió al login. */
     val aviso: String? = null,

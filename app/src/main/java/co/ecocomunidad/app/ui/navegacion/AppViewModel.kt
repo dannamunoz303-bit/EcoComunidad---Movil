@@ -48,6 +48,8 @@ class AppViewModel(
                 }
                 else -> {
                     revisarEstado()
+                    // Para sesiones abiertas antes de existir los avisos push (RN-26); repetirlo no cambia nada
+                    launch { repositorio.registrarDispositivo() }
                     destinoPara(usuario.rol, usuario.debeCambiarContrasena)
                 }
             }

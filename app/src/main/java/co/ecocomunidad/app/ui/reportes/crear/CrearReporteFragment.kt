@@ -72,10 +72,11 @@ class CrearReporteFragment : Fragment() {
         viewModelFactory {
             initializer {
                 val repositorio = contenedor.reportesRepository
+                val territorio = contenedor.territorioRepository
                 val reductor = ReductorFotos(requireContext().applicationContext)
                 val id = idReporte
-                if (id == null) CrearReporteViewModel(repositorio, reductor)
-                else EditarReporteViewModel(repositorio, reductor, id)
+                if (id == null) CrearReporteViewModel(repositorio, territorio, reductor)
+                else EditarReporteViewModel(repositorio, territorio, reductor, id)
             }
         }
     }
@@ -124,6 +125,9 @@ class CrearReporteFragment : Fragment() {
         binding.textoCategoria.setOnItemClickListener { _, _, posicion, _ ->
             categoriasPintadas?.getOrNull(posicion)?.let { viewModel.elegirCategoria(it.id) }
         }
+        binding.botonReintentarMunicipios.setOnClickListener { viewModel.reintentarMunicipios() }
+        binding.textoMunicipio.setOnClickListener { elegirMunicipio() }
+        binding.campoMunicipio.setEndIconOnClickListener { elegirMunicipio() }
         campos.forEach { (campo, vista) -> vista.alEscribir { viewModel.cambiar(campo, it) } }
 
         binding.botonTomarFoto.setOnClickListener { selectorFotos.abrirCamara() }
@@ -144,6 +148,7 @@ class CrearReporteFragment : Fragment() {
         get() = mapOf(
             CampoReporte.TITULO to binding.campoTitulo,
             CampoReporte.DESCRIPCION to binding.campoDescripcion,
+            CampoReporte.VEREDA to binding.campoVereda,
             CampoReporte.DIRECCION to binding.campoDireccion,
             CampoReporte.DESCRIPCION_UBICACION to binding.campoDescripcionUbicacion,
         )
@@ -166,6 +171,7 @@ class CrearReporteFragment : Fragment() {
             vista.mostrar(estado.texto(campo), estado.errores[campo])
             vista.isEnabled = habilitado
         }
+        mostrarMunicipio(estado, habilitado)
         mostrarFotos(estado, habilitado)
         mostrarUbicacion(estado, habilitado)
 
@@ -192,7 +198,7 @@ class CrearReporteFragment : Fragment() {
     /** Al editar, mientras se abre el reporte (o si no se pudo) no se muestra el formulario. */
     private fun mostrarCargaDelReporte(estado: FormularioReporteEstado) = with(binding) {
         val vistaEstado = when {
-            estado.cargandoReporte -> EstadoVista.Cargando(conBrotico = false, texto = R.string.editar_cargando)
+            estado.cargandoReporte -> EstadoVista.Cargando(cargaLarga = false, texto = R.string.editar_cargando)
             estado.errorReporte != null -> EstadoVista.Error(R.string.editar_error_titulo, estado.errorReporte)
             else -> null
         }
@@ -234,6 +240,35 @@ class CrearReporteFragment : Fragment() {
             else -> estado.categoria?.descripcion
         }
         botonReintentarCategorias.visibility = if (estado.errorCategorias != null) View.VISIBLE else View.GONE
+    }
+
+    // --- Municipio y vereda (RN-23) ---
+
+    private fun mostrarMunicipio(estado: FormularioReporteEstado, habilitado: Boolean) = with(binding) {
+        val nombre = estado.municipio?.nombre.orEmpty()
+        if (textoMunicipio.text?.toString() != nombre) textoMunicipio.setText(nombre, false)
+
+        val puedeElegir = habilitado && estado.puedeCambiarTerritorio && estado.municipios.isNotEmpty()
+        campoMunicipio.isEnabled = puedeElegir
+        // Fuera de pendiente (RN-07) se ven, pero no se cambian
+        campoVereda.isEnabled = habilitado && estado.puedeCambiarTerritorio
+
+        val error = estado.errores[CampoReporte.MUNICIPIO] ?: estado.errorMunicipios
+        if (campoMunicipio.error?.toString() != error) campoMunicipio.error = error
+        campoMunicipio.helperText = when {
+            error != null -> null
+            !estado.puedeCambiarTerritorio -> getString(R.string.territorio_solo_pendiente)
+            estado.cargandoMunicipios -> getString(R.string.municipios_cargando)
+            else -> estado.municipio?.zona?.let { getString(R.string.municipio_zona, it.nombre) }
+        }
+        botonReintentarMunicipios.visibility =
+            if (estado.errorMunicipios != null && estado.puedeCambiarTerritorio) View.VISIBLE else View.GONE
+    }
+
+    private fun elegirMunicipio() {
+        val estado = viewModel.estado.value
+        if (estado.enviando || !estado.puedeCambiarTerritorio || estado.municipios.isEmpty()) return
+        SelectorMunicipio.mostrar(this, estado.municipios) { viewModel.elegirMunicipio(it.id) }
     }
 
     // --- Fotos ---
@@ -435,6 +470,8 @@ class CrearReporteFragment : Fragment() {
                 CampoReporte.CATEGORIA -> binding.campoCategoria
                 CampoReporte.TITULO -> binding.campoTitulo
                 CampoReporte.DESCRIPCION -> binding.campoDescripcion
+                CampoReporte.MUNICIPIO -> binding.campoMunicipio
+                CampoReporte.VEREDA -> binding.campoVereda
                 CampoReporte.FOTOS -> binding.fotosAyuda
                 CampoReporte.DIRECCION -> binding.campoDireccion
                 CampoReporte.DESCRIPCION_UBICACION -> binding.campoDescripcionUbicacion
@@ -474,7 +511,7 @@ class CrearReporteFragment : Fragment() {
         )
 
         // Solo la vista inicial del mapa: el lugar no queda marcado hasta que el ciudadano lo elige
-        val CENTRO_INICIAL = GeoPoint(4.7110, -74.0721) // Bogotá
+        val CENTRO_INICIAL = GeoPoint(2.4448, -76.6147) // Popayán, Cauca
         const val ZOOM_INICIAL = 12.0
         const val ZOOM_UBICACION = 17.0
         const val DURACION_CENTRAR_MS = 600L

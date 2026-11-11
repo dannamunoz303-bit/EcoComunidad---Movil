@@ -17,7 +17,18 @@ interface AuthRepository {
 
     suspend fun login(correo: String, contrasena: String): Resultado<UsuarioActual>
 
+    /**
+     * Quita este celular de los avisos push (RN-26) y borra la sesión local. Si quitarlo falla o tarda,
+     * la sesión se borra igual.
+     */
     suspend fun cerrarSesion()
+
+    /**
+     * Registra este celular para los avisos push de quien tiene la sesión (RN-26). Sin sesión no hace nada.
+     * [token]: el nuevo que entrega Firebase (onNewToken); si es null se pide. Un fallo no se informa:
+     * los avisos siguen en la campana.
+     */
+    suspend fun registrarDispositivo(token: String? = null)
 
     suspend fun cambiarContrasena(contrasenaActual: String, contrasenaNueva: String): Resultado<Unit>
 

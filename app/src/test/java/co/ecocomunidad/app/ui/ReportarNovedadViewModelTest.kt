@@ -123,7 +123,7 @@ class ReportarNovedadViewModelTest {
         vm.enviar()
         advanceTimeBy(1_001)
 
-        // Mientras envía: carga, y Brotico piensa pasado 1 s
+        // Mientras envía: carga, y carga larga pasado 1 s
         assertTrue(vm.estado.value.enviando)
         assertTrue(vm.estado.value.cargaLarga)
 

@@ -33,7 +33,9 @@ import co.ecocomunidad.app.ui.navegacion.RESULTADO_ACCION_REGISTRADA
 import co.ecocomunidad.app.ui.reportes.EstadoVista
 import co.ecocomunidad.app.ui.reportes.cargarFoto
 import co.ecocomunidad.app.ui.reportes.fechaLarga
+import co.ecocomunidad.app.ui.reportes.lugarDelReporte
 import co.ecocomunidad.app.ui.reportes.mostrarEtiquetaEstado
+import co.ecocomunidad.app.ui.reportes.mostrarUrgencia
 import co.ecocomunidad.app.ui.reportes.mostrar as mostrarEstadoCarga
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -155,6 +157,7 @@ class DetalleTareaFragment : Fragment() {
         val reporte = tarea.reporte
         categoria.text = reporte.categoria
         estado.mostrarEtiquetaEstado(tarea.estado.etiqueta, tarea.estado.color)
+        urgencia.mostrarUrgencia(reporte.urgencia)
         titulo.text = reporte.titulo
         fechas.text = listOfNotNull(
             getString(R.string.tarea_asignada_el, fechaLarga(tarea.fechaAsignacion)),
@@ -169,6 +172,9 @@ class DetalleTareaFragment : Fragment() {
     /** reportes/{id}/: fotos y descripción del ciudadano. Si no llegó, esas partes no se muestran. */
     private fun mostrarReporte(reporte: Reporte?) = with(binding) {
         mostrarFotos(reporte?.fotos.orEmpty())
+        // tareas/mias/ no trae el municipio: sin reportes/{id}/ la línea no se muestra
+        territorio.visibility = if (reporte == null) View.GONE else View.VISIBLE
+        territorio.text = reporte?.let { lugarDelReporte(it.municipio?.nombre, it.vereda, it.zona?.nombre) }
         descripcion.text = reporte?.descripcion
         val conDescripcion = !reporte?.descripcion.isNullOrBlank()
         descripcionTitulo.visibility = if (conDescripcion) View.VISIBLE else View.GONE

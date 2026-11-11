@@ -4,6 +4,10 @@ import co.ecocomunidad.app.data.ErrorAuth
 import co.ecocomunidad.app.data.Resultado
 import co.ecocomunidad.app.data.modelo.CambiosReporte
 import co.ecocomunidad.app.data.modelo.EstadoReporte
+import co.ecocomunidad.app.data.modelo.Municipio
+import co.ecocomunidad.app.ui.TerritorioFalso.Companion.CENTRO
+import co.ecocomunidad.app.ui.TerritorioFalso.Companion.POPAYAN
+import co.ecocomunidad.app.ui.TerritorioFalso.Companion.TIMBIO
 import co.ecocomunidad.app.ui.ReportesFalso.Companion.ANA
 import co.ecocomunidad.app.ui.ReportesFalso.Companion.foto
 import co.ecocomunidad.app.ui.ReportesFalso.Companion.reporte
@@ -36,11 +40,22 @@ class EditarReporteViewModelTest {
         override fun descartar(archivo: File) = Unit
     }
 
-    private fun TestScope.abrir(vararg fotos: Int): EditarReporteViewModel {
+    private val territorio = TerritorioFalso()
+
+    /** Reporte pendiente en Popayán (el detalle trae el municipio sin zona y la zona aparte). */
+    private fun TestScope.abrir(
+        vararg fotos: Int,
+        estado: EstadoReporte = EstadoReporte.PENDIENTE,
+        municipio: Municipio? = Municipio(POPAYAN.id, POPAYAN.nombre),
+        vereda: String? = "La Playa",
+    ): EditarReporteViewModel {
         repositorio.detalle = Resultado.Exito(
-            reporte(5, EstadoReporte.PENDIENTE, ciudadano = ANA, fotos = fotos.map { foto(it) }),
+            reporte(
+                5, estado, ciudadano = ANA, fotos = fotos.map { foto(it) },
+                municipio = municipio, vereda = vereda, zona = municipio?.let { CENTRO },
+            ),
         )
-        return EditarReporteViewModel(repositorio, preparador, id = 5).also { advanceUntilIdle() }
+        return EditarReporteViewModel(repositorio, territorio, preparador, id = 5).also { advanceUntilIdle() }
     }
 
     private fun EditarReporteViewModel.guardadas() =
@@ -271,7 +286,7 @@ class EditarReporteViewModelTest {
     @Test
     fun noSePuedeAbrir_sinConexion() = runTest(main.despachador) {
         repositorio.detalle = RepositorioFalso.fallo(ErrorAuth.SinConexion(IOException()))
-        val vm = EditarReporteViewModel(repositorio, preparador, id = 5)
+        val vm = EditarReporteViewModel(repositorio, territorio, preparador, id = 5)
         advanceUntilIdle()
 
         assertTrue(vm.estado.value.errorReporte!!.sinConexion)
@@ -281,5 +296,92 @@ class EditarReporteViewModelTest {
         advanceUntilIdle()
         assertTrue(repositorio.operaciones.isEmpty())
         assertNull(vm.estado.value.ubicacion)
+    }
+
+    // --- Municipio y vereda (RN-07, RN-23) ---
+
+    @Test
+    fun alAbrir_traeSuMunicipioConZonaYSuVereda() = runTest(main.despachador) {
+        val vm = abrir(1)
+
+        with(vm.estado.value) {
+            assertEquals(POPAYAN, municipio)
+            assertEquals("centro", municipio?.zona?.nombre)
+            assertEquals("La Playa", texto(CampoReporte.VEREDA))
+            assertTrue(puedeCambiarTerritorio)
+        }
+        assertFalse(vm.hayCambios())
+    }
+
+    @Test
+    fun cambiarMunicipioYVereda_mandaSoloEso() = runTest(main.despachador) {
+        val vm = abrir(1)
+        vm.elegirMunicipio(TIMBIO.id)
+        vm.cambiar(CampoReporte.VEREDA, " El Cofre ")
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertEquals(CambiosReporte(municipio = TIMBIO.id, vereda = "El Cofre"), repositorio.cambiosEnviados.single())
+        assertTrue(vm.estado.value.guardado)
+    }
+
+    @Test
+    fun borrarLaVereda_mandaTextoVacio() = runTest(main.despachador) {
+        val vm = abrir(1)
+        vm.cambiar(CampoReporte.VEREDA, "  ")
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertEquals(CambiosReporte(vereda = ""), repositorio.cambiosEnviados.single())
+    }
+
+    @Test
+    fun reporteViejoSinMunicipio_pideElegirloAntesDeGuardar() = runTest(main.despachador) {
+        val vm = abrir(1, municipio = null, vereda = null)
+        assertNull(vm.estado.value.municipio)
+        vm.cambiar(CampoReporte.TITULO, "Nuevo")
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertEquals("Elige el municipio.", vm.estado.value.errores[CampoReporte.MUNICIPIO])
+        assertTrue(repositorio.operaciones.isEmpty())
+
+        vm.elegirMunicipio(POPAYAN.id)
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertEquals(CambiosReporte(titulo = "Nuevo", municipio = POPAYAN.id), repositorio.cambiosEnviados.single())
+    }
+
+    @Test
+    fun siYaNoEstaPendiente_elMunicipioYLaVeredaNoSeCambian() = runTest(main.despachador) {
+        val vm = abrir(1, estado = EstadoReporte.APROBADO)
+        assertFalse(vm.estado.value.puedeCambiarTerritorio)
+
+        vm.elegirMunicipio(TIMBIO.id)
+        vm.cambiar(CampoReporte.VEREDA, "Otra")
+        vm.cambiar(CampoReporte.TITULO, "Nuevo")
+        assertEquals(POPAYAN, vm.estado.value.municipio)
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        // Solo el título: quien decide si se guarda es el backend (RN-07)
+        assertEquals(CambiosReporte(titulo = "Nuevo"), repositorio.cambiosEnviados.single())
+    }
+
+    @Test
+    fun siYaNoEstaPendienteYNoTieneMunicipio_noLoExige() = runTest(main.despachador) {
+        val vm = abrir(1, estado = EstadoReporte.APROBADO, municipio = null)
+        vm.cambiar(CampoReporte.TITULO, "Nuevo")
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertNull(vm.estado.value.errores[CampoReporte.MUNICIPIO])
+        assertEquals(CambiosReporte(titulo = "Nuevo"), repositorio.cambiosEnviados.single())
     }
 }

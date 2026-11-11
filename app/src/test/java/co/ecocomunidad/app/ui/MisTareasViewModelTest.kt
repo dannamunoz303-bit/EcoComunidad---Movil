@@ -3,6 +3,7 @@ package co.ecocomunidad.app.ui
 import co.ecocomunidad.app.data.ErrorAuth
 import co.ecocomunidad.app.data.Resultado
 import co.ecocomunidad.app.data.modelo.EstadoTarea
+import co.ecocomunidad.app.data.modelo.Urgencia
 import co.ecocomunidad.app.ui.ReportesFalso.Companion.foto
 import co.ecocomunidad.app.ui.ReportesFalso.Companion.reporte
 import co.ecocomunidad.app.ui.TareasFalso.Companion.tarea
@@ -50,6 +51,26 @@ class MisTareasViewModelTest {
             assertEquals(listOf(5, 4), visibles.map { it.id })
             assertEquals(2, cantidadActivas)
         }
+    }
+
+    @Test
+    fun respetaElOrdenDelBackend_porUrgencia() = runTest(main.despachador) {
+        // RN-25: alta primero aunque sea más nueva o tenga un id mayor; la app no reordena
+        tareas.mias = Resultado.Exito(
+            listOf(
+                tarea(9, EstadoTarea.ASIGNADA, urgencia = Urgencia.ALTA),
+                tarea(2, EstadoTarea.EN_PROCESO, urgencia = Urgencia.MEDIA),
+                tarea(5, EstadoTarea.ASIGNADA, urgencia = Urgencia.BAJA),
+            ),
+        )
+        val vm = viewModel()
+        advanceUntilIdle()
+
+        assertEquals(listOf(9, 2, 5), vm.estado.value.visibles.map { it.id })
+        assertEquals(
+            listOf(Urgencia.ALTA, Urgencia.MEDIA, Urgencia.BAJA),
+            vm.estado.value.visibles.map { it.reporte.urgencia },
+        )
     }
 
     @Test

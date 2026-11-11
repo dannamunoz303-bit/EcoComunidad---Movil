@@ -4,8 +4,10 @@ import androidx.lifecycle.viewModelScope
 import co.ecocomunidad.app.data.ErrorAuth
 import co.ecocomunidad.app.data.ReportesRepository
 import co.ecocomunidad.app.data.Resultado
+import co.ecocomunidad.app.data.TerritorioRepository
 import co.ecocomunidad.app.data.modelo.CambiosReporte
 import co.ecocomunidad.app.data.modelo.Categoria
+import co.ecocomunidad.app.data.modelo.EstadoReporte
 import co.ecocomunidad.app.data.modelo.Foto
 import co.ecocomunidad.app.data.modelo.Reporte
 import co.ecocomunidad.app.ui.navegacion.mensajeDeError
@@ -22,9 +24,10 @@ import java.io.File
  */
 class EditarReporteViewModel(
     repositorio: ReportesRepository,
+    territorio: TerritorioRepository,
     preparador: PreparadorFotos,
     private val id: Int,
-) : FormularioReporteViewModel(repositorio, preparador) {
+) : FormularioReporteViewModel(repositorio, territorio, preparador) {
 
     /** El reporte como está en el backend; se actualiza con cada respuesta para no repetir cambios. */
     private var guardado: Reporte? = null
@@ -61,11 +64,17 @@ class EditarReporteViewModel(
             // Si la categoría ya no está entre las activas, se muestra igual: solo se envía si cambia
             categoria = categorias.firstOrNull { it.id == reporte.categoriaId }
                 ?: Categoria(reporte.categoriaId, reporte.categoria),
+            // Los reportes anteriores a RN-23 no tienen municipio: queda vacío para elegirlo
+            municipio = reporte.municipio?.let { suyo ->
+                municipios.firstOrNull { it.id == suyo.id } ?: suyo.copy(zona = reporte.zona)
+            },
+            puedeCambiarTerritorio = reporte.estado == EstadoReporte.PENDIENTE,
             textos = mapOf(
                 CampoReporte.TITULO to reporte.titulo,
                 CampoReporte.DESCRIPCION to reporte.descripcion,
                 CampoReporte.DIRECCION to reporte.direccion,
                 CampoReporte.DESCRIPCION_UBICACION to reporte.descripcionUbicacion.orEmpty(),
+                CampoReporte.VEREDA to reporte.vereda.orEmpty(),
             ),
             fotos = reporte.fotos.map { FotoFormulario.Guardada(it) },
             ubicacion = ubicacion,
@@ -90,12 +99,16 @@ class EditarReporteViewModel(
     private fun cambios(original: Reporte, e: FormularioReporteEstado): CambiosReporte {
         fun nuevo(campo: CampoReporte, antes: String) = e.texto(campo).trim().takeIf { it != antes }
         val ubicacion = e.ubicacion?.takeIf { it != ubicacionDe(original) }
+        // RN-07: fuera de pendiente el municipio y la vereda no se envían
+        val territorio = e.puedeCambiarTerritorio
         return CambiosReporte(
             categoria = e.categoria?.id?.takeIf { it != original.categoriaId },
             titulo = nuevo(CampoReporte.TITULO, original.titulo),
             descripcion = nuevo(CampoReporte.DESCRIPCION, original.descripcion),
             direccion = nuevo(CampoReporte.DIRECCION, original.direccion),
             descripcionUbicacion = nuevo(CampoReporte.DESCRIPCION_UBICACION, original.descripcionUbicacion.orEmpty()),
+            municipio = e.municipio?.id?.takeIf { territorio && it != original.municipio?.id },
+            vereda = nuevo(CampoReporte.VEREDA, original.vereda.orEmpty())?.takeIf { territorio },
             latitud = ubicacion?.latitud,
             longitud = ubicacion?.longitud,
         )

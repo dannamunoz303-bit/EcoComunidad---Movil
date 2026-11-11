@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fondo"
@@ -64,11 +65,13 @@
 
                     <include
                         android:id="@+id/aviso_exito"
-                        layout="@layout/vista_aviso_exito" />
+                        layout="@layout/vista_aviso_exito"
+                        tools:visibility="gone" />
 
                     <include
                         android:id="@+id/aviso"
-                        layout="@layout/vista_aviso" />
+                        layout="@layout/vista_aviso"
+                        tools:visibility="gone" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/campo_correo"
@@ -85,7 +88,8 @@
                             android:autofillHints="emailAddress"
                             android:imeOptions="actionNext"
                             android:inputType="textEmailAddress"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            tools:text="laura.gomez@correo.co" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -103,7 +107,8 @@
                             android:autofillHints="password"
                             android:imeOptions="actionDone"
                             android:inputType="textPassword"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            tools:text="Brote2026" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <FrameLayout
@@ -131,7 +136,7 @@
                             app:trackThickness="2dp" />
                     </FrameLayout>
 
-                    <!-- Carga de más de 1 s: Brotico piensa (marca.md) -->
+                    <!-- Carga de más de 1 s: el texto junto al indicador de progreso -->
                     <LinearLayout
                         android:id="@+id/carga_larga"
                         android:layout_width="match_parent"
@@ -141,13 +146,6 @@
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:visibility="gone">
-
-                        <ImageView
-                            android:layout_width="56dp"
-                            android:layout_height="56dp"
-                            android:layout_marginEnd="12dp"
-                            android:importantForAccessibility="no"
-                            android:src="@drawable/brotico_piensa" />
 
                         <TextView
                             android:layout_width="wrap_content"

@@ -6,6 +6,7 @@
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fondo"
@@ -52,7 +53,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginHorizontal="20dp" />
+            android:layout_marginHorizontal="20dp"
+            tools:visibility="gone" />
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/desplazamiento"
@@ -60,7 +62,8 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingBottom="24dp"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -104,14 +107,16 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta"
-                                android:textColor="@color/tinta" />
+                                android:textColor="@color/tinta"
+                                tools:text="Mancha de aceite en la quebrada" />
 
                             <TextView
                                 android:id="@+id/estado_reporte"
                                 style="@style/Widget.EcoComunidad.EtiquetaEstado"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp" />
+                                android:layout_marginTop="8dp"
+                                tools:text="@string/estado_en_proceso" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -165,7 +170,8 @@
                         style="@style/Widget.EcoComunidad.OpcionNovedad"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp">
+                        android:layout_marginTop="12dp"
+                        tools:checked="true">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -252,7 +258,8 @@
                             android:id="@+id/texto_gestor"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="none" />
+                            android:inputType="none"
+                            tools:text="Carlos Pérez" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -268,7 +275,8 @@
                             android:layout_height="wrap_content"
                             android:gravity="top"
                             android:inputType="textMultiLine|textCapSentences"
-                            android:minLines="4" />
+                            android:minLines="4"
+                            tools:text="La mancha volvió a aparecer en la orilla después de la limpieza." />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
@@ -285,7 +293,8 @@
                     <!-- Lo que el backend rechazó y no es de un campo -->
                     <include
                         android:id="@+id/aviso"
-                        layout="@layout/vista_aviso" />
+                        layout="@layout/vista_aviso"
+                        tools:visibility="gone" />
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -312,7 +321,7 @@
                             app:trackThickness="2dp" />
                     </FrameLayout>
 
-                    <!-- Envío de más de 1 s: Brotico piensa (marca.md) -->
+                    <!-- Envío de más de 1 s: el texto junto al indicador de progreso -->
                     <LinearLayout
                         android:id="@+id/carga_larga"
                         android:layout_width="match_parent"
@@ -322,13 +331,6 @@
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:visibility="gone">
-
-                        <ImageView
-                            android:layout_width="56dp"
-                            android:layout_height="56dp"
-                            android:layout_marginEnd="12dp"
-                            android:importantForAccessibility="no"
-                            android:src="@drawable/brotico_piensa" />
 
                         <TextView
                             android:layout_width="wrap_content"

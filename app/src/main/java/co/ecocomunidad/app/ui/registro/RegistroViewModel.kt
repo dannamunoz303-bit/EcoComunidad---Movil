@@ -33,7 +33,7 @@ data class RegistroEstado(
     /** Error debajo de cada campo: vacío o confirmación local, o el mensaje del backend. */
     val errores: Map<CampoRegistro, String> = emptyMap(),
     val cargando: Boolean = false,
-    /** La carga pasó de 1 s: se muestra Brotico pensando (marca.md). */
+    /** La carga pasó de 1 s: se muestra el indicador con su texto. */
     val cargaLarga: Boolean = false,
     val aviso: String? = null,
     val destino: Ruta? = null,

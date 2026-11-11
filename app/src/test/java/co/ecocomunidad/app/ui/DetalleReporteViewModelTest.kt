@@ -138,7 +138,7 @@ class DetalleReporteViewModelTest {
     }
 
     @Test
-    fun cargaLarga_muestraBroticoTrasUnSegundo() = runTest(main.despachador) {
+    fun cargaLarga_muestraTextoDeCargaTrasUnSegundo() = runTest(main.despachador) {
         val espera = CompletableDeferred<Unit>()
         repositorio.esperaDetalle = espera
         val vm = viewModel()

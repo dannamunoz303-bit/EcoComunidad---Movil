@@ -46,16 +46,20 @@ sealed interface DestinoNotificacion {
  * Gestor (sección 9): tarea_asignada → el detalle de esa tarea; tarea_cancelada → Mis tareas;
  * novedad_respondida → Mis novedades. Si no hay a dónde ir, null: solo se marca como leída.
  */
-fun destinoDe(notificacion: Notificacion, rol: Rol): DestinoNotificacion? = when (rol) {
-    Rol.CIUDADANO -> when (notificacion.tipo) {
+fun destinoDe(notificacion: Notificacion, rol: Rol): DestinoNotificacion? =
+    destinoDe(notificacion.tipo, notificacion.reporteId, rol)
+
+/** Lo mismo con el tipo y el reporte sueltos, como llegan en data del aviso push (RN-26). */
+fun destinoDe(tipo: String, reporteId: Int?, rol: Rol): DestinoNotificacion? = when (rol) {
+    Rol.CIUDADANO -> when (tipo) {
         TipoNotificacion.NOVEDAD_RESPONDIDA -> DestinoNotificacion.MisNovedades
         TipoNotificacion.SANCION, TipoNotificacion.BLOQUEO_LEVANTADO -> DestinoNotificacion.MisSanciones
         TipoNotificacion.REPORTE_ELIMINADO -> null
-        else -> notificacion.reporteId?.let { DestinoNotificacion.Reporte(it) }
+        else -> reporteId?.let { DestinoNotificacion.Reporte(it) }
     }
-    Rol.GESTOR -> when (notificacion.tipo) {
+    Rol.GESTOR -> when (tipo) {
         TipoNotificacion.TAREA_ASIGNADA ->
-            notificacion.reporteId?.let { DestinoNotificacion.TareaDelReporte(it) } ?: DestinoNotificacion.MisTareas
+            reporteId?.let { DestinoNotificacion.TareaDelReporte(it) } ?: DestinoNotificacion.MisTareas
         TipoNotificacion.TAREA_CANCELADA -> DestinoNotificacion.MisTareas
         TipoNotificacion.NOVEDAD_RESPONDIDA -> DestinoNotificacion.MisNovedades
         else -> null
@@ -66,7 +70,7 @@ fun destinoDe(notificacion: Notificacion, rol: Rol): DestinoNotificacion? = when
 
 data class NotificacionesEstado(
     val cargando: Boolean = true,
-    /** La carga pasó de 1 s: se muestra Brotico pensando (marca.md). */
+    /** La carga pasó de 1 s: se muestra el indicador con su texto. */
     val cargaLarga: Boolean = false,
     /** Más nueva primero. */
     val notificaciones: List<Notificacion> = emptyList(),

@@ -7,11 +7,11 @@ Fuente de verdad del diseño del frontend. Si algo no está aquí, preguntar ant
 - El logo es **el brote en la grieta**: dos losas de pavimento separadas por una grieta en zigzag, y de la grieta sale un brote de dos hojas. No tiene cara.
 - Archivos (en esta carpeta):
   - `logo.svg`: versión principal, sobre fondos claros.
-  - `logo-sobre-verde.svg`: sobre el verde oscuro `#1E5A3A`.
+  - `logo-sobre-verde.svg`: sobre el verde oscuro `#2E6B1F`.
   - `logo-un-color.svg`: un solo color (`currentColor`), para impresión o sellos.
   - `favicon.svg`: versión con trazos más gruesos para la pestaña del navegador (20–32 px).
-- Junto al nombre: el logo a la izquierda y el texto **EcoComunidad** en Bricolage Grotesque 700, con "Eco" en `#3B7A55` peso 500 y "Comunidad" en `#1E5A3A` peso 700.
-- Sobre el verde oscuro `#1E5A3A` (con `logo-sobre-verde.svg`): "Eco" en verde-brote `#A8D9B8` peso 500 y "Comunidad" en blanco `#FFFFFF` peso 700.
+- Junto al nombre: el logo a la izquierda y el texto **EcoComunidad** en Bricolage Grotesque 700, con "Eco" en `#44892F` peso 500 y "Comunidad" en `#2E6B1F` peso 700.
+- Sobre el verde oscuro `#2E6B1F` (con `logo-sobre-verde.svg`): "Eco" en verde-brote `#C6E8A9` peso 500 y "Comunidad" en blanco `#FFFFFF` peso 700.
 - No deformar, no rotar, no cambiar colores fuera de las tres versiones.
 
 ## Animación del logo (solo en el login, una vez)
@@ -29,6 +29,8 @@ Usar `transform-box: view-box` en las hojas y las losas. Con `prefers-reduced-mo
 
 ## Brotico (personaje)
 
+> **Nota:** Brotico se retiró de la app en octubre de 2026.
+
 - Es la misma planta con carita. Aparece **solo en momentos especiales**, nunca en todas las pantallas. En el resto de la app manda el logo.
 - Estados (archivos en esta carpeta):
 
@@ -45,11 +47,11 @@ Usar `transform-box: view-box` en las hojas y las losas. Con `prefers-reduced-mo
 
 | Uso | Nombre | Hex |
 | --- | --- | --- |
-| Verde principal (botones, barra lateral, títulos) | verde-bosque | `#1E5A3A` |
-| Verde hoja (acentos, gráficas) | verde-hoja | `#3E9B63` |
-| Verde texto suave ("Eco", etiquetas) | verde-musgo | `#3B7A55` |
-| Verde claro (detalles sobre verde oscuro) | verde-brote | `#A8D9B8` |
-| Cuerpo de Brotico | verde-brotico | `#5BB37E` |
+| Verde principal (botones, barra lateral, títulos) | verde-bosque | `#2E6B1F` |
+| Verde hoja (acentos, gráficas) | verde-hoja | `#5DB33C` |
+| Verde texto suave ("Eco", etiquetas) | verde-musgo | `#44892F` |
+| Verde claro (detalles sobre verde oscuro) | verde-brote | `#C6E8A9` |
+| Verde medio | verde-medio | `#7CC35C` |
 | Fondo de la app | fondo | `#F3F6F1` |
 | Tarjetas | superficie | `#FFFFFF` |
 | Bordes | borde | `#DCE5DF` |

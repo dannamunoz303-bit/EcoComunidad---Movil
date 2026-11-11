@@ -22,7 +22,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_imagen"
+            tools:scaleType="center" />
     </com.google.android.material.card.MaterialCardView>
 
     <!-- 40 dp de toque aunque el círculo se vea pequeño en la esquina -->

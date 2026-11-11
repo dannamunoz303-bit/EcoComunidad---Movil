@@ -13,7 +13,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import co.ecocomunidad.app.R
+import co.ecocomunidad.app.data.modelo.TipoNotificacion
 import co.ecocomunidad.app.databinding.FragmentMisTareasBinding
+import co.ecocomunidad.app.ui.componentes.PermisoNotificaciones
 import co.ecocomunidad.app.ui.componentes.contenedor
 import co.ecocomunidad.app.ui.componentes.observar
 import co.ecocomunidad.app.ui.inicio.InicioViewModel
@@ -39,8 +41,13 @@ class MisTareasFragment : Fragment() {
         viewModelFactory { initializer { MisTareasViewModel(contenedor.tareasRepository, contenedor.reportesRepository) } }
     }
     private val campana: CampanaViewModel by viewModels {
-        viewModelFactory { initializer { CampanaViewModel(contenedor.notificacionesRepository) } }
+        viewModelFactory {
+            initializer { CampanaViewModel(contenedor.notificacionesRepository, contenedor.eventosPush.llegadas) }
+        }
     }
+
+    /** Al entrar al inicio se pregunta una vez por los avisos push (RN-26). */
+    private val permisoAvisos = PermisoNotificaciones(this)
 
     private lateinit var encabezado: EncabezadoGestorAdapter
     private lateinit var estadoLista: EstadoListaAdapter
@@ -77,6 +84,11 @@ class MisTareasFragment : Fragment() {
             encabezado.encabezado = encabezado.encabezado.copy(hayNoLeidas = hay)
         }
         observar(tareas.estado, ::mostrarEstado)
+        // Con la pantalla abierta, una tarea asignada o cancelada se ve sin tener que recargar
+        observar(contenedor.eventosPush.llegadas) { tipo ->
+            if (tipo == TipoNotificacion.TAREA_ASIGNADA || tipo == TipoNotificacion.TAREA_CANCELADA) tareas.recargar()
+        }
+        permisoAvisos.pedirSiHaceFalta()
     }
 
     /** Cada vez que la pantalla vuelve a verse se revisa la campana y, si no es la primera vez, las tareas. */

@@ -133,7 +133,7 @@ class RegistrarAccionFragment : Fragment() {
     /** Mientras se abre la tarea (o si no se pudo) no se muestra el formulario. */
     private fun mostrarCarga(estado: RegistrarAccionEstado) = with(binding) {
         val vistaEstado = when {
-            estado.cargandoTarea -> EstadoVista.Cargando(conBrotico = false, texto = R.string.tarea_cargando)
+            estado.cargandoTarea -> EstadoVista.Cargando(cargaLarga = false, texto = R.string.tarea_cargando)
             estado.errorTarea != null -> EstadoVista.Error(R.string.tarea_error_titulo, estado.errorTarea)
             else -> null
         }

@@ -42,6 +42,21 @@ class AppViewModelTest {
     }
 
     @Test
+    fun conSesion_registraElCelularParaLosAvisos() = runTest(main.despachador) {
+        repositorio.usuario.value = usuarioSesion(Rol.GESTOR)
+        AppViewModel(repositorio, emptyFlow())
+        advanceUntilIdle()
+        assertEquals(listOf<String?>(null), repositorio.dispositivos)
+    }
+
+    @Test
+    fun sinSesion_noRegistraElCelular() = runTest(main.despachador) {
+        AppViewModel(repositorio, emptyFlow())
+        advanceUntilIdle()
+        assertTrue(repositorio.dispositivos.isEmpty())
+    }
+
+    @Test
     fun sesionDeAdministrador_seCierra() = runTest(main.despachador) {
         repositorio.usuario.value = usuarioSesion(Rol.ADMINISTRADOR)
         val vm = AppViewModel(repositorio, emptyFlow())

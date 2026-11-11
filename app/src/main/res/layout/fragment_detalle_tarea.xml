@@ -5,6 +5,7 @@
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/raiz"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -36,7 +37,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:accessibilityHeading="true"
-            android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta" />
+            android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta"
+            tools:text="Tarea #12" />
     </LinearLayout>
 
     <FrameLayout
@@ -50,7 +52,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginHorizontal="20dp" />
+            android:layout_marginHorizontal="20dp"
+            tools:visibility="gone" />
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/contenido"
@@ -58,7 +61,8 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingBottom="24dp"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -114,13 +118,26 @@
                                     android:layout_marginEnd="8dp"
                                     android:layout_weight="1"
                                     android:textAppearance="@style/TextAppearance.EcoComunidad.Etiqueta"
-                                    android:textColor="@color/verde_musgo" />
+                                    android:textColor="@color/verde_musgo"
+                                    tools:text="Escombros" />
 
                                 <TextView
                                     android:id="@+id/estado"
                                     style="@style/Widget.EcoComunidad.EtiquetaEstado"
                                     android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" />
+                                    android:layout_height="wrap_content"
+                                    tools:text="@string/tarea_estado_asignada" />
+
+                                <!-- RN-25: la pone el backend; el ciudadano solo la ve -->
+                                <TextView
+                                    android:id="@+id/urgencia"
+                                    style="@style/Widget.EcoComunidad.EtiquetaEstado"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="6dp"
+                                    android:visibility="gone"
+                                    tools:text="@string/urgencia_alta"
+                                    tools:visibility="visible" />
                             </LinearLayout>
 
                             <TextView
@@ -130,7 +147,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
                                 android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta"
-                                android:textColor="@color/tinta" />
+                                android:textColor="@color/tinta"
+                                tools:text="Arena y ladrillos tapando el sumidero" />
 
                             <TextView
                                 android:id="@+id/fechas"
@@ -140,7 +158,8 @@
                                 android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
                                 android:textColor="@color/tinta_suave"
                                 android:textSize="13sp"
-                                app:lineHeight="20sp" />
+                                app:lineHeight="20sp"
+                                tools:text="Asignada el 21 de octubre de 2026 a las 2:30 p. m." />
 
                             <TextView
                                 android:id="@+id/direccion"
@@ -151,7 +170,8 @@
                                 android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
                                 android:textSize="14sp"
                                 app:drawableStartCompat="@drawable/ic_ubicacion"
-                                app:drawableTint="@color/verde_musgo" />
+                                app:drawableTint="@color/verde_musgo"
+                                tools:text="Carrera 50 # 3-21" />
 
                             <TextView
                                 android:id="@+id/descripcion_ubicacion"
@@ -161,7 +181,21 @@
                                 android:layout_marginTop="2dp"
                                 android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
                                 android:textColor="@color/tinta_suave"
-                                android:textSize="14sp" />
+                                android:textSize="14sp"
+                                tools:text="Al lado de la tienda de la esquina, frente a la parada del bus" />
+
+                            <!-- Municipio, zona y vereda (RN-23) -->
+                            <TextView
+                                android:id="@+id/territorio"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:drawablePadding="6dp"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                android:textSize="14sp"
+                                app:drawableStartCompat="@drawable/ic_mapa"
+                                app:drawableTint="@color/verde_musgo"
+                                tools:text="Santander de Quilichao · Zona norte" />
 
                             <!-- Mapa con el pin del reporte (osmdroid, sin clave) -->
                             <com.google.android.material.card.MaterialCardView
@@ -175,7 +209,8 @@
                                     android:id="@+id/mapa"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:contentDescription="@string/mapa_tarea_descripcion" />
+                                    android:contentDescription="@string/mapa_tarea_descripcion"
+                                    tools:background="@color/borde" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <!-- Lo que escribió el ciudadano (llega de reportes/{id}/) -->
@@ -193,7 +228,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo" />
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                                tools:text="Dejaron arena y ladrillos de una obra encima del sumidero. Cuando llueve, el agua se empoza en toda la cuadra." />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -216,7 +252,8 @@
                         android:contentDescription="@string/cargando"
                         android:indeterminate="true"
                         app:indicatorColor="@color/verde_bosque"
-                        app:trackColor="@color/borde" />
+                        app:trackColor="@color/borde"
+                        tools:visibility="gone" />
 
                     <TextView
                         android:id="@+id/acciones_mensaje"
@@ -226,7 +263,9 @@
                         android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
                         android:textColor="@color/tinta_suave"
                         android:textSize="14sp"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        tools:text="@string/tarea_sin_acciones"
+                        tools:visibility="visible" />
 
                     <!-- Solo si no se pudieron cargar las acciones -->
                     <com.google.android.material.button.MaterialButton
@@ -255,16 +294,19 @@
                         android:visibility="gone"
                         app:icon="@drawable/ic_mas"
                         app:iconSize="18dp"
-                        app:iconTint="@color/verde_bosque" />
+                        app:iconTint="@color/verde_bosque"
+                        tools:visibility="visible" />
 
                     <!-- Según el estado: Iniciar, Terminar o un aviso (RN-13) -->
                     <include
                         android:id="@+id/aviso"
-                        layout="@layout/vista_aviso" />
+                        layout="@layout/vista_aviso"
+                        tools:visibility="gone" />
 
                     <include
                         android:id="@+id/aviso_terminada"
-                        layout="@layout/vista_aviso_exito" />
+                        layout="@layout/vista_aviso_exito"
+                        tools:visibility="gone" />
 
                     <FrameLayout
                         android:id="@+id/marco_boton"
@@ -276,7 +318,8 @@
                             android:id="@+id/boton_estado"
                             style="@style/Widget.EcoComunidad.BotonPrincipal"
                             android:layout_width="match_parent"
-                            android:layout_height="52dp" />
+                            android:layout_height="52dp"
+                            tools:text="@string/iniciar_tarea" />
 
                         <com.google.android.material.progressindicator.CircularProgressIndicator
                             android:id="@+id/progreso"
@@ -301,7 +344,8 @@
                         android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
                         android:textColor="@color/tinta_suave"
                         android:textSize="13sp"
-                        app:lineHeight="19sp" />
+                        app:lineHeight="19sp"
+                        tools:visibility="gone" />
 
                     <!-- RN-18: novedad del gestor, solo con la tarea asignada o en proceso -->
                     <com.google.android.material.button.MaterialButton
@@ -316,7 +360,8 @@
                         android:visibility="gone"
                         app:icon="@drawable/ic_alerta"
                         app:iconSize="18dp"
-                        app:iconTint="@color/ambar" />
+                        app:iconTint="@color/ambar"
+                        tools:visibility="visible" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

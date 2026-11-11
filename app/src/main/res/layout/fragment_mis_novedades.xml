@@ -2,6 +2,7 @@
 <!-- Mis novedades (RN-18): las que creó el ciudadano, más nuevas primero, con la respuesta del administrador. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fondo"
@@ -40,14 +41,15 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <!-- Cargando, vacío (Brotico triste) o error con Reintentar -->
+        <!-- Cargando, vacío (ícono de bandeja) o error con Reintentar -->
         <include
             android:id="@+id/estado_carga"
             layout="@layout/vista_estado_carga"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginHorizontal="20dp" />
+            android:layout_marginHorizontal="20dp"
+            tools:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/lista"
@@ -57,6 +59,9 @@
             android:paddingHorizontal="20dp"
             android:paddingBottom="24dp"
             android:visibility="gone"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:visibility="visible"
+            tools:listitem="@layout/item_novedad"
+            tools:itemCount="3" />
     </FrameLayout>
 </LinearLayout>

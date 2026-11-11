@@ -22,7 +22,7 @@ private val formatoFecha =
 fun formatearFechaColombia(fecha: OffsetDateTime): String =
     fecha.atZoneSameInstant(zonaColombia).format(formatoFecha)
 
-/** Texto para el usuario según el error del backend. Sobrio: sin Brotico (marca.md). */
+/** Texto para el usuario según el error del backend. Sobrio (marca.md). */
 fun mensajeDeError(error: ErrorAuth): String = when (error) {
     is ErrorAuth.Inactivo -> "Tu cuenta está inactiva y no puede iniciar sesión."
     is ErrorAuth.Bloqueado -> error.hasta

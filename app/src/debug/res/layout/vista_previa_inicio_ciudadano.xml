@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Solo para la vista previa de fragment_inicio_ciudadano (tools:listitem): encabezado con las
+  pestañas y tres reportes. Está en src/debug, así que no entra en la versión release.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <include layout="@layout/item_encabezado_ciudadano" />
+
+    <include layout="@layout/item_reporte" />
+
+    <include layout="@layout/item_reporte" />
+
+    <include layout="@layout/item_reporte" />
+</LinearLayout>

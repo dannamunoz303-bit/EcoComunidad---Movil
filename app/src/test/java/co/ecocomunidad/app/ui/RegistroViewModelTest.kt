@@ -172,7 +172,7 @@ class RegistroViewModelTest {
     }
 
     @Test
-    fun mientrasCarga_noEnviaDosVecesYTrasUnSegundoMuestraBrotico() = runTest(main.despachador) {
+    fun mientrasCarga_noEnviaDosVecesYTrasUnSegundoMuestraCargaLarga() = runTest(main.despachador) {
         val vm = viewModelLleno()
         val espera = CompletableDeferred<Unit>()
         repositorio.esperaRegistro = espera

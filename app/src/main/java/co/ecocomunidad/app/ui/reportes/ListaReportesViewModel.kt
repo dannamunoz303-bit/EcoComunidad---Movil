@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 
 enum class FiltroReportes { TODOS, MIOS }
 
-/** Error que deja la pantalla sin datos. [sinConexion]: se muestra con Brotico triste; el resto, sobrio. */
+/** Error que deja la pantalla sin datos. [sinConexion]: se muestra con el wifi tachado; el resto, sobrio. */
 data class ErrorCarga(val mensaje: String, val sinConexion: Boolean)
 
 data class ListaReportesEstado(
@@ -27,7 +27,7 @@ data class ListaReportesEstado(
     val cargando: Boolean = false,
     /** Deslizar hacia abajo: la lista actual sigue visible. */
     val recargando: Boolean = false,
-    /** La carga pasó de 1 s: se muestra Brotico pensando (marca.md). */
+    /** La carga pasó de 1 s: se muestra el indicador con su texto. */
     val cargaLarga: Boolean = false,
     val error: ErrorCarga? = null,
     /** Falló una recarga con datos en pantalla: se avisa sin quitar la lista. */

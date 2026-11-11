@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fondo"
@@ -74,7 +75,8 @@
 
                     <include
                         android:id="@+id/aviso"
-                        layout="@layout/vista_aviso" />
+                        layout="@layout/vista_aviso"
+                        tools:visibility="gone" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/campo_actual"
@@ -91,7 +93,8 @@
                             android:autofillHints="password"
                             android:imeOptions="actionNext"
                             android:inputType="textPassword"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            tools:text="Temporal2026" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -109,7 +112,8 @@
                             android:autofillHints="newPassword"
                             android:imeOptions="actionNext"
                             android:inputType="textPassword"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            tools:text="Brote2026" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -127,7 +131,8 @@
                             android:autofillHints="newPassword"
                             android:imeOptions="actionDone"
                             android:inputType="textPassword"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            tools:text="Brote2026" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <FrameLayout

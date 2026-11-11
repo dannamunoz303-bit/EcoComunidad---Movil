@@ -27,6 +27,14 @@ enum class EstadoTarea {
     @SerialName("cancelada") CANCELADA,
 }
 
+/** Urgencia del reporte (RN-25). La pone el backend con la categoría; el ciudadano no la elige. */
+@Serializable
+enum class Urgencia {
+    @SerialName("alta") ALTA,
+    @SerialName("media") MEDIA,
+    @SerialName("baja") BAJA,
+}
+
 /** CategoriaSerializer. Al ciudadano el backend solo le devuelve las activas (sección 4.3). */
 @Serializable
 data class Categoria(
@@ -46,6 +54,9 @@ data class NuevoReporte(
     val descripcion: String,
     val direccion: String,
     val descripcionUbicacion: String?,
+    /** Id de uno de los 42 municipios (RN-23). */
+    val municipio: Int,
+    val vereda: String?,
     val latitud: Double,
     val longitud: Double,
     val fotos: List<File>,
@@ -53,7 +64,8 @@ data class NuevoReporte(
 
 /**
  * Campos de ReporteEditarSerializer que cambiaron (PATCH reportes/{id}/, RN-07). null = sin cambio.
- * Para borrar las referencias de ubicación se manda texto vacío (el campo permite blank).
+ * Para borrar las referencias de ubicación o la vereda se manda texto vacío (los campos permiten blank).
+ * El municipio se puede cambiar pero no quitar (RN-23).
  * La latitud y la longitud van siempre juntas.
  */
 data class CambiosReporte(
@@ -62,6 +74,8 @@ data class CambiosReporte(
     val descripcion: String? = null,
     val direccion: String? = null,
     val descripcionUbicacion: String? = null,
+    val municipio: Int? = null,
+    val vereda: String? = null,
     val latitud: Double? = null,
     val longitud: Double? = null,
 ) {
@@ -88,6 +102,7 @@ data class Foto(
 /**
  * ReporteSerializer. [ciudadano] llega null cuando quien mira no puede ver al creador (RN-10).
  * [fotos] son solo las tipo reporte; las evidencias vienen en las acciones.
+ * [municipio] y [zona] llegan null en los reportes creados antes de RN-23; la zona sale del municipio.
  */
 @Serializable
 data class Reporte(
@@ -99,10 +114,15 @@ data class Reporte(
     val descripcion: String,
     val direccion: String,
     @SerialName("descripcion_ubicacion") val descripcionUbicacion: String? = null,
+    /** MunicipioResumenSerializer: solo id y nombre (la zona va aparte). */
+    val municipio: Municipio? = null,
+    val vereda: String? = null,
+    val zona: Zona? = null,
     /** DecimalField: DRF las manda como texto ("4.60971000"). Sirven para poner el pin al editar. */
     val latitud: String? = null,
     val longitud: String? = null,
     val estado: EstadoReporte,
+    val urgencia: Urgencia? = null,
     @SerialName("motivo_rechazo") val motivoRechazo: String? = null,
     @SerialName("fecha_creacion") val fechaCreacion: String,
     @SerialName("fecha_actualizacion") val fechaActualizacion: String,

@@ -11,8 +11,10 @@ import co.ecocomunidad.app.data.modelo.TareaGestor
 import co.ecocomunidad.app.databinding.ItemEncabezadoGestorBinding
 import co.ecocomunidad.app.databinding.ItemReporteBinding
 import co.ecocomunidad.app.ui.reportes.cargarFoto
+import co.ecocomunidad.app.ui.reportes.etiqueta
 import co.ecocomunidad.app.ui.reportes.fechaCorta
 import co.ecocomunidad.app.ui.reportes.mostrarEtiquetaEstado
+import co.ecocomunidad.app.ui.reportes.mostrarUrgencia
 
 /** Lo que muestra el encabezado del gestor. [activas] es null mientras no se sabe. */
 data class EncabezadoGestor(
@@ -22,7 +24,7 @@ data class EncabezadoGestor(
     val hayNoLeidas: Boolean = false,
 )
 
-/** Barra (logo, campana y menú), saludo de Brotico con las tareas activas y pestañas. Siempre un elemento. */
+/** Barra (logo, campana y menú), saludo con las tareas activas y pestañas. Siempre un elemento. */
 class EncabezadoGestorAdapter(
     private val alAbrirNotificaciones: () -> Unit,
     private val alAbrirMiCuenta: () -> Unit,
@@ -96,6 +98,8 @@ class TareasAdapter(
         titulo.text = reporte.titulo
         direccion.text = reporte.direccion
         estado.mostrarEtiquetaEstado(tarea.estado.etiqueta, tarea.estado.color)
+        // RN-25: la lista llega ordenada por urgencia desde el backend; aquí solo se muestra
+        urgencia.mostrarUrgencia(reporte.urgencia)
         fecha.text = contexto.getString(R.string.tarea_asignada_el, fechaCorta(tarea.fechaAsignacion))
         // Una sola frase para el lector de pantalla
         tarjeta.contentDescription = contexto.getString(
@@ -104,7 +108,7 @@ class TareasAdapter(
             reporte.titulo,
             reporte.direccion,
             contexto.getString(tarea.estado.etiqueta),
-        )
+        ) + reporte.urgencia?.let { ". " + contexto.getString(it.etiqueta) }.orEmpty()
     }
 
     private object Diferencias : DiffUtil.ItemCallback<TareaConFoto>() {

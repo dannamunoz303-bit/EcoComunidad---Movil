@@ -25,7 +25,7 @@ import java.time.OffsetDateTime
 
 data class MisNovedadesEstado(
     val cargando: Boolean = true,
-    /** La carga pasó de 1 s: se muestra Brotico pensando (marca.md). */
+    /** La carga pasó de 1 s: se muestra el indicador con su texto. */
     val cargaLarga: Boolean = false,
     /** Más nueva primero. */
     val novedades: List<Novedad> = emptyList(),

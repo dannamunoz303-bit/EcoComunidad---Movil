@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Encabezado de la pantalla principal del ciudadano: barra, saludo de Brotico y pestañas. -->
+<!-- Encabezado de la pantalla principal del ciudadano: barra, saludo y pestañas. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -47,7 +48,8 @@
                 android:layout_marginEnd="11dp"
                 android:background="@drawable/punto_campana"
                 android:importantForAccessibility="no"
-                android:visibility="gone" />
+                android:visibility="gone"
+                tools:visibility="visible" />
         </FrameLayout>
 
         <!-- Menú "Mi cuenta" -->
@@ -72,41 +74,27 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:padding="20dp">
 
-            <ImageView
-                android:layout_width="88dp"
-                android:layout_height="88dp"
-                android:importantForAccessibility="no"
-                android:src="@drawable/brotico_saluda" />
-
-            <LinearLayout
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/saludo"
+                style="@style/Widget.EcoComunidad.TextoTitulo"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:text="@string/saludo_sin_nombre"
+                android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta"
+                android:textColor="@color/superficie"
+                tools:text="¡Hola de nuevo, Laura!" />
 
-                <TextView
-                    android:id="@+id/saludo"
-                    style="@style/Widget.EcoComunidad.TextoTitulo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/saludo_sin_nombre"
-                    android:textAppearance="@style/TextAppearance.EcoComunidad.TituloTarjeta"
-                    android:textColor="@color/superficie" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/saludo_barrio"
-                    android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
-                    android:textColor="@color/verde_brote"
-                    android:textSize="14sp" />
-            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/saludo_barrio"
+                android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+                android:textColor="@color/verde_brote"
+                android:textSize="14sp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

@@ -3,6 +3,7 @@ package co.ecocomunidad.app.data
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import co.ecocomunidad.app.data.modelo.EstadoReporte
 import co.ecocomunidad.app.data.modelo.EstadoTarea
+import co.ecocomunidad.app.data.modelo.Urgencia
 import co.ecocomunidad.app.data.remoto.ApiCliente
 import co.ecocomunidad.app.data.sesion.EventosSesion
 import co.ecocomunidad.app.data.sesion.SesionStore
@@ -84,6 +85,22 @@ class TareasRepositoryTest {
             assertEquals(EstadoReporte.EN_PROCESO, reporte.estado)
         }
         assertEquals("2026-10-04T16:00:00-05:00", tareas[1].fechaFin)
+    }
+
+    @Test
+    fun mias_traeLaUrgenciaYConservaElOrdenDelBackend() = runTest {
+        sesion.guardarTokens("access-1", "refresh-1")
+        // RN-25: el backend ya las manda por urgencia (alta primero) y luego por fecha
+        responder(
+            200,
+            "[${tareaJson(7, "asignada", urgencia = "alta")}, ${tareaJson(3, "asignada", urgencia = "media")}, " +
+                "${tareaJson(12, "en_proceso", urgencia = "baja")}]",
+        )
+
+        val tareas = (repositorio.mias() as Resultado.Exito).datos
+
+        assertEquals(listOf(7, 3, 12), tareas.map { it.id })
+        assertEquals(listOf(Urgencia.ALTA, Urgencia.MEDIA, Urgencia.BAJA), tareas.map { it.reporte.urgencia })
     }
 
     @Test
@@ -286,9 +303,9 @@ class TareasRepositoryTest {
     }
 
     /** Forma de TareaGestorSerializer con su ReporteBasicoSerializer. */
-    private fun tareaJson(id: Int, estado: String, fin: String = "null") =
+    private fun tareaJson(id: Int, estado: String, fin: String = "null", urgencia: String = "media") =
         """{"id":$id,"reporte":{"id":5,"titulo":"Basura en la esquina","categoria":"Basura acumulada",
             "direccion":"Calle 10 # 5-20","descripcion_ubicacion":"Frente al parque",
-            "latitud":"4.60971000","longitud":"-74.08175000","estado":"en_proceso"},
+            "latitud":"4.60971000","longitud":"-74.08175000","estado":"en_proceso","urgencia":"$urgencia"},
             "estado":"$estado","fecha_asignacion":"2026-10-02T09:00:00-05:00","fecha_fin":$fin}"""
 }

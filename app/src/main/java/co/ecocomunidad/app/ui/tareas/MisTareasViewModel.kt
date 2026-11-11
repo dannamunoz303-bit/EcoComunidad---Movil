@@ -31,7 +31,7 @@ data class MisTareasEstado(
     val cargando: Boolean = true,
     /** Deslizar hacia abajo o volver a la pantalla: la lista actual sigue visible. */
     val recargando: Boolean = false,
-    /** La carga pasó de 1 s: se muestra Brotico pensando (marca.md). */
+    /** La carga pasó de 1 s: se muestra el indicador con su texto. */
     val cargaLarga: Boolean = false,
     val error: ErrorCarga? = null,
     /** Falló una recarga con datos en pantalla: se avisa sin quitar la lista. */

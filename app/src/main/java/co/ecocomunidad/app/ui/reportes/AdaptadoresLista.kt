@@ -16,7 +16,7 @@ import co.ecocomunidad.app.databinding.VistaEstadoCargaBinding
 data class Encabezado(val nombre: String?, val filtro: FiltroReportes, val hayNoLeidas: Boolean = false)
 
 /**
- * Barra con la campana de notificaciones y el menú "Mi cuenta", saludo de Brotico y las pestañas
+ * Barra con la campana de notificaciones y el menú "Mi cuenta", saludo y las pestañas
  * "Todos" y "Mis reportes". Siempre un elemento.
  */
 class EncabezadoAdapter(

@@ -2,13 +2,13 @@
 <!-- Colores de marca (docs/marca/marca.md). Solo tema claro. -->
 <resources>
     <!-- Verde principal: botones, barras, títulos -->
-    <color name="verde_bosque">#FF1E5A3A</color>
+    <color name="verde_bosque">#FF2E6B1F</color>
     <!-- Acentos y gráficas -->
-    <color name="verde_hoja">#FF3E9B63</color>
+    <color name="verde_hoja">#FF5DB33C</color>
     <!-- Texto verde suave ("Eco", etiquetas) -->
-    <color name="verde_musgo">#FF3B7A55</color>
+    <color name="verde_musgo">#FF44892F</color>
     <!-- Detalles sobre verde oscuro -->
-    <color name="verde_brote">#FFA8D9B8</color>
+    <color name="verde_brote">#FFC6E8A9</color>
     <color name="fondo">#FFF3F6F1</color>
     <!-- Tarjetas -->
     <color name="superficie">#FFFFFFFF</color>

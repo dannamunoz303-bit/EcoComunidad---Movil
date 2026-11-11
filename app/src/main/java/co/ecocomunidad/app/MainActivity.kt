@@ -1,5 +1,6 @@
 package co.ecocomunidad.app
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
@@ -14,11 +15,15 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import co.ecocomunidad.app.data.push.EXTRA_REPORTE_ID
+import co.ecocomunidad.app.data.push.EXTRA_TIPO
 import co.ecocomunidad.app.databinding.ActivityMainBinding
 import co.ecocomunidad.app.ui.navegacion.AppViewModel
 import co.ecocomunidad.app.ui.navegacion.Ruta
 import co.ecocomunidad.app.ui.navegacion.destino
 import co.ecocomunidad.app.ui.navegacion.irA
+import co.ecocomunidad.app.ui.notificaciones.AvisoPushViewModel
+import co.ecocomunidad.app.ui.notificaciones.abrir
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -31,6 +36,13 @@ class MainActivity : AppCompatActivity() {
         val contenedor = (application as EcoComunidadApp).contenedor
         viewModelFactory {
             initializer { AppViewModel(contenedor.authRepository, contenedor.eventosSesion.sesionCerrada) }
+        }
+    }
+
+    private val avisoPush: AvisoPushViewModel by viewModels {
+        val contenedor = (application as EcoComunidadApp).contenedor
+        viewModelFactory {
+            initializer { AvisoPushViewModel(contenedor.tareasRepository, contenedor.authRepository.usuario) }
         }
     }
 
@@ -51,14 +63,36 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        // Al recrear la Activity (por ejemplo, al girar) el aviso ya se atendió
+        if (savedInstanceState == null) atenderAviso(intent)
+
         lifecycleScope.launch {
             val inicio = appViewModel.inicio.filterNotNull().first()
             ponerGrafo(inicio)
 
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                appViewModel.cierres.collect { motivo -> navController.irA(Ruta.Login(motivo)) }
+                launch { appViewModel.cierres.collect { motivo -> navController.irA(Ruta.Login(motivo)) } }
+                launch { avisoPush.abrir.collect { destino -> navController.abrir(destino) } }
             }
         }
+    }
+
+    /** Con la app ya abierta (launchMode singleTop), tocar un aviso push llega aquí. */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        atenderAviso(intent)
+    }
+
+    /**
+     * Se tocó un aviso push (RN-26): Android o ServicioAvisos dejan tipo y reporte_id en los extras.
+     * Abrir la app desde el ícono no trae tipo y no hace nada.
+     */
+    private fun atenderAviso(intent: Intent) {
+        val tipo = intent.getStringExtra(EXTRA_TIPO) ?: return
+        avisoPush.avisoTocado(tipo, intent.getStringExtra(EXTRA_REPORTE_ID))
+        intent.removeExtra(EXTRA_TIPO)
+        intent.removeExtra(EXTRA_REPORTE_ID)
     }
 
     /**

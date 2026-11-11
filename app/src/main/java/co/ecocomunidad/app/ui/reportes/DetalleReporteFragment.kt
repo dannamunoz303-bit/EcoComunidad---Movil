@@ -147,11 +147,13 @@ class DetalleReporteFragment : Fragment() {
         mostrarFotos(reporte.fotos)
         categoria.text = reporte.categoria
         estado.mostrarEstado(reporte.estado)
+        urgencia.mostrarUrgencia(reporte.urgencia)
         titulo.text = reporte.titulo
         descripcion.text = reporte.descripcion
         direccion.text = reporte.direccion
         descripcionUbicacion.text = reporte.descripcionUbicacion
         descripcionUbicacion.visibility = if (reporte.descripcionUbicacion.isNullOrBlank()) View.GONE else View.VISIBLE
+        territorio.text = lugarDelReporte(reporte.municipio?.nombre, reporte.vereda, reporte.zona?.nombre)
 
         val motivo = reporte.motivoRechazo
             ?.takeIf { esPropio && reporte.estado == EstadoReporte.RECHAZADO && it.isNotBlank() }

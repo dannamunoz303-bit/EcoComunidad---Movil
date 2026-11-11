@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Cargando, vacío o error, centrado. Lo usan la lista y el detalle.
-  Brotico solo cuando aplica (marca.md): piensa si la carga tarda, triste si no hay nada o no hay conexión.
+  Si la carga tarda, el indicador va con su texto; bandeja si no hay nada; wifi tachado si no hay conexión.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:accessibilityLiveRegion="polite"
@@ -21,14 +22,18 @@
         android:indeterminate="true"
         app:indicatorColor="@color/verde_bosque"
         app:indicatorSize="32dp"
-        app:trackThickness="3dp" />
+        app:trackThickness="3dp"
+        tools:visibility="gone" />
 
     <ImageView
-        android:id="@+id/brotico"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:id="@+id/icono_estado"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:importantForAccessibility="no"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:tint="@color/verde_bosque"
+        tools:src="@drawable/ic_sin_wifi"
+        tools:visibility="visible" />
 
     <ImageView
         android:id="@+id/icono_error"
@@ -48,7 +53,9 @@
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
         android:textSize="18sp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:text="@string/reportes_error_titulo"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/mensaje"
@@ -60,7 +67,9 @@
         android:textColor="@color/tinta_suave"
         android:textSize="14sp"
         android:visibility="gone"
-        app:lineHeight="20sp" />
+        app:lineHeight="20sp"
+        tools:text="No hay conexión con el servidor. Revisa tu internet e inténtalo de nuevo."
+        tools:visibility="visible" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/boton_reintentar"
@@ -69,5 +78,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/reintentar"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible" />
 </LinearLayout>

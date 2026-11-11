@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
@@ -28,6 +29,7 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
 import java.time.OffsetDateTime
+import java.util.concurrent.TimeUnit
 
 class AuthRepositoryTest {
 
@@ -38,7 +40,11 @@ class AuthRepositoryTest {
     private lateinit var alcanceDataStore: CoroutineScope
     private lateinit var sesion: SesionStore
     private lateinit var eventos: EventosSesion
+    private lateinit var alcanceRepositorio: CoroutineScope
     private lateinit var repositorio: AuthRepository
+
+    /** Lo que entrega el "Firebase" de la prueba; null = no hay token (no se llama al backend). */
+    private var tokenCelular: String? = null
 
     @Before
     fun preparar() {
@@ -51,12 +57,16 @@ class AuthRepositoryTest {
         )
         eventos = EventosSesion()
         val cliente = ApiCliente(sesion, eventos, servidor.url("/api").toString(), registrarPeticiones = false)
-        repositorio = AuthRepositoryRemoto(cliente.authApi, sesion, cliente.json)
+        alcanceRepositorio = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        repositorio = AuthRepositoryRemoto(
+            cliente.authApi, sesion, cliente.json, cliente.dispositivosApi, { tokenCelular }, alcanceRepositorio,
+        )
     }
 
     @After
     fun limpiar() {
         servidor.shutdown()
+        alcanceRepositorio.cancel()
         alcanceDataStore.cancel()
     }
 
@@ -329,6 +339,142 @@ class AuthRepositoryTest {
         assertNull(sesion.access())
         assertNull(sesion.usuario.first())
         assertEquals(false, sesion.haySesion.first())
+    }
+
+    // --- Avisos push (RN-26) ---
+
+    @Test
+    fun login_registraElCelularConElTokenDeLaSesion() = runTest {
+        tokenCelular = "fcm-1"
+        responder(200, LOGIN_OK)
+        responder(200, yo(debeCambiar = false))
+        servidor.enqueue(MockResponse().setResponseCode(204))
+
+        val r = repositorio.login("ana@correo.co", "clave-segura-1")
+
+        assertTrue(r is Resultado.Exito)
+        servidor.takeRequest()
+        servidor.takeRequest()
+        val registro = servidor.takeRequest(5, TimeUnit.SECONDS)!!
+        assertEquals("/api/notificaciones/dispositivos/", registro.path)
+        assertEquals("POST", registro.method)
+        assertEquals("""{"token":"fcm-1"}""", registro.body.readUtf8())
+        assertEquals("Bearer access-1", registro.getHeader("Authorization"))
+    }
+
+    @Test
+    fun login_siRegistrarElCelularFalla_entraIgual() = runTest {
+        tokenCelular = "fcm-1"
+        responder(200, LOGIN_OK)
+        responder(200, yo(debeCambiar = false))
+        responder(500, """{"detail":"Error"}""")
+
+        val r = repositorio.login("ana@correo.co", "clave-segura-1")
+
+        assertTrue(r is Resultado.Exito)
+        servidor.takeRequest()
+        servidor.takeRequest()
+        assertEquals("/api/notificaciones/dispositivos/", servidor.takeRequest(5, TimeUnit.SECONDS)!!.path)
+        assertEquals("access-1", sesion.access())
+    }
+
+    @Test
+    fun login_sinTokenDeFirebase_noLlamaAlBackend() = runTest {
+        responder(200, LOGIN_OK)
+        responder(200, yo(debeCambiar = false))
+
+        assertTrue(repositorio.login("ana@correo.co", "clave-segura-1") is Resultado.Exito)
+
+        servidor.takeRequest()
+        servidor.takeRequest()
+        assertNull(servidor.takeRequest(500, TimeUnit.MILLISECONDS))
+    }
+
+    @Test
+    fun loginDeAdministrador_noRegistraElCelular() = runTest {
+        tokenCelular = "fcm-1"
+        responder(200, LOGIN_OK)
+        responder(200, yo(debeCambiar = false).replace("ciudadano", "administrador"))
+
+        assertTrue(repositorio.login("admin@correo.co", "clave") is Resultado.Exito)
+
+        servidor.takeRequest()
+        servidor.takeRequest()
+        assertNull(servidor.takeRequest(500, TimeUnit.MILLISECONDS))
+    }
+
+    @Test
+    fun registrarDispositivo_conElTokenNuevoDeFirebase() = runTest {
+        sesion.guardarTokens("access-1", "refresh-1")
+        servidor.enqueue(MockResponse().setResponseCode(204))
+
+        repositorio.registrarDispositivo("fcm-nuevo")
+
+        val registro = servidor.takeRequest()
+        assertEquals("/api/notificaciones/dispositivos/", registro.path)
+        assertEquals("""{"token":"fcm-nuevo"}""", registro.body.readUtf8())
+    }
+
+    @Test
+    fun registrarDispositivo_sinSesion_noLlama() = runTest {
+        repositorio.registrarDispositivo("fcm-nuevo")
+
+        assertEquals(0, servidor.requestCount)
+    }
+
+    // runBlocking: con runTest el límite de tiempo de cerrarSesion correría en tiempo virtual
+    @Test
+    fun cerrarSesion_quitaElCelularAntesDeBorrarLaSesion() = runBlocking {
+        tokenCelular = "fcm-1"
+        sesion.guardarTokens("access-1", "refresh-1")
+        sesion.guardarUsuario(USUARIO)
+        servidor.enqueue(MockResponse().setResponseCode(204))
+
+        repositorio.cerrarSesion()
+
+        val quitar = servidor.takeRequest()
+        assertEquals("/api/notificaciones/dispositivos/quitar/", quitar.path)
+        assertEquals("POST", quitar.method)
+        assertEquals("""{"token":"fcm-1"}""", quitar.body.readUtf8())
+        // Fue con la sesión todavía guardada
+        assertEquals("Bearer access-1", quitar.getHeader("Authorization"))
+        assertNull(sesion.access())
+        assertNull(sesion.usuario.first())
+    }
+
+    @Test
+    fun cerrarSesion_siQuitarElCelularFalla_borraIgual() = runBlocking {
+        tokenCelular = "fcm-1"
+        sesion.guardarTokens("access-1", "refresh-1")
+        responder(500, """{"detail":"Error"}""")
+
+        repositorio.cerrarSesion()
+
+        assertEquals(1, servidor.requestCount)
+        assertNull(sesion.access())
+    }
+
+    @Test
+    fun cerrarSesion_sinConexion_borraIgual() = runBlocking {
+        tokenCelular = "fcm-1"
+        sesion.guardarTokens("access-1", "refresh-1")
+        servidor.shutdown()
+
+        repositorio.cerrarSesion()
+
+        assertNull(sesion.access())
+    }
+
+    @Test
+    fun cerrarSesion_siElBackendTarda_noEsperaMasDelLimite() = runTest {
+        // En runTest el límite de 5 s pasa en tiempo virtual: la respuesta de 30 s no se espera
+        tokenCelular = "fcm-1"
+        sesion.guardarTokens("access-1", "refresh-1")
+        servidor.enqueue(MockResponse().setResponseCode(204).setHeadersDelay(30, TimeUnit.SECONDS))
+
+        repositorio.cerrarSesion()
+
+        assertNull(sesion.access())
     }
 
     @Test

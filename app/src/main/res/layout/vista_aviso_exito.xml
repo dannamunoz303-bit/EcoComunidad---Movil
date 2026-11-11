@@ -2,6 +2,7 @@
 <!-- Aviso de que algo salió bien (por ejemplo, la cuenta quedó creada). Oculto hasta que haga falta. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/aviso_exito"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -11,7 +12,8 @@
     android:orientation="horizontal"
     android:paddingHorizontal="14dp"
     android:paddingVertical="12dp"
-    android:visibility="gone">
+    android:visibility="gone"
+    tools:visibility="visible">
 
     <ImageView
         android:layout_width="20dp"
@@ -28,5 +30,6 @@
         android:layout_weight="1"
         android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
         android:textSize="14sp"
-        app:lineHeight="20sp" />
+        app:lineHeight="20sp"
+        tools:text="@string/sin_bloqueos" />
 </LinearLayout>

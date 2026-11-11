@@ -5,6 +5,7 @@
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fondo"
@@ -109,7 +110,8 @@
                                     android:id="@+id/texto_categoria"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:inputType="none" />
+                                    android:inputType="none"
+                                    tools:text="Basura acumulada" />
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.button.MaterialButton
@@ -133,7 +135,8 @@
                                     android:layout_height="wrap_content"
                                     android:imeOptions="actionNext"
                                     android:inputType="textCapSentences"
-                                    android:maxLines="1" />
+                                    android:maxLines="1"
+                                    tools:text="Bolsas de basura acumuladas en la esquina del parque" />
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
@@ -149,7 +152,8 @@
                                     android:layout_height="wrap_content"
                                     android:gravity="top"
                                     android:inputType="textMultiLine|textCapSentences"
-                                    android:minLines="3" />
+                                    android:minLines="3"
+                                    tools:text="Hay unas quince bolsas rotas junto a la banca. Los perros las riegan y ya huele mal." />
                             </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -183,7 +187,8 @@
                                 android:layout_marginTop="4dp"
                                 android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
                                 android:textColor="@color/tinta_suave"
-                                android:textSize="14sp" />
+                                android:textSize="14sp"
+                                tools:text="Agrega de 1 a 5 fotos del problema. Llevas 0." />
 
                             <HorizontalScrollView
                                 android:id="@+id/carrusel_fotos"
@@ -293,6 +298,50 @@
                                 android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
                                 android:textSize="18sp" />
 
+                            <!-- RN-23: obligatorio. Se elige en un diálogo con buscador (SelectorMunicipio) -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/campo_municipio"
+                                style="@style/Widget.EcoComunidad.Campo.Desplegable"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:hint="@string/campo_municipio">
+
+                                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                                    android:id="@+id/texto_municipio"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:focusable="false"
+                                    android:inputType="none"
+                                    tools:text="Popayán" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/boton_reintentar_municipios"
+                                style="@style/Widget.EcoComunidad.BotonTexto"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/reintentar"
+                                android:visibility="gone" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/campo_vereda"
+                                style="@style/Widget.EcoComunidad.Campo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:hint="@string/campo_vereda">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:imeOptions="actionNext"
+                                    android:inputType="textCapWords"
+                                    android:maxLength="120"
+                                    android:maxLines="1"
+                                    tools:text="La Playa" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
                             <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/campo_direccion"
                                 style="@style/Widget.EcoComunidad.Campo"
@@ -307,7 +356,8 @@
                                     android:autofillHints="postalAddress"
                                     android:imeOptions="actionNext"
                                     android:inputType="textPostalAddress|textCapSentences"
-                                    android:maxLines="1" />
+                                    android:maxLines="1"
+                                    tools:text="Calle 45 # 13-20, Chapinero" />
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
@@ -323,7 +373,8 @@
                                     android:layout_height="wrap_content"
                                     android:imeOptions="actionDone"
                                     android:inputType="textCapSentences"
-                                    android:maxLines="1" />
+                                    android:maxLines="1"
+                                    tools:text="Frente a la entrada del parque, junto al poste de luz" />
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <TextView
@@ -346,7 +397,8 @@
                                     android:id="@+id/mapa"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:contentDescription="@string/mapa_descripcion" />
+                                    android:contentDescription="@string/mapa_descripcion"
+                                    tools:background="@color/borde" />
                             </com.google.android.material.card.MaterialCardView>
 
                             <com.google.android.material.button.MaterialButton
@@ -370,7 +422,8 @@
                                 android:accessibilityLiveRegion="polite"
                                 android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
                                 android:textColor="@color/tinta_suave"
-                                android:textSize="13sp" />
+                                android:textSize="13sp"
+                                tools:text="Lugar marcado: 4.63212, -74.06517" />
 
                             <TextView
                                 android:id="@+id/ubicacion_mensaje"
@@ -386,7 +439,8 @@
 
                     <include
                         android:id="@+id/aviso"
-                        layout="@layout/vista_aviso" />
+                        layout="@layout/vista_aviso"
+                        tools:visibility="gone" />
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -413,7 +467,7 @@
                             app:trackThickness="2dp" />
                     </FrameLayout>
 
-                    <!-- Envío de más de 1 s: Brotico piensa (marca.md) -->
+                    <!-- Envío de más de 1 s: el texto junto al indicador de progreso -->
                     <LinearLayout
                         android:id="@+id/carga_larga"
                         android:layout_width="match_parent"
@@ -423,13 +477,6 @@
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:visibility="gone">
-
-                        <ImageView
-                            android:layout_width="56dp"
-                            android:layout_height="56dp"
-                            android:layout_marginEnd="12dp"
-                            android:importantForAccessibility="no"
-                            android:src="@drawable/brotico_piensa" />
 
                         <TextView
                             android:id="@+id/texto_carga_larga"

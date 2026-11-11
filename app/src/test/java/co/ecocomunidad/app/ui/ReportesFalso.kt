@@ -6,6 +6,9 @@ import co.ecocomunidad.app.data.modelo.Accion
 import co.ecocomunidad.app.data.modelo.CambiosReporte
 import co.ecocomunidad.app.data.modelo.Categoria
 import co.ecocomunidad.app.data.modelo.Foto
+import co.ecocomunidad.app.data.modelo.Municipio
+import co.ecocomunidad.app.data.modelo.Urgencia
+import co.ecocomunidad.app.data.modelo.Zona
 import co.ecocomunidad.app.data.modelo.NuevoReporte
 import co.ecocomunidad.app.data.modelo.EstadoReporte
 import co.ecocomunidad.app.data.modelo.EstadoTarea
@@ -131,12 +134,17 @@ class ReportesFalso : ReportesRepository {
             ciudadano: UsuarioResumen? = null,
             motivoRechazo: String? = null,
             fotos: List<Foto> = emptyList(),
+            municipio: Municipio? = null,
+            vereda: String? = null,
+            zona: Zona? = null,
+            urgencia: Urgencia? = null,
         ) = Reporte(
             id = id, ciudadano = ciudadano, categoriaId = 3, categoria = "Basura acumulada",
             titulo = "Basura en la esquina", descripcion = "Hay bolsas desde el lunes.",
             direccion = "Calle 10 # 5-20", descripcionUbicacion = "Frente al parque",
             latitud = "4.60971000", longitud = "-74.08175000",
-            estado = estado, motivoRechazo = motivoRechazo,
+            municipio = municipio, vereda = vereda, zona = zona,
+            estado = estado, urgencia = urgencia, motivoRechazo = motivoRechazo,
             fechaCreacion = "2026-10-01T10:00:00-05:00", fechaActualizacion = "2026-10-02T10:00:00-05:00",
             fotos = fotos,
         )

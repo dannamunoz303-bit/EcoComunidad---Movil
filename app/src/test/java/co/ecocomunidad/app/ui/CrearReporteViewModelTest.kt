@@ -2,6 +2,8 @@ package co.ecocomunidad.app.ui
 
 import co.ecocomunidad.app.data.ErrorAuth
 import co.ecocomunidad.app.data.Resultado
+import co.ecocomunidad.app.ui.TerritorioFalso.Companion.ALMAGUER
+import co.ecocomunidad.app.ui.TerritorioFalso.Companion.POPAYAN
 import co.ecocomunidad.app.ui.reportes.crear.CampoReporte
 import co.ecocomunidad.app.ui.reportes.crear.CrearReporteViewModel
 import co.ecocomunidad.app.ui.reportes.crear.FotoFormulario
@@ -42,11 +44,14 @@ class CrearReporteViewModelTest {
         }
     }
 
-    private fun viewModel() = CrearReporteViewModel(repositorio, preparador)
+    private val territorio = TerritorioFalso()
+
+    private fun viewModel() = CrearReporteViewModel(repositorio, territorio, preparador)
 
     /** Formulario completo y válido. */
     private fun CrearReporteViewModel.llenar() {
         elegirCategoria(3)
+        elegirMunicipio(POPAYAN.id)
         cambiar(CampoReporte.TITULO, " Basura en el parque ")
         cambiar(CampoReporte.DESCRIPCION, "Bolsas acumuladas")
         cambiar(CampoReporte.DIRECCION, " Calle 10 # 5-20 ")
@@ -86,6 +91,7 @@ class CrearReporteViewModelTest {
         vm.cambiar(CampoReporte.DIRECCION, "Calle 10")
         vm.agregarFotos(listOf("foto-a"))
         vm.ponerUbicacion(4.6, -74.0)
+        vm.elegirMunicipio(POPAYAN.id)
         // Una categoría que no vino del backend no se puede elegir
         vm.elegirCategoria(99)
         advanceUntilIdle()
@@ -165,13 +171,14 @@ class CrearReporteViewModelTest {
 
         assertEquals(
             setOf(
-                CampoReporte.CATEGORIA, CampoReporte.TITULO, CampoReporte.DESCRIPCION,
+                CampoReporte.CATEGORIA, CampoReporte.TITULO, CampoReporte.DESCRIPCION, CampoReporte.MUNICIPIO,
                 CampoReporte.DIRECCION, CampoReporte.FOTOS, CampoReporte.UBICACION,
             ),
             vm.estado.value.errores.keys,
         )
-        // La descripción de la ubicación es opcional en el backend
+        // La descripción de la ubicación y la vereda son opcionales en el backend
         assertNull(vm.estado.value.errores[CampoReporte.DESCRIPCION_UBICACION])
+        assertNull(vm.estado.value.errores[CampoReporte.VEREDA])
     }
 
     @Test
@@ -200,6 +207,9 @@ class CrearReporteViewModelTest {
         assertEquals("Bolsas acumuladas", nuevo.descripcion)
         assertEquals("Calle 10 # 5-20", nuevo.direccion)
         assertNull(nuevo.descripcionUbicacion)
+        assertEquals(POPAYAN.id, nuevo.municipio)
+        // Sin vereda escrita no se envía
+        assertNull(nuevo.vereda)
         assertEquals(4.60971, nuevo.latitud, 0.0)
         assertEquals(-74.08175, nuevo.longitud, 0.0)
         assertEquals(listOf("foto-a.jpg", "foto-b.jpg"), nuevo.fotos.map { it.name })
@@ -316,5 +326,111 @@ class CrearReporteViewModelTest {
         advanceUntilIdle()
         assertEquals(MAXIMO_FOTOS - 1, vm.estado.value.fotos.size)
         assertEquals("No pudimos usar una de las fotos. Prueba con otra.", vm.estado.value.aviso)
+    }
+
+    // --- Municipio y vereda (RN-23) ---
+
+    @Test
+    fun alAbrir_cargaLosMunicipiosOrdenadosPorNombre() = runTest(main.despachador) {
+        val vm = viewModel()
+        assertTrue(vm.estado.value.cargandoMunicipios)
+
+        advanceUntilIdle()
+
+        with(vm.estado.value) {
+            assertFalse(cargandoMunicipios)
+            assertEquals(listOf("Almaguer", "Popayán", "Santander de Quilichao", "Timbío"), municipios.map { it.nombre })
+            assertNull(municipio)
+        }
+    }
+
+    @Test
+    fun sinMunicipio_noEnvia_yElErrorVaEnSuCampo() = runTest(main.despachador) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        vm.elegirCategoria(3)
+        vm.cambiar(CampoReporte.TITULO, "Basura")
+        vm.cambiar(CampoReporte.DESCRIPCION, "Bolsas")
+        vm.cambiar(CampoReporte.DIRECCION, "Calle 10")
+        vm.agregarFotos(listOf("foto-a"))
+        vm.ponerUbicacion(4.6, -74.0)
+        // Un municipio que no vino del backend no se puede elegir
+        vm.elegirMunicipio(99)
+        advanceUntilIdle()
+        assertNull(vm.estado.value.municipio)
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertEquals(setOf(CampoReporte.MUNICIPIO), vm.estado.value.errores.keys)
+        assertEquals("Elige el municipio.", vm.estado.value.errores[CampoReporte.MUNICIPIO])
+        assertTrue(repositorio.creados.isEmpty())
+
+        vm.elegirMunicipio(ALMAGUER.id)
+        assertNull(vm.estado.value.errores[CampoReporte.MUNICIPIO])
+        assertEquals("sur", vm.estado.value.municipio?.zona?.nombre)
+    }
+
+    @Test
+    fun conVereda_laEnviaSinEspacios() = runTest(main.despachador) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        vm.llenar()
+        vm.cambiar(CampoReporte.VEREDA, "  La Playa  ")
+        advanceUntilIdle()
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        with(repositorio.creados.single()) {
+            assertEquals(POPAYAN.id, municipio)
+            assertEquals("La Playa", vereda)
+        }
+    }
+
+    @Test
+    fun municipioElegido_cuentaComoCambio() = runTest(main.despachador) {
+        val vm = viewModel()
+        advanceUntilIdle()
+
+        vm.elegirMunicipio(POPAYAN.id)
+
+        assertTrue(vm.hayCambios())
+    }
+
+    @Test
+    fun siNoCarganLosMunicipios_avisaYSePuedeReintentar() = runTest(main.despachador) {
+        territorio.municipios = RepositorioFalso.fallo(ErrorAuth.SinConexion(IOException()))
+        val vm = viewModel()
+        advanceUntilIdle()
+        assertEquals(
+            "No hay conexión con el servidor. Revisa tu internet e inténtalo de nuevo.",
+            vm.estado.value.errorMunicipios,
+        )
+
+        territorio.municipios = Resultado.Exito(listOf(POPAYAN))
+        vm.reintentarMunicipios()
+        advanceUntilIdle()
+
+        assertNull(vm.estado.value.errorMunicipios)
+        assertEquals(listOf(POPAYAN), vm.estado.value.municipios)
+        assertEquals(2, territorio.consultas)
+    }
+
+    @Test
+    fun errorDelBackendEnMunicipio_vaASuCampo() = runTest(main.despachador) {
+        repositorio.creado = RepositorioFalso.fallo(
+            ErrorAuth.Validacion(mapOf("municipio" to listOf("El municipio no existe."))),
+        )
+        val vm = viewModel()
+        advanceUntilIdle()
+        vm.llenar()
+        advanceUntilIdle()
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertEquals("El municipio no existe.", vm.estado.value.errores[CampoReporte.MUNICIPIO])
+        assertNull(vm.estado.value.aviso)
     }
 }

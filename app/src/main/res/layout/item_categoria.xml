@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Una categoría en el desplegable del reporte nuevo. -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:ellipsize="end"
@@ -9,4 +10,5 @@
     android:gravity="center_vertical"
     android:paddingHorizontal="16dp"
     android:paddingVertical="12dp"
-    android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo" />
+    android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
+    tools:text="Basura acumulada" />

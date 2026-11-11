@@ -42,7 +42,7 @@ sealed interface LineaDeTiempo {
 
 data class DetalleReporteEstado(
     val cargando: Boolean = true,
-    /** La carga pasó de 1 s: se muestra Brotico pensando (marca.md). */
+    /** La carga pasó de 1 s: se muestra el indicador con su texto. */
     val cargaLarga: Boolean = false,
     val reporte: Reporte? = null,
     /**

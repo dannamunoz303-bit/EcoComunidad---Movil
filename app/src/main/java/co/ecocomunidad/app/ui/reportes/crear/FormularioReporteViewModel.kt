@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import co.ecocomunidad.app.data.ErrorAuth
 import co.ecocomunidad.app.data.ReportesRepository
 import co.ecocomunidad.app.data.Resultado
+import co.ecocomunidad.app.data.TerritorioRepository
 import co.ecocomunidad.app.data.modelo.Categoria
 import co.ecocomunidad.app.data.modelo.Foto
+import co.ecocomunidad.app.data.modelo.Municipio
 import co.ecocomunidad.app.ui.navegacion.mensajeDeError
 import co.ecocomunidad.app.ui.reportes.ErrorCarga
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +34,12 @@ enum class CampoReporte(val claves: Set<String>) {
     CATEGORIA(setOf("categoria")),
     TITULO(setOf("titulo")),
     DESCRIPCION(setOf("descripcion")),
+
+    /** Obligatorio, uno de los 42 del Cauca (RN-23). */
+    MUNICIPIO(setOf("municipio")),
+
+    /** Opcional, la escribe el ciudadano. */
+    VEREDA(setOf("vereda")),
     DIRECCION(setOf("direccion")),
     DESCRIPCION_UBICACION(setOf("descripcion_ubicacion")),
     FOTOS(setOf("fotos")),
@@ -53,6 +61,16 @@ data class FormularioReporteEstado(
     val cargandoCategorias: Boolean = true,
     val errorCategorias: String? = null,
     val categoria: Categoria? = null,
+    /** Ordenados por nombre. */
+    val municipios: List<Municipio> = emptyList(),
+    val cargandoMunicipios: Boolean = true,
+    val errorMunicipios: String? = null,
+    val municipio: Municipio? = null,
+    /**
+     * Al editar, el municipio y la vereda solo cambian si el reporte está pendiente (RN-07, RN-23).
+     * Si no, se muestran sin poder tocarlos y no se envían.
+     */
+    val puedeCambiarTerritorio: Boolean = true,
     val textos: Map<CampoReporte, String> = emptyMap(),
     /** En el orden en que se ven. */
     val fotos: List<FotoFormulario> = emptyList(),
@@ -61,7 +79,7 @@ data class FormularioReporteEstado(
     val ubicacion: Ubicacion? = null,
     val errores: Map<CampoReporte, String> = emptyMap(),
     val enviando: Boolean = false,
-    /** El envío pasó de 1 s: se muestra Brotico pensando (marca.md). */
+    /** El envío pasó de 1 s: se muestra el texto de espera junto al indicador. */
     val cargaLarga: Boolean = false,
     val aviso: String? = null,
     /** Crear: se creó el reporte y la pantalla vuelve a la lista. */
@@ -94,6 +112,7 @@ typealias CrearReporteEstado = FormularioReporteEstado
  */
 abstract class FormularioReporteViewModel(
     protected val repositorio: ReportesRepository,
+    private val territorio: TerritorioRepository,
     private val preparador: PreparadorFotos,
 ) : ViewModel() {
 
@@ -102,6 +121,7 @@ abstract class FormularioReporteViewModel(
 
     init {
         cargarCategorias()
+        cargarMunicipios()
     }
 
     abstract fun enviar()
@@ -125,6 +145,30 @@ abstract class FormularioReporteViewModel(
                 }
             }
         }
+    }
+
+    fun reintentarMunicipios() = cargarMunicipios()
+
+    private fun cargarMunicipios() {
+        _estado.update { it.copy(cargandoMunicipios = true, errorMunicipios = null) }
+        viewModelScope.launch {
+            when (val r = territorio.municipios()) {
+                is Resultado.Exito -> _estado.update { e ->
+                    // Al editar puede llegar antes el reporte: su municipio se cambia por el de la lista, que trae la zona
+                    val elegido = e.municipio?.let { actual -> r.datos.firstOrNull { it.id == actual.id } ?: actual }
+                    e.copy(municipios = ordenarMunicipios(r.datos), cargandoMunicipios = false, municipio = elegido)
+                }
+                is Resultado.Fallo -> _estado.update {
+                    it.copy(cargandoMunicipios = false, errorMunicipios = mensajeDeError(r.error))
+                }
+            }
+        }
+    }
+
+    fun elegirMunicipio(id: Int) = _estado.update { e ->
+        if (!e.puedeCambiarTerritorio) return@update e
+        val municipio = e.municipios.firstOrNull { it.id == id } ?: return@update e
+        e.copy(municipio = municipio, errores = e.errores - CampoReporte.MUNICIPIO)
     }
 
     fun elegirCategoria(id: Int) = _estado.update { e ->
@@ -194,6 +238,7 @@ abstract class FormularioReporteViewModel(
         if (e.categoria == null) put(CampoReporte.CATEGORIA, "Elige una categoría.")
         if (e.texto(CampoReporte.TITULO).isBlank()) put(CampoReporte.TITULO, "Escribe un título.")
         if (e.texto(CampoReporte.DESCRIPCION).isBlank()) put(CampoReporte.DESCRIPCION, "Describe el problema.")
+        if (e.puedeCambiarTerritorio && e.municipio == null) put(CampoReporte.MUNICIPIO, "Elige el municipio.")
         if (e.texto(CampoReporte.DIRECCION).isBlank()) put(CampoReporte.DIRECCION, "Escribe la dirección.")
         if (e.fotos.isEmpty()) put(CampoReporte.FOTOS, "Agrega al menos una foto.")
         if (e.ubicacion == null) put(CampoReporte.UBICACION, "Marca el lugar en el mapa o usa tu ubicación.")

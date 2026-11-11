@@ -78,7 +78,7 @@ class ListaReportesViewModelTest {
     }
 
     @Test
-    fun sinConexion_errorConBroticoYReintentar() = runTest(main.despachador) {
+    fun sinConexion_errorSinConexionYReintentar() = runTest(main.despachador) {
         repositorio.todos = RepositorioFalso.fallo(ErrorAuth.SinConexion(IOException()))
         val vm = ListaReportesViewModel(repositorio)
         advanceUntilIdle()

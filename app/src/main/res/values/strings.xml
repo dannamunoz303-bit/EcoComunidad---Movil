@@ -80,6 +80,21 @@
     <string name="campo_direccion">Dirección</string>
     <string name="campo_descripcion_ubicacion">Referencias para ubicar el lugar (opcional)</string>
     <string name="categorias_cargando">Cargando categorías…</string>
+
+    <!-- Municipio y vereda del reporte (RN-23) -->
+    <string name="campo_municipio">Municipio</string>
+    <string name="campo_vereda">Vereda o corregimiento (opcional)</string>
+    <string name="municipios_cargando">Cargando municipios…</string>
+    <string name="municipio_titulo">Elige el municipio</string>
+    <string name="municipio_buscar">Buscar municipio</string>
+    <string name="municipio_sin_resultados">No encontramos ese municipio. Revisa cómo lo escribiste.</string>
+    <string name="municipio_zona">Zona %1$s</string>
+    <string name="territorio_solo_pendiente">Solo se puede cambiar mientras el reporte está pendiente.</string>
+
+    <!-- Urgencia del reporte (RN-25): la pone el backend, el ciudadano solo la ve -->
+    <string name="urgencia_alta">Urgencia alta</string>
+    <string name="urgencia_media">Urgencia media</string>
+    <string name="urgencia_baja">Urgencia baja</string>
     <string name="fotos_ayuda">Agrega de 1 a %1$d fotos del problema. Llevas %2$d.</string>
     <string name="fotos_preparando">Preparando las fotos…</string>
     <string name="tomar_foto">Tomar foto</string>
@@ -99,6 +114,14 @@
     <string name="permiso_ubicacion_explicacion">La usamos solo para marcar en el mapa dónde está el problema, una vez, cuando tocas \"Usar mi ubicación\". No la guardamos ni la seguimos. Si prefieres, puedes marcar el lugar a mano en el mapa.</string>
     <string name="permiso_permitir">Permitir</string>
     <string name="permiso_ahora_no">Ahora no</string>
+
+    <!-- Avisos push (RN-26) -->
+    <string name="permiso_notificaciones_titulo">¿Te avisamos al celular?</string>
+    <string name="permiso_notificaciones_explicacion">Te enviamos un aviso cuando cambia algo de tus reportes, te responden una novedad o, si eres gestor, te asignan una tarea (suena como una alarma). Si prefieres no recibirlos, igual verás todo en la campana.</string>
+    <string name="canal_tareas_asignadas">Tareas asignadas</string>
+    <string name="canal_tareas_asignadas_descripcion">Suena como una alarma cuando te asignan una tarea.</string>
+    <string name="canal_avisos">Avisos</string>
+    <string name="canal_avisos_descripcion">Cambios en tus reportes, novedades, sanciones y otros avisos.</string>
     <string name="boton_enviar_reporte">Enviar reporte</string>
     <string name="crear_enviando">Enviando tu reporte…</string>
     <string name="reporte_creado">Tu reporte quedó enviado. El administrador lo revisará pronto.</string>

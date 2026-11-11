@@ -47,7 +47,7 @@ data class SancionConReporte(val sancion: Sancion, val tituloReporte: String?)
 
 data class MisSancionesEstado(
     val cargando: Boolean = true,
-    /** La carga pasó de 1 s: se muestra Brotico pensando (marca.md). */
+    /** La carga pasó de 1 s: se muestra el indicador con su texto. */
     val cargaLarga: Boolean = false,
     /** Más nueva primero. */
     val sanciones: List<SancionConReporte> = emptyList(),

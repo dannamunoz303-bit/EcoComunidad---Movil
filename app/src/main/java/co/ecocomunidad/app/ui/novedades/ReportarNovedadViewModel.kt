@@ -70,7 +70,7 @@ data class ReportarNovedadEstado(
     val descripcion: String = "",
     val errores: Map<CampoNovedad, String> = emptyMap(),
     val enviando: Boolean = false,
-    /** El envío pasó de 1 s: se muestra Brotico pensando (marca.md). */
+    /** El envío pasó de 1 s: se muestra el texto de espera junto al indicador. */
     val cargaLarga: Boolean = false,
     /** Mensaje del backend que no es de un campo (por ejemplo, el estado del reporte ya no lo permite). */
     val aviso: String? = null,

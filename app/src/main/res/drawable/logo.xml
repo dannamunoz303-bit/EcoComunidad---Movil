@@ -13,13 +13,13 @@
         android:fillColor="#FF3A4740" />
     <path
         android:pathData="M33 47 C33 39 31 35 32 27"
-        android:strokeColor="#FF1E5A3A"
+        android:strokeColor="#FF2E6B1F"
         android:strokeWidth="4"
         android:strokeLineCap="round" />
     <path
         android:pathData="M32 35 C24 35 18 30 18 22 C26 22 32 27 32 35 Z"
-        android:fillColor="#FF3E9B63" />
+        android:fillColor="#FF5DB33C" />
     <path
         android:pathData="M32 29 C32 21 38 15 46 15 C46 23 40 29 32 29 Z"
-        android:fillColor="#FF1E5A3A" />
+        android:fillColor="#FF2E6B1F" />
 </vector>

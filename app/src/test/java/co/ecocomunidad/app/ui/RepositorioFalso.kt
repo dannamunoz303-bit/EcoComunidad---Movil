@@ -64,6 +64,13 @@ class RepositorioFalso : AuthRepository {
         return resultadoCambio
     }
 
+    /** Cada llamada a registrarDispositivo, con el token que trajo (null = pedirlo a Firebase). */
+    val dispositivos = mutableListOf<String?>()
+
+    override suspend fun registrarDispositivo(token: String?) {
+        dispositivos += token
+    }
+
     var consultasYo = 0
 
     override suspend fun usuarioActual(): Resultado<UsuarioActual> {

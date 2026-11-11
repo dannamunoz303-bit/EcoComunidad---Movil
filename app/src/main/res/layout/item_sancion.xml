@@ -2,6 +2,7 @@
 <!-- Una sanción: tipo como etiqueta, fecha de inicio, motivo y el reporte si se conoce. -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/Widget.EcoComunidad.TarjetaReporte"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -23,7 +24,8 @@
                 android:id="@+id/tipo"
                 style="@style/Widget.EcoComunidad.EtiquetaEstado"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                tools:text="@string/sancion_bloqueo_temporal" />
 
             <TextView
                 android:id="@+id/fecha"
@@ -34,7 +36,8 @@
                 android:gravity="end"
                 android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
                 android:textColor="@color/tinta_suave"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                tools:text="@sample/sancion_fechas" />
         </LinearLayout>
 
         <TextView
@@ -44,7 +47,8 @@
             android:layout_marginTop="10dp"
             android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
             android:textSize="15sp"
-            app:lineHeight="21sp" />
+            app:lineHeight="21sp"
+            tools:text="@sample/sancion_motivos" />
 
         <TextView
             android:id="@+id/reporte"
@@ -55,7 +59,8 @@
             android:maxLines="2"
             android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
             android:textColor="@color/tinta_suave"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            tools:text="@sample/sancion_reportes" />
 
         <!-- Bloqueo temporal: hasta cuándo; bloqueo levantado: desde cuándo -->
         <TextView
@@ -65,6 +70,7 @@
             android:layout_marginTop="4dp"
             android:textAppearance="@style/TextAppearance.EcoComunidad.Cuerpo"
             android:textColor="@color/tinta_suave"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            tools:text="@sample/sancion_fines" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

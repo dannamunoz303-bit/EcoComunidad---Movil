@@ -3,20 +3,25 @@ package co.ecocomunidad.app.ui.reportes.crear
 import androidx.lifecycle.viewModelScope
 import co.ecocomunidad.app.data.ReportesRepository
 import co.ecocomunidad.app.data.Resultado
+import co.ecocomunidad.app.data.TerritorioRepository
 import co.ecocomunidad.app.data.modelo.NuevoReporte
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/** Crear reporte (RN-06): todo, fotos incluidas, en una sola petición. */
+/**
+ * Crear reporte (RN-06): todo, fotos incluidas, en una sola petición. El municipio es obligatorio y
+ * la vereda opcional (RN-23). La urgencia no se elige: la pone el backend con la categoría (RN-25).
+ */
 class CrearReporteViewModel(
     repositorio: ReportesRepository,
+    territorio: TerritorioRepository,
     preparador: PreparadorFotos,
-) : FormularioReporteViewModel(repositorio, preparador) {
+) : FormularioReporteViewModel(repositorio, territorio, preparador) {
 
     override fun hayCambios(): Boolean {
         val e = _estado.value
-        return e.categoria != null || e.textos.values.any { it.isNotBlank() } ||
+        return e.categoria != null || e.municipio != null || e.textos.values.any { it.isNotBlank() } ||
             e.fotos.isNotEmpty() || e.preparandoFotos > 0 || e.ubicacion != null
     }
 
@@ -36,6 +41,8 @@ class CrearReporteViewModel(
             descripcion = e.texto(CampoReporte.DESCRIPCION).trim(),
             direccion = e.texto(CampoReporte.DIRECCION).trim(),
             descripcionUbicacion = e.texto(CampoReporte.DESCRIPCION_UBICACION).trim().ifEmpty { null },
+            municipio = e.municipio!!.id,
+            vereda = e.texto(CampoReporte.VEREDA).trim().ifEmpty { null },
             latitud = ubicacion.latitud,
             longitud = ubicacion.longitud,
             fotos = e.fotosNuevas,

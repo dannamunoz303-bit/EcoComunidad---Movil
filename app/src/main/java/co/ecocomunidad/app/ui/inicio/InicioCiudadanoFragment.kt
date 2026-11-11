@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import co.ecocomunidad.app.R
 import co.ecocomunidad.app.databinding.FragmentInicioCiudadanoBinding
+import co.ecocomunidad.app.ui.componentes.PermisoNotificaciones
 import co.ecocomunidad.app.ui.componentes.contenedor
 import co.ecocomunidad.app.ui.componentes.observar
 import co.ecocomunidad.app.ui.navegacion.ARG_ID_REPORTE
@@ -44,8 +45,13 @@ class InicioCiudadanoFragment : Fragment() {
         viewModelFactory { initializer { ListaReportesViewModel(contenedor.reportesRepository) } }
     }
     private val campana: CampanaViewModel by viewModels {
-        viewModelFactory { initializer { CampanaViewModel(contenedor.notificacionesRepository) } }
+        viewModelFactory {
+            initializer { CampanaViewModel(contenedor.notificacionesRepository, contenedor.eventosPush.llegadas) }
+        }
     }
+
+    /** Al entrar al inicio se pregunta una vez por los avisos push (RN-26). */
+    private val permisoAvisos = PermisoNotificaciones(this)
 
     private lateinit var encabezado: EncabezadoAdapter
     private lateinit var estadoLista: EstadoListaAdapter
@@ -88,6 +94,7 @@ class InicioCiudadanoFragment : Fragment() {
             encabezado.encabezado = encabezado.encabezado.copy(hayNoLeidas = hay)
         }
         observar(lista.estado, ::mostrarEstado)
+        permisoAvisos.pedirSiHaceFalta()
     }
 
     /** Cada vez que el inicio vuelve a verse (por ejemplo, al volver de Notificaciones) se revisa la campana. */
