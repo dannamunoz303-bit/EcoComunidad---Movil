@@ -43,6 +43,8 @@ class CrearReporteViewModel(
             descripcionUbicacion = e.texto(CampoReporte.DESCRIPCION_UBICACION).trim().ifEmpty { null },
             municipio = e.municipio!!.id,
             vereda = e.texto(CampoReporte.VEREDA).trim().ifEmpty { null },
+            // RN-27: vacía no se envía. El backend no dice si es de alguien registrado
+            causanteCedula = e.texto(CampoReporte.CAUSANTE).trim().ifEmpty { null },
             latitud = ubicacion.latitud,
             longitud = ubicacion.longitud,
             fotos = e.fotosNuevas,

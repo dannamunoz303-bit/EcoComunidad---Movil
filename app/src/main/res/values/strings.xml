@@ -74,6 +74,7 @@
     <string name="crear_seccion_problema">Qué está pasando</string>
     <string name="crear_seccion_fotos">Fotos</string>
     <string name="crear_seccion_lugar">Dónde es</string>
+    <string name="crear_seccion_causante">Quién causó el daño</string>
     <string name="campo_categoria">Categoría</string>
     <string name="campo_titulo">Título</string>
     <string name="campo_descripcion">Descripción del problema</string>
@@ -90,6 +91,13 @@
     <string name="municipio_sin_resultados">No encontramos ese municipio. Revisa cómo lo escribiste.</string>
     <string name="municipio_zona">Zona %1$s</string>
     <string name="territorio_solo_pendiente">Solo se puede cambiar mientras el reporte está pendiente.</string>
+
+    <!-- Cédula del causante (RN-27). Nunca se dice si es de alguien registrado -->
+    <string name="campo_causante">Cédula de quien causó el daño (opcional)</string>
+    <string name="causante_ayuda">Solo la verá el administrador.</string>
+    <string name="causante_ayuda_editar">Solo la verá el administrador. Por privacidad, aquí no se muestra la que escribiste: si escribes otra, la reemplaza.</string>
+    <string name="causante_se_quitara">Se quitará la cédula al guardar.</string>
+    <string name="causante_quitar">Quitar la cédula</string>
 
     <!-- Urgencia del reporte (RN-25): la pone el backend, el ciudadano solo la ve -->
     <string name="urgencia_alta">Urgencia alta</string>
@@ -226,6 +234,7 @@
     <string name="sancion_fecha">Desde el %1$s</string>
     <string name="sancion_hasta">Hasta el %1$s</string>
     <string name="sancion_levantada">Levantado el %1$s</string>
+    <string name="sancion_por_causante">Por causar un daño</string>
 
     <!-- Mi cuenta -->
     <string name="mi_cuenta">Mi cuenta</string>

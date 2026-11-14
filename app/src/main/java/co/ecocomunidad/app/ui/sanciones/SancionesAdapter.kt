@@ -79,10 +79,14 @@ class SancionesAdapter : ListAdapter<SancionConReporte, SancionesAdapter.Vista>(
         val (sancion, tituloReporte) = getItem(position)
         val contexto = root.context
         tipo.mostrarEtiquetaEstado(sancion.tipo.etiqueta, sancion.tipo.color)
+        // RN-27: se dice que fue por causar un daño, sin el reporte ni quién lo hizo
+        porCausante.visibility = if (sancion.porCausante) View.VISIBLE else View.GONE
+        if (sancion.porCausante) porCausante.mostrarEtiquetaEstado(R.string.sancion_por_causante, R.color.tinta_suave)
         fecha.text = contexto.getString(R.string.sancion_fecha, fechaLarga(sancion.fechaInicio))
         motivo.text = sancion.motivo
-        reporte.text = tituloReporte?.let { contexto.getString(R.string.reporte_con_titulo, it) }
-        reporte.visibility = if (tituloReporte == null) View.GONE else View.VISIBLE
+        val titulo = tituloReporte?.takeIf { !sancion.porCausante }
+        reporte.text = titulo?.let { contexto.getString(R.string.reporte_con_titulo, it) }
+        reporte.visibility = if (titulo == null) View.GONE else View.VISIBLE
 
         // Temporal: hasta cuándo. Permanente con fecha_fin: se levantó ese día (RN-21)
         val textoFin = sancion.fechaFin?.let {

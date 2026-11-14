@@ -126,6 +126,7 @@ class CrearReporteFragment : Fragment() {
             categoriasPintadas?.getOrNull(posicion)?.let { viewModel.elegirCategoria(it.id) }
         }
         binding.botonReintentarMunicipios.setOnClickListener { viewModel.reintentarMunicipios() }
+        binding.botonQuitarCausante.setOnClickListener { (viewModel as? EditarReporteViewModel)?.quitarCausante() }
         binding.textoMunicipio.setOnClickListener { elegirMunicipio() }
         binding.campoMunicipio.setEndIconOnClickListener { elegirMunicipio() }
         campos.forEach { (campo, vista) -> vista.alEscribir { viewModel.cambiar(campo, it) } }
@@ -151,6 +152,7 @@ class CrearReporteFragment : Fragment() {
             CampoReporte.VEREDA to binding.campoVereda,
             CampoReporte.DIRECCION to binding.campoDireccion,
             CampoReporte.DESCRIPCION_UBICACION to binding.campoDescripcionUbicacion,
+            CampoReporte.CAUSANTE to binding.campoCausante,
         )
 
     private fun mostrarEstado(estado: FormularioReporteEstado) {
@@ -172,6 +174,7 @@ class CrearReporteFragment : Fragment() {
             vista.isEnabled = habilitado
         }
         mostrarMunicipio(estado, habilitado)
+        mostrarCausante(estado, habilitado)
         mostrarFotos(estado, habilitado)
         mostrarUbicacion(estado, habilitado)
 
@@ -248,26 +251,45 @@ class CrearReporteFragment : Fragment() {
         val nombre = estado.municipio?.nombre.orEmpty()
         if (textoMunicipio.text?.toString() != nombre) textoMunicipio.setText(nombre, false)
 
-        val puedeElegir = habilitado && estado.puedeCambiarTerritorio && estado.municipios.isNotEmpty()
+        val puedeElegir = habilitado && estado.puedeCambiarSiPendiente && estado.municipios.isNotEmpty()
         campoMunicipio.isEnabled = puedeElegir
         // Fuera de pendiente (RN-07) se ven, pero no se cambian
-        campoVereda.isEnabled = habilitado && estado.puedeCambiarTerritorio
+        campoVereda.isEnabled = habilitado && estado.puedeCambiarSiPendiente
 
         val error = estado.errores[CampoReporte.MUNICIPIO] ?: estado.errorMunicipios
         if (campoMunicipio.error?.toString() != error) campoMunicipio.error = error
         campoMunicipio.helperText = when {
             error != null -> null
-            !estado.puedeCambiarTerritorio -> getString(R.string.territorio_solo_pendiente)
+            !estado.puedeCambiarSiPendiente -> getString(R.string.territorio_solo_pendiente)
             estado.cargandoMunicipios -> getString(R.string.municipios_cargando)
             else -> estado.municipio?.zona?.let { getString(R.string.municipio_zona, it.nombre) }
         }
         botonReintentarMunicipios.visibility =
-            if (estado.errorMunicipios != null && estado.puedeCambiarTerritorio) View.VISIBLE else View.GONE
+            if (estado.errorMunicipios != null && estado.puedeCambiarSiPendiente) View.VISIBLE else View.GONE
+    }
+
+    // --- Cédula del causante (RN-27) ---
+
+    /** El error del backend (por ejemplo, si es la propia cédula) ya lo pone [mostrar] debajo del campo. */
+    private fun mostrarCausante(estado: FormularioReporteEstado, habilitado: Boolean) = with(binding) {
+        val puede = habilitado && estado.puedeCambiarSiPendiente
+        campoCausante.isEnabled = puede
+        campoCausante.helperText = getString(
+            when {
+                !estado.puedeCambiarSiPendiente -> R.string.territorio_solo_pendiente
+                estado.quitarCausante -> R.string.causante_se_quitara
+                editando -> R.string.causante_ayuda_editar
+                else -> R.string.causante_ayuda
+            },
+        )
+        botonQuitarCausante.visibility =
+            if (editando && estado.puedeCambiarSiPendiente && !estado.quitarCausante) View.VISIBLE else View.GONE
+        botonQuitarCausante.isEnabled = puede
     }
 
     private fun elegirMunicipio() {
         val estado = viewModel.estado.value
-        if (estado.enviando || !estado.puedeCambiarTerritorio || estado.municipios.isEmpty()) return
+        if (estado.enviando || !estado.puedeCambiarSiPendiente || estado.municipios.isEmpty()) return
         SelectorMunicipio.mostrar(this, estado.municipios) { viewModel.elegirMunicipio(it.id) }
     }
 
@@ -476,6 +498,7 @@ class CrearReporteFragment : Fragment() {
                 CampoReporte.DIRECCION -> binding.campoDireccion
                 CampoReporte.DESCRIPCION_UBICACION -> binding.campoDescripcionUbicacion
                 CampoReporte.UBICACION -> binding.ubicacionMensaje
+                CampoReporte.CAUSANTE -> binding.campoCausante
             },
         )
     }

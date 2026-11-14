@@ -7,6 +7,7 @@ import co.ecocomunidad.app.data.modelo.EstadoReporte
 import co.ecocomunidad.app.data.modelo.Municipio
 import co.ecocomunidad.app.ui.TerritorioFalso.Companion.CENTRO
 import co.ecocomunidad.app.ui.TerritorioFalso.Companion.POPAYAN
+import co.ecocomunidad.app.ui.TerritorioFalso.Companion.SANTANDER
 import co.ecocomunidad.app.ui.TerritorioFalso.Companion.TIMBIO
 import co.ecocomunidad.app.ui.ReportesFalso.Companion.ANA
 import co.ecocomunidad.app.ui.ReportesFalso.Companion.foto
@@ -308,7 +309,7 @@ class EditarReporteViewModelTest {
             assertEquals(POPAYAN, municipio)
             assertEquals("centro", municipio?.zona?.nombre)
             assertEquals("La Playa", texto(CampoReporte.VEREDA))
-            assertTrue(puedeCambiarTerritorio)
+            assertTrue(puedeCambiarSiPendiente)
         }
         assertFalse(vm.hayCambios())
     }
@@ -359,7 +360,7 @@ class EditarReporteViewModelTest {
     @Test
     fun siYaNoEstaPendiente_elMunicipioYLaVeredaNoSeCambian() = runTest(main.despachador) {
         val vm = abrir(1, estado = EstadoReporte.APROBADO)
-        assertFalse(vm.estado.value.puedeCambiarTerritorio)
+        assertFalse(vm.estado.value.puedeCambiarSiPendiente)
 
         vm.elegirMunicipio(TIMBIO.id)
         vm.cambiar(CampoReporte.VEREDA, "Otra")
@@ -383,5 +384,117 @@ class EditarReporteViewModelTest {
 
         assertNull(vm.estado.value.errores[CampoReporte.MUNICIPIO])
         assertEquals(CambiosReporte(titulo = "Nuevo"), repositorio.cambiosEnviados.single())
+    }
+
+    // --- Cédula del causante (RN-07, RN-27) ---
+
+    @Test
+    fun causante_empiezaVacioYSinTocarloNoSeEnvia() = runTest(main.despachador) {
+        // El backend nunca devuelve la cédula al ciudadano: vacío no puede significar "quitarla"
+        val vm = abrir(1)
+        assertEquals("", vm.estado.value.texto(CampoReporte.CAUSANTE))
+        vm.cambiar(CampoReporte.TITULO, "Nuevo")
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertEquals(CambiosReporte(titulo = "Nuevo"), repositorio.cambiosEnviados.single())
+    }
+
+    @Test
+    fun escribirOtraCedula_laReemplaza() = runTest(main.despachador) {
+        val vm = abrir(1)
+        vm.cambiar(CampoReporte.CAUSANTE, " 99887766 ")
+        assertTrue(vm.hayCambios())
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertEquals(CambiosReporte(causanteCedula = "99887766"), repositorio.cambiosEnviados.single())
+    }
+
+    @Test
+    fun quitarLaCedula_mandaTextoVacio() = runTest(main.despachador) {
+        val vm = abrir(1)
+        vm.cambiar(CampoReporte.CAUSANTE, "123")
+
+        vm.quitarCausante()
+        assertTrue(vm.estado.value.quitarCausante)
+        assertEquals("", vm.estado.value.texto(CampoReporte.CAUSANTE))
+        assertTrue(vm.hayCambios())
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertEquals(CambiosReporte(causanteCedula = ""), repositorio.cambiosEnviados.single())
+    }
+
+    @Test
+    fun escribirDespuesDeQuitar_mandaLaNueva() = runTest(main.despachador) {
+        val vm = abrir(1)
+        vm.quitarCausante()
+        vm.cambiar(CampoReporte.CAUSANTE, "555")
+        assertFalse(vm.estado.value.quitarCausante)
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertEquals(CambiosReporte(causanteCedula = "555"), repositorio.cambiosEnviados.single())
+    }
+
+    @Test
+    fun siYaNoEstaPendiente_laCedulaNoSeCambiaNiSeQuita() = runTest(main.despachador) {
+        val vm = abrir(1, estado = EstadoReporte.APROBADO)
+        vm.quitarCausante()
+        assertFalse(vm.estado.value.quitarCausante)
+        vm.cambiar(CampoReporte.CAUSANTE, "555")
+        vm.cambiar(CampoReporte.TITULO, "Nuevo")
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertEquals(CambiosReporte(titulo = "Nuevo"), repositorio.cambiosEnviados.single())
+    }
+
+    @Test
+    fun cedulaRechazadaPorElBackend_vaDebajoDelCampo() = runTest(main.despachador) {
+        repositorio.editado = RepositorioFalso.fallo(
+            ErrorAuth.Validacion(
+                mapOf("causante_cedula" to listOf("La cédula del causante no puede ser la de quien hace el reporte.")),
+            ),
+        )
+        val vm = abrir(1)
+        vm.cambiar(CampoReporte.CAUSANTE, "1020304050")
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertEquals(
+            "La cédula del causante no puede ser la de quien hace el reporte.",
+            vm.estado.value.errores[CampoReporte.CAUSANTE],
+        )
+        assertFalse(vm.estado.value.guardado)
+    }
+
+    @Test
+    fun cambioDeZonaConTareasActivas_elMensajeVaDebajoDelMunicipio() = runTest(main.despachador) {
+        // RN-23: así responde el backend (ReporteEditarSerializer._validar_cambio_de_zona)
+        val mensaje = "El reporte tiene tareas activas: no se puede cambiar a un municipio de otra zona. " +
+            "Primero cancela o termina esas tareas."
+        repositorio.editado = RepositorioFalso.fallo(ErrorAuth.Validacion(mapOf("municipio" to listOf(mensaje))))
+        val vm = abrir(1)
+        vm.elegirMunicipio(SANTANDER.id)
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        with(vm.estado.value) {
+            assertEquals(mensaje, errores[CampoReporte.MUNICIPIO])
+            assertNull(aviso)
+            assertFalse(guardado)
+            assertFalse(enviando)
+            // Se queda lo que eligió, para que lo cambie
+            assertEquals(SANTANDER, municipio)
+        }
+        assertEquals(CambiosReporte(municipio = SANTANDER.id), repositorio.cambiosEnviados.single())
     }
 }

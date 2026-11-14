@@ -46,7 +46,13 @@ enum class CampoReporte(val claves: Set<String>) {
 
     /** Latitud y longitud: no las escribe el ciudadano, salen del GPS o del pin (RN-06). */
     UBICACION(setOf("latitud", "longitud")),
+
+    /** Cédula de quien causó el daño (RN-27). Opcional, solo números, máximo [MAXIMO_CEDULA]. */
+    CAUSANTE(setOf("causante_cedula")),
 }
+
+/** causante_cedula es VARCHAR(20) en el backend (tabla 4.4). */
+const val MAXIMO_CEDULA = 20
 
 data class Ubicacion(val latitud: Double, val longitud: Double)
 
@@ -67,10 +73,12 @@ data class FormularioReporteEstado(
     val errorMunicipios: String? = null,
     val municipio: Municipio? = null,
     /**
-     * Al editar, el municipio y la vereda solo cambian si el reporte está pendiente (RN-07, RN-23).
-     * Si no, se muestran sin poder tocarlos y no se envían.
+     * Al editar, el municipio, la vereda y la cédula del causante solo cambian si el reporte está
+     * pendiente (RN-07, RN-23, RN-27). Si no, se muestran sin poder tocarlos y no se envían.
      */
-    val puedeCambiarTerritorio: Boolean = true,
+    val puedeCambiarSiPendiente: Boolean = true,
+    /** Editar: se pidió quitar la cédula del causante; al guardar se manda "" (RN-27). */
+    val quitarCausante: Boolean = false,
     val textos: Map<CampoReporte, String> = emptyMap(),
     /** En el orden en que se ven. */
     val fotos: List<FotoFormulario> = emptyList(),
@@ -166,7 +174,7 @@ abstract class FormularioReporteViewModel(
     }
 
     fun elegirMunicipio(id: Int) = _estado.update { e ->
-        if (!e.puedeCambiarTerritorio) return@update e
+        if (!e.puedeCambiarSiPendiente) return@update e
         val municipio = e.municipios.firstOrNull { it.id == id } ?: return@update e
         e.copy(municipio = municipio, errores = e.errores - CampoReporte.MUNICIPIO)
     }
@@ -177,7 +185,9 @@ abstract class FormularioReporteViewModel(
     }
 
     fun cambiar(campo: CampoReporte, valor: String) = _estado.update {
-        it.copy(textos = it.textos + (campo to valor), errores = it.errores - campo)
+        // Escribir una cédula nueva deja sin efecto "Quitar la cédula"
+        val quitar = it.quitarCausante && !(campo == CampoReporte.CAUSANTE && valor.isNotBlank())
+        it.copy(textos = it.textos + (campo to valor), errores = it.errores - campo, quitarCausante = quitar)
     }
 
     /** Agrega las fotos elegidas hasta completar el máximo del backend; si sobran, se avisa. */
@@ -238,7 +248,15 @@ abstract class FormularioReporteViewModel(
         if (e.categoria == null) put(CampoReporte.CATEGORIA, "Elige una categoría.")
         if (e.texto(CampoReporte.TITULO).isBlank()) put(CampoReporte.TITULO, "Escribe un título.")
         if (e.texto(CampoReporte.DESCRIPCION).isBlank()) put(CampoReporte.DESCRIPCION, "Describe el problema.")
-        if (e.puedeCambiarTerritorio && e.municipio == null) put(CampoReporte.MUNICIPIO, "Elige el municipio.")
+        if (e.puedeCambiarSiPendiente && e.municipio == null) put(CampoReporte.MUNICIPIO, "Elige el municipio.")
+        val cedula = e.texto(CampoReporte.CAUSANTE).trim()
+        if (e.puedeCambiarSiPendiente && cedula.isNotEmpty()) {
+            when {
+                !cedula.all { it in '0'..'9' } -> put(CampoReporte.CAUSANTE, "Escribe solo los números de la cédula.")
+                cedula.length > MAXIMO_CEDULA ->
+                    put(CampoReporte.CAUSANTE, "La cédula puede tener máximo $MAXIMO_CEDULA números.")
+            }
+        }
         if (e.texto(CampoReporte.DIRECCION).isBlank()) put(CampoReporte.DIRECCION, "Escribe la dirección.")
         if (e.fotos.isEmpty()) put(CampoReporte.FOTOS, "Agrega al menos una foto.")
         if (e.ubicacion == null) put(CampoReporte.UBICACION, "Marca el lugar en el mapa o usa tu ubicación.")

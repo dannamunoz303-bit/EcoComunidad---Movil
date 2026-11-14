@@ -68,7 +68,7 @@ class EditarReporteViewModel(
             municipio = reporte.municipio?.let { suyo ->
                 municipios.firstOrNull { it.id == suyo.id } ?: suyo.copy(zona = reporte.zona)
             },
-            puedeCambiarTerritorio = reporte.estado == EstadoReporte.PENDIENTE,
+            puedeCambiarSiPendiente = reporte.estado == EstadoReporte.PENDIENTE,
             textos = mapOf(
                 CampoReporte.TITULO to reporte.titulo,
                 CampoReporte.DESCRIPCION to reporte.descripcion,
@@ -99,8 +99,8 @@ class EditarReporteViewModel(
     private fun cambios(original: Reporte, e: FormularioReporteEstado): CambiosReporte {
         fun nuevo(campo: CampoReporte, antes: String) = e.texto(campo).trim().takeIf { it != antes }
         val ubicacion = e.ubicacion?.takeIf { it != ubicacionDe(original) }
-        // RN-07: fuera de pendiente el municipio y la vereda no se envían
-        val territorio = e.puedeCambiarTerritorio
+        // RN-07: fuera de pendiente el municipio, la vereda y la cédula del causante no se envían
+        val territorio = e.puedeCambiarSiPendiente
         return CambiosReporte(
             categoria = e.categoria?.id?.takeIf { it != original.categoriaId },
             titulo = nuevo(CampoReporte.TITULO, original.titulo),
@@ -109,8 +109,29 @@ class EditarReporteViewModel(
             descripcionUbicacion = nuevo(CampoReporte.DESCRIPCION_UBICACION, original.descripcionUbicacion.orEmpty()),
             municipio = e.municipio?.id?.takeIf { territorio && it != original.municipio?.id },
             vereda = nuevo(CampoReporte.VEREDA, original.vereda.orEmpty())?.takeIf { territorio },
+            causanteCedula = causante(e).takeIf { territorio },
             latitud = ubicacion?.latitud,
             longitud = ubicacion?.longitud,
+        )
+    }
+
+    /**
+     * RN-27: el backend nunca devuelve la cédula del causante al ciudadano, así que el campo empieza
+     * vacío. Vacío no se envía (si no, cada edición la borraría); una cédula escrita la reemplaza
+     * y "Quitar la cédula" manda "".
+     */
+    private fun causante(e: FormularioReporteEstado): String? = when {
+        e.quitarCausante -> ""
+        else -> e.texto(CampoReporte.CAUSANTE).trim().ifEmpty { null }
+    }
+
+    /** Al guardar se manda la cédula vacía. Escribir otra lo deshace. */
+    fun quitarCausante() = _estado.update {
+        if (!it.puedeCambiarSiPendiente) return@update it
+        it.copy(
+            quitarCausante = true,
+            textos = it.textos + (CampoReporte.CAUSANTE to ""),
+            errores = it.errores - CampoReporte.CAUSANTE,
         )
     }
 

@@ -63,6 +63,7 @@ class ReportesRepositoryRemoto(
             .apply { nuevo.descripcionUbicacion?.let { addFormDataPart("descripcion_ubicacion", it) } }
             .addFormDataPart("municipio", nuevo.municipio.toString())
             .apply { nuevo.vereda?.let { addFormDataPart("vereda", it) } }
+            .apply { nuevo.causanteCedula?.let { addFormDataPart("causante_cedula", it) } }
             .addFormDataPart("latitud", coordenada(nuevo.latitud))
             .addFormDataPart("longitud", coordenada(nuevo.longitud))
             .agregarFotos(nuevo.fotos)
@@ -91,6 +92,7 @@ class ReportesRepositoryRemoto(
         cambios.descripcionUbicacion?.let { put("descripcion_ubicacion", it) }
         cambios.municipio?.let { put("municipio", it) }
         cambios.vereda?.let { put("vereda", it) }
+        cambios.causanteCedula?.let { put("causante_cedula", it) }
         cambios.latitud?.let { put("latitud", coordenada(it)) }
         cambios.longitud?.let { put("longitud", coordenada(it)) }
     }

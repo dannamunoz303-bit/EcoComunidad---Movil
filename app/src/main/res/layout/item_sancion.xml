@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Una sanción: tipo como etiqueta, fecha de inicio, motivo y el reporte si se conoce. -->
+<!-- Una sanción: tipo como etiqueta, fecha de inicio, motivo y el reporte si se conoce.
+     Por causar un daño (RN-27): una segunda etiqueta y nunca el reporte. -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -26,6 +27,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="@string/sancion_bloqueo_temporal" />
+
+            <TextView
+                android:id="@+id/por_causante"
+                style="@style/Widget.EcoComunidad.EtiquetaEstado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="@string/sancion_por_causante"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/fecha"

@@ -97,7 +97,10 @@ class MisSancionesViewModel(
                     )
                     _estado.value = MisSancionesEstado(
                         cargando = false,
-                        sanciones = ordenadas.map { SancionConReporte(it, it.reporteId?.let(titulos::get)) },
+                        // RN-27: las de causante nunca muestran un reporte, aunque llegara uno
+                        sanciones = ordenadas.map {
+                            SancionConReporte(it, it.reporteId?.takeIf { _ -> !it.porCausante }?.let(titulos::get))
+                        },
                         bloqueo = bloqueoVigente(r.datos, ahora()),
                     )
                 }
@@ -114,7 +117,7 @@ class MisSancionesViewModel(
 
     /** Solo se piden los reportes si alguna sanción tiene uno. */
     private suspend fun titulosDeReportes(lista: List<Sancion>): Map<Int, String> {
-        if (lista.none { it.reporteId != null }) return emptyMap()
+        if (lista.none { it.reporteId != null && !it.porCausante }) return emptyMap()
         val r = reportes.listar(soloMios = true)
         return if (r is Resultado.Exito) r.datos.associate { it.id to it.titulo } else emptyMap()
     }

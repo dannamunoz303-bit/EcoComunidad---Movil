@@ -437,6 +437,60 @@
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
+                    <!-- RN-27: opcional. Solo la ve el administrador; nunca se dice si es de alguien registrado -->
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.EcoComunidad.TarjetaClara"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <TextView
+                                style="@style/Widget.EcoComunidad.TextoTitulo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:accessibilityHeading="true"
+                                android:text="@string/crear_seccion_causante"
+                                android:textAppearance="@style/TextAppearance.EcoComunidad.Subtitulo"
+                                android:textSize="18sp" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/campo_causante"
+                                style="@style/Widget.EcoComunidad.Campo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:hint="@string/campo_causante"
+                                app:helperText="@string/causante_ayuda"
+                                app:helperTextEnabled="true">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:digits="0123456789"
+                                    android:imeOptions="actionDone"
+                                    android:importantForAutofill="no"
+                                    android:inputType="number"
+                                    android:maxLength="20"
+                                    android:maxLines="1" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <!-- Solo al editar: el backend no devuelve la cédula, así que no se puede borrar a mano -->
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/boton_quitar_causante"
+                                style="@style/Widget.EcoComunidad.BotonTexto"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/causante_quitar"
+                                android:visibility="gone" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
                     <include
                         android:id="@+id/aviso"
                         layout="@layout/vista_aviso"

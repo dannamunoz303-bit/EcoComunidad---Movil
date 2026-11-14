@@ -15,6 +15,7 @@ enum class TipoSancion {
  * SancionCiudadanoSerializer (GET sanciones/mias/): sin el administrador (RN-21).
  * reporte_id llega como "reporte", sin el título. [fechaFin] es null en advertencia y en el
  * permanente vigente; al levantar un bloqueo el backend la pone en la fecha en que se levantó.
+ * RN-27: en las sanciones por causar un daño [reporteId] llega null, para no revelar quién reportó.
  */
 @Serializable
 data class Sancion(
@@ -24,4 +25,6 @@ data class Sancion(
     @SerialName("fecha_inicio") val fechaInicio: String,
     @SerialName("fecha_fin") val fechaFin: String? = null,
     @SerialName("reporte") val reporteId: Int? = null,
+    /** RN-27: se sancionó por causar el daño de un reporte, no por hacer un reporte erróneo. */
+    @SerialName("por_causante") val porCausante: Boolean = false,
 )

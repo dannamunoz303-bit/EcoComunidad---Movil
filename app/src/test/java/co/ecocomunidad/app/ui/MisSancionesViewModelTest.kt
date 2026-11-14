@@ -123,6 +123,43 @@ class MisSancionesViewModelTest {
     }
 
     @Test
+    fun porCausante_seVeComoLasDemasPeroSinReporte() = runTest(main.despachador) {
+        sanciones.mias = Resultado.Exito(
+            listOf(
+                sancion(1, TipoSancion.ADVERTENCIA, inicio = "2026-10-01T09:00:00-05:00", reporte = 1),
+                // Aunque llegara un reporte, en una de causante nunca se muestra (RN-27)
+                sancion(2, TipoSancion.BLOQUEO_TEMPORAL, inicio = "2026-10-05T09:00:00-05:00",
+                    fin = "2026-10-07T09:00:00-05:00", reporte = 1, porCausante = true),
+            ),
+        )
+        reportes.mios = Resultado.Exito(listOf(reporte(1)))
+        val vm = viewModel()
+
+        advanceUntilIdle()
+
+        with(vm.estado.value.sanciones) {
+            assertEquals(listOf(2, 1), map { it.sancion.id })
+            assertTrue(this[0].sancion.porCausante)
+            assertEquals("Motivo 2", this[0].sancion.motivo)
+            assertNull(this[0].tituloReporte)
+            assertEquals("Basura en la esquina", this[1].tituloReporte)
+        }
+        // También cuenta para el bloqueo vigente, como las demás
+        assertTrue(vm.estado.value.bloqueo is Bloqueo.Temporal)
+    }
+
+    @Test
+    fun soloSancionesPorCausante_noPideLosReportes() = runTest(main.despachador) {
+        sanciones.mias = Resultado.Exito(listOf(sancion(1, TipoSancion.ADVERTENCIA, reporte = 9, porCausante = true)))
+        val vm = viewModel()
+
+        advanceUntilIdle()
+
+        assertTrue(reportes.listados.isEmpty())
+        assertNull(vm.estado.value.sanciones.single().tituloReporte)
+    }
+
+    @Test
     fun sinReportesLigados_noPideLosReportes() = runTest(main.despachador) {
         sanciones.mias = Resultado.Exito(listOf(sancion(1, TipoSancion.ADVERTENCIA)))
         val vm = viewModel()

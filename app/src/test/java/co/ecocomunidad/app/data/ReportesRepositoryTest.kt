@@ -221,6 +221,34 @@ class ReportesRepositoryTest {
     }
 
     @Test
+    fun crearConCausante_laEnviaComoCausanteCedula() = runTest {
+        responder(201, reporteJson(id = 9, estado = "pendiente"))
+
+        repositorio.crear(nuevo(fotos = listOf(foto("a.jpg", "AAA")), causante = "1020304050"))
+
+        val partes = partes(servidor.takeRequest())
+        assertEquals("1020304050", partes.single { it.nombre == "causante_cedula" }.contenido)
+    }
+
+    @Test
+    fun crearSinCausante_noEnviaEseCampo() = runTest {
+        responder(201, reporteJson(id = 9, estado = "pendiente"))
+
+        repositorio.crear(nuevo(fotos = listOf(foto("a.jpg", "AAA"))))
+
+        assertTrue(partes(servidor.takeRequest()).none { it.nombre == "causante_cedula" })
+    }
+
+    @Test
+    fun editar_quitarLaCedulaDelCausanteMandaTextoVacio() = runTest {
+        responder(200, reporteJson(id = 5, estado = "pendiente"))
+
+        repositorio.editar(5, CambiosReporte(causanteCedula = ""))
+
+        assertEquals("""{"causante_cedula":""}""", servidor.takeRequest().body.readUtf8())
+    }
+
+    @Test
     fun crearSinVereda_noEnviaEseCampo_peroSiElMunicipio() = runTest {
         responder(201, reporteJson(id = 9, estado = "pendiente"))
 
@@ -410,7 +438,12 @@ class ReportesRepositoryTest {
     private fun foto(nombre: String, contenido: String): File =
         File(carpeta.root, nombre).apply { writeText(contenido) }
 
-    private fun nuevo(fotos: List<File>, descripcionUbicacion: String? = null, vereda: String? = "La Playa") = NuevoReporte(
+    private fun nuevo(
+        fotos: List<File>,
+        descripcionUbicacion: String? = null,
+        vereda: String? = "La Playa",
+        causante: String? = null,
+    ) = NuevoReporte(
         categoria = 3,
         titulo = "Basura en el parque",
         descripcion = "Bolsas acumuladas",
@@ -418,6 +451,7 @@ class ReportesRepositoryTest {
         descripcionUbicacion = descripcionUbicacion,
         municipio = 1,
         vereda = vereda,
+        causanteCedula = causante,
         latitud = 4.60971,
         longitud = -74.08175,
         fotos = fotos,

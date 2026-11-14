@@ -433,4 +433,83 @@ class CrearReporteViewModelTest {
         assertEquals("El municipio no existe.", vm.estado.value.errores[CampoReporte.MUNICIPIO])
         assertNull(vm.estado.value.aviso)
     }
+
+    // --- Cédula del causante (RN-27) ---
+
+    @Test
+    fun causanteVacio_noSeEnvia() = runTest(main.despachador) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        vm.llenar()
+        vm.cambiar(CampoReporte.CAUSANTE, "   ")
+        advanceUntilIdle()
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertNull(repositorio.creados.single().causanteCedula)
+    }
+
+    @Test
+    fun conCausante_laEnviaSinEspacios() = runTest(main.despachador) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        vm.llenar()
+        vm.cambiar(CampoReporte.CAUSANTE, " 1020304050 ")
+        advanceUntilIdle()
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        assertEquals("1020304050", repositorio.creados.single().causanteCedula)
+        assertTrue(vm.estado.value.creado)
+    }
+
+    @Test
+    fun causanteConLetrasOMuyLarga_noSeEnvia() = runTest(main.despachador) {
+        val vm = viewModel()
+        advanceUntilIdle()
+        vm.llenar()
+        advanceUntilIdle()
+
+        vm.cambiar(CampoReporte.CAUSANTE, "10.203.040")
+        vm.enviar()
+        advanceUntilIdle()
+        assertEquals("Escribe solo los números de la cédula.", vm.estado.value.errores[CampoReporte.CAUSANTE])
+
+        vm.cambiar(CampoReporte.CAUSANTE, "1".repeat(21))
+        vm.enviar()
+        advanceUntilIdle()
+        assertEquals("La cédula puede tener máximo 20 números.", vm.estado.value.errores[CampoReporte.CAUSANTE])
+        assertTrue(repositorio.creados.isEmpty())
+    }
+
+    @Test
+    fun siEsSuPropiaCedula_elMensajeDelBackendVaDebajoDelCampo() = runTest(main.despachador) {
+        repositorio.creado = RepositorioFalso.fallo(
+            ErrorAuth.Validacion(
+                mapOf("causante_cedula" to listOf("La cédula del causante no puede ser la de quien hace el reporte.")),
+            ),
+        )
+        val vm = viewModel()
+        advanceUntilIdle()
+        vm.llenar()
+        vm.cambiar(CampoReporte.CAUSANTE, "1020304050")
+        advanceUntilIdle()
+
+        vm.enviar()
+        advanceUntilIdle()
+
+        with(vm.estado.value) {
+            assertEquals(
+                "La cédula del causante no puede ser la de quien hace el reporte.",
+                errores[CampoReporte.CAUSANTE],
+            )
+            assertNull(aviso)
+            assertFalse(creado)
+        }
+        // Escribir otra borra el error
+        vm.cambiar(CampoReporte.CAUSANTE, "99")
+        assertNull(vm.estado.value.errores[CampoReporte.CAUSANTE])
+    }
 }

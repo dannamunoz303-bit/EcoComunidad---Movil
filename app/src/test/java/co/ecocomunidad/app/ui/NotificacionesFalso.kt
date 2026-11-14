@@ -53,6 +53,10 @@ class SancionesFalso : SancionesRepository {
             inicio: String = "2026-10-05T09:00:00-05:00",
             fin: String? = null,
             reporte: Int? = null,
-        ) = Sancion(id = id, tipo = tipo, motivo = "Motivo $id", fechaInicio = inicio, fechaFin = fin, reporteId = reporte)
+            porCausante: Boolean = false,
+        ) = Sancion(
+            id = id, tipo = tipo, motivo = "Motivo $id", fechaInicio = inicio, fechaFin = fin,
+            reporteId = reporte, porCausante = porCausante,
+        )
     }
 }

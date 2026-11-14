@@ -14,6 +14,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -78,6 +79,33 @@ class SancionesRepositoryTest {
             assertNull(fechaFin)
             assertNull(reporteId)
         }
+    }
+
+    @Test
+    fun sancionPorCausante_llegaSinReporteYConLaMarca() = runTest {
+        // RN-27: SancionCiudadanoSerializer pone el reporte en null en las de causante
+        responder(
+            200,
+            """[{"id":3,"tipo":"advertencia","motivo":"Dejaste escombros en la vía.",
+                 "fecha_inicio":"2026-10-05T09:00:00-05:00","fecha_fin":null,"reporte":null,"por_causante":true}]""",
+        )
+
+        with((repositorio.listarMias() as Resultado.Exito).datos.single()) {
+            assertTrue(porCausante)
+            assertNull(reporteId)
+            assertEquals("Dejaste escombros en la vía.", motivo)
+        }
+    }
+
+    @Test
+    fun sinPorCausante_esUnaSancionComun() = runTest {
+        responder(
+            200,
+            """[{"id":1,"tipo":"advertencia","motivo":"Otro motivo.",
+                 "fecha_inicio":"2026-10-01T09:00:00-05:00","fecha_fin":null,"reporte":null}]""",
+        )
+
+        assertFalse((repositorio.listarMias() as Resultado.Exito).datos.single().porCausante)
     }
 
     @Test

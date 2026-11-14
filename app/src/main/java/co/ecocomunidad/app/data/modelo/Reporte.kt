@@ -57,6 +57,8 @@ data class NuevoReporte(
     /** Id de uno de los 42 municipios (RN-23). */
     val municipio: Int,
     val vereda: String?,
+    /** RN-27: opcional. Solo la ve el administrador; el backend nunca la devuelve al ciudadano. */
+    val causanteCedula: String? = null,
     val latitud: Double,
     val longitud: Double,
     val fotos: List<File>,
@@ -76,6 +78,8 @@ data class CambiosReporte(
     val descripcionUbicacion: String? = null,
     val municipio: Int? = null,
     val vereda: String? = null,
+    /** RN-27: "" la quita. */
+    val causanteCedula: String? = null,
     val latitud: Double? = null,
     val longitud: Double? = null,
 ) {
@@ -103,6 +107,7 @@ data class Foto(
  * ReporteSerializer. [ciudadano] llega null cuando quien mira no puede ver al creador (RN-10).
  * [fotos] son solo las tipo reporte; las evidencias vienen en las acciones.
  * [municipio] y [zona] llegan null en los reportes creados antes de RN-23; la zona sale del municipio.
+ * causante_cedula y causante no están a propósito: solo los recibe el administrador (RN-02, RN-27).
  */
 @Serializable
 data class Reporte(
